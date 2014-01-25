@@ -1,0 +1,1 @@
+window.SSE_URL = 'https://sentry.exoscale.ch:8843/index/';

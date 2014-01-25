@@ -1,9 +1,6 @@
 var dashboardApp = angular.module('RiemannDashboardApp', ['ui.bootstrap']);
 
 
-var SSE_URL = 'http://185.19.28.17:5558/index';
-
-
 var percent_format = function(val) {
 	return (val.metric * 100.0).toFixed(2) +"%"
 };
@@ -278,7 +275,7 @@ dashboardApp.controller('RiemannDashboardCtrl', function ($scope, $sce) {
 	};
 
 	if (!!window.EventSource) {
-		var source = new EventSource(SSE_URL+"?query=true");
+		var source = new EventSource(window.SSE_URL+"?query=true");
 		source.addEventListener('message', handleCallback, false);
 
 		source.addEventListener('open', function(e) {
