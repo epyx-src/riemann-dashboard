@@ -92,9 +92,9 @@ dashboardApp.controller('RiemannDashboardCtrl', function ($scope) {
 			}
 		},
 		'riak ring': {
-			img: "check",
+			img: "heart",
 			format: state_format,
-			name: "Riak ring status"
+			name: "Riak ring"
 		}
 	};
 	var services = _.map(service_info, function(v, k) {
@@ -204,17 +204,6 @@ dashboardApp.controller('RiemannDashboardCtrl', function ($scope) {
 				showError("Server Send Event error")
 			}
 		}, false);
-		setTimeout(function() {
-			handleCallback({
-				data: JSON.stringify({
-					service: 'cpu',
-					host: 'test',
-					state: 'warning',
-					metric: 1
-				})
-			})
-		}, 100)
-
 	} else {
 	  	showError("SSE not available")
 	}

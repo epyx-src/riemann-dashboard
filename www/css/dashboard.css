@@ -12,13 +12,13 @@
 	content: " ";
 	position: absolute;
 	top: 5px;
-	bottom: 5px;
-	left: 5px;
+	bottom: 0px;
+	left: 0px;
 	right: 5px;
 	background-repeat: no-repeat;
-	background-size: contain;
-	background-position: center center;
-	opacity: 0.5;
+	background-size: 48px;
+	background-position: 100% 0%;
+	opacity: 0.1;
 }
 
 .img-document:before {
@@ -56,6 +56,11 @@
 .img-www:before {
 	background-image: url('/img/world.png');
 }
+
+.img-heart:before {
+	background-image: url('/img/heart.png');
+}
+
 
 .riemann-cell {
 	height: 100%;
@@ -101,7 +106,9 @@
 }
 
 .state-expired {
-	background-color: #dedede;
+	background-color: #222;
+	border: 2px solid #444;
+	color: #777;
 }
 
 .sub-name {
