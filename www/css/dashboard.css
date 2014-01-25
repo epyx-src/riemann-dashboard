@@ -1,0 +1,122 @@
+#main_error {
+	padding: 70px 10px 10px 10px;
+}
+#main_content {
+	padding: 10px 10px 10px 10px;
+}
+
+.img {
+	position: relative;
+}
+.img:before {
+	content: " ";
+	position: absolute;
+	top: 5px;
+	bottom: 5px;
+	left: 5px;
+	right: 5px;
+	background-repeat: no-repeat;
+	background-size: contain;
+	background-position: center center;
+	opacity: 0.5;
+}
+
+.img-document:before {
+	background-image: url('/img/document.png');
+}
+
+.img-services:before {
+	background-image: url('/img/services.png');
+}
+
+.img-memory:before {
+	background-image: url('/img/memory.png');
+}
+
+.img-hdd:before {
+	background-image: url('/img/hdd.png');
+}
+
+.img-cloud-storage:before {
+	background-image: url('/img/cloud_storage.png');
+}
+
+.img-upload:before {
+	background-image: url('/img/upload.png');
+}
+
+.img-download:before {
+	background-image: url('/img/download.png');
+}
+
+.img-check:before {
+	background-image: url('/img/checkmark.png');
+}
+
+.img-www:before {
+	background-image: url('/img/world.png');
+}
+
+.riemann-cell {
+	height: 100%;
+	width: 100%;
+	padding: 5px;
+	border-radius: 3px;
+	border: 2px solid rgba(255, 255, 255,0.1);
+}
+
+.riemann-cell .value {
+	font-size: 150%;
+	text-align: center;
+	text-shadow: 0px 0px 2px white;
+}
+
+.riemann-cell .host {
+	font-weight: bold;
+}
+
+.riemann-cell .head {
+	margin-bottom: 5px;
+}
+
+.riemann-cell .service {
+	opacity: 0.5;
+}
+
+.state-critical {
+	background-color: #a00000;
+	color: white;
+	box-shadow: 0 0 10px red;
+	border: 2px solid red;
+}
+
+.state-warning {
+	background-color: #41391b;
+	color: #eecf4e;
+}
+
+.state-ok {
+	background-color: #003304;
+	color: #4aee4c;
+}
+
+.state-expired {
+	background-color: #dedede;
+}
+
+.sub-name {
+	opacity: 0.7;
+}
+
+.sub-value {
+	background-color: rgba(255,255,255,0.05);
+	margin: 1px;
+	padding: 1px;
+	text-align: right;
+	min-width: 60px;
+	color: #ded;
+}
+
+body {
+	background-color: #111;
+}
