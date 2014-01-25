@@ -71,9 +71,9 @@
 }
 
 .riemann-cell .value {
-	font-size: 150%;
+	font-size: 130%;
 	text-align: center;
-	text-shadow: 0px 0px 2px white;
+	color: #ded;
 }
 
 .riemann-cell .host {
@@ -93,6 +93,9 @@
 	color: white;
 	box-shadow: 0 0 10px red;
 	border: 2px solid red;
+	-webkit-animation-iteration-count: infinite;
+	-moz-animation-iteration-count: infinite;
+	animation-iteration-count: infinite;
 }
 
 .state-warning {
@@ -108,11 +111,13 @@
 .state-expired {
 	background-color: #222;
 	border: 2px solid #444;
-	color: #777;
+	color: #999;
+	opacity: 0.5;
 }
 
 .sub-name {
-	opacity: 0.7;
+	opacity: 0.5;
+	text-align: right;
 }
 
 .sub-value {
@@ -126,4 +131,16 @@
 
 body {
 	background-color: #111;
+}
+
+.sparklines {
+	overflow: hidden;
+}
+
+table {
+	table-layout:fixed;
+}
+
+.sub-values td {
+	width: 30%;
 }

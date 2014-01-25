@@ -1,14 +1,14 @@
 <div class="img riemann-cell" ng-class="data.classes" ng-if="data">
-	<div clas="head">
+	<div class="head">
 		<span class="host">{{data.host}}</span>
 		<span class="service pull-right">{{data.name}}</span>
 	</div>
 	<div ng-if="data.values">
-		<table>
+		<table class="sub-values">
 			<tr ng-repeat="(key, val) in data.values">
 				<td class="sub-name" ng-class="val.classes">{{ val.name }}</td>
 				<td>
-					<div  class="sub-value">{{ val.value }}</div>
+					<div class="sub-value"><span ng-bind-html="val.value"></span></div>
 				</td>
 				<td>
 					<sparkline data="{{val.sparklines}}"></sparkline>
@@ -17,9 +17,9 @@
 		</table>
 	</div>
 	<div ng-if="!data.values">
-		<div class="value">{{data.value}}</div>
+		<div class="value"><span ng-bind-html="data.value"></span></div>
 	</div>
-	<div ng-if="data.sparklines">
+	<div ng-if="data.sparklines" class="sparklines">
 		<sparkline data="{{data.sparklines}}"></sparkline>
 	</div>
 </div>

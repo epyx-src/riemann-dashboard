@@ -4,6 +4,8 @@
 		<meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0">
 		<link rel="stylesheet" href="css/bootstrap.min.css">
 		<link rel="stylesheet" href="css/dashboard.css">
+		<link rel="stylesheet" href="css/animate.min.css">
+
 		<meta name="apple-mobile-web-app-title" content="exodoc">
 		<title>Exodoc dashboard</title>
 
@@ -19,6 +21,9 @@
 	</head>
 	<body>
 		<div ng-controller="RiemannDashboardCtrl">
+			<div ng-if="error" class="alert alert-danger">
+				{{error}}
+			</div>
 			<table style="width:100%;">
 				<tbody>
 					<tr ng-repeat="service in available_services">

@@ -1,10 +1,17 @@
 var dashboardApp = angular.module('RiemannDashboardApp', ['ui.bootstrap']);
 
+
+var SSE_URL = 'http://185.19.28.17:5558/index';
+
+
 var percent_format = function(val) {
 	return (val.metric * 100.0).toFixed(2) +"%"
 };
 
 var state_format = function(val) {
+	if (val.state == 'ok') {
+		return '<span class="glyphicon glyphicon-ok"></span>';
+	}
 	return val.state.toUpperCase()
 };
 
@@ -12,9 +19,29 @@ var int_format = function(val) {
 	return val.metric.toFixed(0)
 };
 
+var unit_format = function(unit, fixed) {
+	return function(val) {
+		return val.metric.toFixed(fixed) +" "+ unit
+	}
+};
 
-dashboardApp.controller('RiemannDashboardCtrl', function ($scope) {
+var desc_format = function(val) {
+	return "<span>"+val.description+"</span>";
+};
+
+var memory_format = function(val) {
+	var lines = val.description.split("\n");
+	var elms = _.map(lines, function(l) {
+		return "<div>"+l+"</div>"
+	});
+	return elms.join("");
+};
+
+dashboardApp.controller('RiemannDashboardCtrl', function ($scope, $sce) {
 	var service_info = {
+		'test state': {
+			format: state_format
+		},
 		'cpu': {
 			img:"services",
 			format: percent_format,
@@ -39,7 +66,6 @@ dashboardApp.controller('RiemannDashboardCtrl', function ($scope) {
 				"nginx accepted": {
 					name: "Accepted",
 					format: int_format,
-					graph: true
 				},
 				"nginx active": {
 					name: "Active",
@@ -49,7 +75,6 @@ dashboardApp.controller('RiemannDashboardCtrl', function ($scope) {
 				"nginx handled": {
 					name: "Handled",
 					format: int_format,
-					graph: true
 				},
 				"nginx reading": {
 					name: "Read",
@@ -59,7 +84,6 @@ dashboardApp.controller('RiemannDashboardCtrl', function ($scope) {
 				"nginx requests": {
 					name: "Req",
 					format: int_format,
-					graph: true
 				},
 				"nginx waiting": {
 					name: "Wait",
@@ -80,21 +104,50 @@ dashboardApp.controller('RiemannDashboardCtrl', function ($scope) {
 			img: "cloud-storage",
 			state_key: "riak",
 			values: {
+				"riak disk": {
+					format: unit_format("GB",2)
+				},
 				"riak node_gets": {
-					graph: true
+					graph: true,
+					format: unit_format("/s",4)
 				},
 				"riak node_puts": {
-					graph: true
+					graph: true,
+					format: unit_format("/s",4)
 				},
 				"riak read_repairs": {
-					graph: true
+					graph: true,
+					format: unit_format("/s",4)
+				},
+				'riak ring': {
+					img: "heart",
+					format: state_format,
+					name: "Riak ring"
 				}
 			}
 		},
-		'riak ring': {
-			img: "heart",
-			format: state_format,
-			name: "Riak ring"
+		'exodoc*': {
+			key: "exodoc",
+			name: "exodoc",
+			img: "document",
+			values: {
+				"exodoc active users": {
+					name: "Users",
+					format: int_format
+				},
+				"exodoc documents": {
+					name: "Docs",
+					format: int_format
+				},
+				"exodoc documents waiting": {
+					name: "Transform",
+					format: int_format
+				},
+				"exodoc files": {
+					name: "Files",
+					format: int_format
+				}
+			}
 		}
 	};
 	var services = _.map(service_info, function(v, k) {
@@ -112,8 +165,11 @@ dashboardApp.controller('RiemannDashboardCtrl', function ($scope) {
 		try {
 			var data = JSON.parse(msg.data);
 		} catch (ex) {
-			console.error(ex);
+			console.error(ex,msg);
 			showError(ex);
+			setTimeout(function() {
+				location.reload();
+			});
 			return;
 		}
 		var found_service = null;
@@ -140,6 +196,32 @@ dashboardApp.controller('RiemannDashboardCtrl', function ($scope) {
 		});
  	};
 
+	/**
+	 * Store history data in local browser store
+	 */
+	var get_storage_history = function(host, service) {
+		if (!!window.localStorage) {
+			var key = "riemann.dashboard:"+host+":"+service;
+			var history = window.localStorage.getItem(key) || "[]";
+
+			var data = JSON.parse(history);
+			return _.filter(data, function(v) {
+				return (v != null)
+			});
+		}
+		return [];
+	};
+
+	/**
+	 * Get history data from local browser store
+	 */
+	var set_storage_history = function(host, service, history) {
+		if (!!window.localStorage) {
+			var key = "riemann.dashboard:"+host+":"+service;
+			window.localStorage.setItem(key, JSON.stringify(history));
+		}
+	}
+
 	var handle_cell = function(cell, cell_info, cell_data, is_sub) {
 		var name = cell_info.name;
 		if (!name) {
@@ -158,15 +240,21 @@ dashboardApp.controller('RiemannDashboardCtrl', function ($scope) {
 			cell['state'] = cell_data.state;
 		}
 		cell['classes'] = "img-"+cell_info.img+" state-"+cell['state'];
-		cell['history'] = cell['history'] || [];
+		if (cell['state'] == 'critical') {
+			cell['classes'] += " animated pulse"
+		} else if (cell['state'] == 'warning') {
+			cell['classes'] += " animated bounce"
+		}
+		cell['history'] = cell['history'] || get_storage_history(cell_data.host, cell_data.service);
 		cell['history'].push(cell_data.metric);
 		var max = is_sub?max_history_sub:max_history;
 		if (cell['history'].length > max) {
-			cell['history'] = cell['history'].splice(0, cell['history'].length - max);
+			cell['history'].splice(0, (cell['history'].length - max));
 		}
+		set_storage_history(cell_data.host, cell_data.service, cell['history']);
 		var format_fun = cell_info.format || function(v) {return v.metric.toFixed(4);};
 		try {
-			cell['value'] = format_fun(cell_data);
+			cell['value'] = $sce.trustAsHtml(format_fun(cell_data));
 		} catch (ex) {
 			cell['value'] = "?"
 		}
@@ -190,22 +278,35 @@ dashboardApp.controller('RiemannDashboardCtrl', function ($scope) {
 	};
 
 	if (!!window.EventSource) {
-  		var source = new EventSource('http://185.19.28.17:5558/index?query=true');
+		var source = new EventSource(SSE_URL+"?query=true");
 		source.addEventListener('message', handleCallback, false);
 
 		source.addEventListener('open', function(e) {
-		 	console.log("SSE Open")
+			console.log("SSE Open")
 		}, false);
 
 		source.addEventListener('error', function(e, err) {
-		  	if (e.readyState == EventSource.CLOSED) {
+			if (e.readyState == EventSource.CLOSED) {
 				console.log("SSE Closed")
-		  	} else {
+			} else {
 				showError("Server Send Event error")
 			}
 		}, false);
+		// Code to generate an event on startup ( for testing )
+		/*
+		setTimeout(function() {
+			handleCallback({
+				data: JSON.stringify({
+					host:'test',
+					service:'test state',
+					state:'ok',
+					metric:1
+				})
+			})
+		});
+		*/
 	} else {
-	  	showError("SSE not available")
+		showError("SSE not available")
 	}
 });
 
