@@ -274,37 +274,45 @@ dashboardApp.controller('RiemannDashboardCtrl', function ($scope, $sce) {
 		$scope.error = text
 	};
 
-	if (!!window.EventSource) {
-		var source = new EventSource(window.SSE_URL+"?query=true");
-		source.addEventListener('message', handleCallback, false);
+	var connect_sse = function() {
+		if (!!window.EventSource) {
+			console.log("Connecting to events");
+			var source = new EventSource(window.SSE_URL+"?query=true");
+			source.addEventListener('message', handleCallback, false);
 
-		source.addEventListener('open', function(e) {
-			console.log("SSE Open")
-		}, false);
+			source.addEventListener('open', function(e) {
+				console.log("Connected");
+				$("body").css("background-color", "");
+			}, false);
 
-		source.addEventListener('error', function(e, err) {
-			if (e.readyState == EventSource.CLOSED) {
-				console.log("SSE Closed")
-			} else {
-				showError("Server Send Event error")
-			}
-		}, false);
-		// Code to generate an event on startup ( for testing )
-		/*
-		setTimeout(function() {
-			handleCallback({
-				data: JSON.stringify({
-					host:'test',
-					service:'test state',
-					state:'ok',
-					metric:1
+			source.addEventListener('error', function(e, err) {
+				$("body").css("background-color", "red");
+				console.error("SSE error", e);
+				setTimeout(connect_sse, 10000);
+				try {
+					source.close();
+				} catch (ex) {
+					console.error(ex);
+				}
+			}, false);
+			// Code to generate an event on startup ( for testing )
+			/*
+			setTimeout(function() {
+				handleCallback({
+					data: JSON.stringify({
+						host:'test',
+						service:'test state',
+						state:'ok',
+						metric:1
+					})
 				})
-			})
-		});
-		*/
-	} else {
-		showError("SSE not available")
-	}
+			});
+			*/
+		} else {
+			showError("SSE not available")
+		}
+	};
+	setTimeout(connect_sse);
 });
 
 
