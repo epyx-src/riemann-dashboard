@@ -105,7 +105,6 @@ dashboardApp.controller('RiemannDashboardCtrl', function ($scope, $sce) {
 		'riak*': {
 			key: "riak2",
 			name: "Riak",
-			values: "all",
 			img: "cloud-storage",
 			state_key: "riak",
 			values: {
@@ -120,6 +119,14 @@ dashboardApp.controller('RiemannDashboardCtrl', function ($scope, $sce) {
 					graph: true,
 					format: unit_format("/s",4)
 				},
+				"riak vnode_gets": {
+					graph: true,
+					format: unit_format("/s",4)
+				},
+				"riak vnode_puts": {
+					graph: true,
+					format: unit_format("/s",4)
+				},
 				"riak read_repairs": {
 					graph: true,
 					format: unit_format("/s",4)
@@ -130,32 +137,32 @@ dashboardApp.controller('RiemannDashboardCtrl', function ($scope, $sce) {
 					name: "Riak ring"
 				},
 				'riak get 50': {
-					group:"get",
+					group:"get (ms)",
 					format: unit_format("",4),
 					name: "50"
 				},
 				'riak get 95': {
-					group:"get",
+					group:"get (ms)",
 					format: unit_format("",4),
 					name: "95"
 				},
 				'riak get 99': {
-					group:"get",
+					group:"get (ms)",
 					format: unit_format("",4),
 					name: "99"
 				},
 				'riak put 50': {
-					group:"put",
+					group:"put (ms)",
 					format: unit_format("",4),
 					name: "50"
 				},
 				'riak put 95': {
-					group:"put",
+					group:"put (ms)",
 					format: unit_format("",4),
 					name: "95"
 				},
 				'riak put 99': {
-					group:"put",
+					group:"put (ms)",
 					format: unit_format("",4),
 					name: "99"
 				}
