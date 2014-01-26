@@ -15,6 +15,16 @@
 				</td>
 			</tr>
 		</table>
+		<table class="sub-groups" ng-repeat="(key, group) in data.groups">
+			<caption>{{key}}</caption>
+			<tr>
+				<td ng-repeat="(k, item) in group">
+					<div class="group-cell">
+						<span class="group-item" ng-bind-html="item.name"></span> <span class="group-value" ng-bind-html="item.value"></span>
+					</div>
+				</td>
+			</tr>
+		</table>
 	</div>
 	<div ng-if="!data.values">
 		<div class="value"><span ng-bind-html="data.value"></span></div>

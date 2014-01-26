@@ -28,7 +28,7 @@
 				<tbody>
 					<tr ng-repeat="service in available_services">
 						<td ng-repeat="(host, host_services) in dashboard" ng-style="td_style">
-							<riemanncell data="host_services[service]"></riemanncell>
+							<riemanncell templatecell="host_services[service].template_cell" data="host_services[service]"></riemanncell>
 						</td>
 					</tr>
 				</tbody>

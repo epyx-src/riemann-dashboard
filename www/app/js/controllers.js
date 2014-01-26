@@ -1,8 +1,13 @@
 var dashboardApp = angular.module('RiemannDashboardApp', ['ui.bootstrap']);
 
 
+function numberFixed(x, d) {
+    if (!d) return x.toFixed(d); // don't go wrong if no decimal
+    return x.toFixed(d).replace(/\.?0+$/, '');
+}
+
 var percent_format = function(val) {
-	return (val.metric * 100.0).toFixed(2) +"%"
+	return numberFixed((val.metric * 100.0), 2) +" %"
 };
 
 var state_format = function(val) {
@@ -18,7 +23,7 @@ var int_format = function(val) {
 
 var unit_format = function(unit, fixed) {
 	return function(val) {
-		return val.metric.toFixed(fixed) +" "+ unit
+		return numberFixed(val.metric, fixed) +" "+ unit
 	}
 };
 
@@ -73,24 +78,27 @@ dashboardApp.controller('RiemannDashboardCtrl', function ($scope, $sce) {
 					name: "Handled",
 					format: int_format,
 				},
-				"nginx reading": {
-					name: "Read",
-					format: int_format,
-					graph: true
-				},
 				"nginx requests": {
 					name: "Req",
 					format: int_format,
 				},
-				"nginx waiting": {
-					name: "Wait",
+				"nginx reading": {
+					name: '<span class="glyphicon glyphicon-log-out"></span>',
 					format: int_format,
-					graph: true
+					graph: true,
+					group: "access",
+				},
+				"nginx waiting": {
+					name: '<span class="glyphicon glyphicon glyphicon-repeat"></span>',
+					format: int_format,
+					graph: true,
+					group: "access",
 				},
 				"nginx writing": {
-					name: "Write",
+					name: '<span class="glyphicon glyphicon-log-in"></span>',
 					format: int_format,
-					graph: true
+					graph: true,
+					group: "access",
 				}
 			}
 		},
@@ -120,6 +128,36 @@ dashboardApp.controller('RiemannDashboardCtrl', function ($scope, $sce) {
 					img: "heart",
 					format: state_format,
 					name: "Riak ring"
+				},
+				'riak get 50': {
+					group:"get",
+					format: unit_format("",4),
+					name: "50"
+				},
+				'riak get 95': {
+					group:"get",
+					format: unit_format("",4),
+					name: "95"
+				},
+				'riak get 99': {
+					group:"get",
+					format: unit_format("",4),
+					name: "99"
+				},
+				'riak put 50': {
+					group:"put",
+					format: unit_format("",4),
+					name: "50"
+				},
+				'riak put 95': {
+					group:"put",
+					format: unit_format("",4),
+					name: "95"
+				},
+				'riak put 99': {
+					group:"put",
+					format: unit_format("",4),
+					name: "99"
 				}
 			}
 		},
@@ -145,6 +183,13 @@ dashboardApp.controller('RiemannDashboardCtrl', function ($scope, $sce) {
 					format: int_format
 				}
 			}
+		},
+		'redis*': {
+			key: "redis",
+			state_key: "redis",
+			name: "redis",
+			img: "hdd",
+			values: "all"
 		}
 	};
 	var services = _.map(service_info, function(v, k) {
@@ -176,7 +221,15 @@ dashboardApp.controller('RiemannDashboardCtrl', function ($scope, $sce) {
 			found_service = service_info[main_service+"*"]
 		}
 		if (!found_service) {
-			return;
+			if (window.ADD_UNKNOWN_SERVICE) {
+				if ($scope.available_services.indexOf(data.service) == -1) {
+					$scope.available_services.push(data.service)
+				}
+				found_service = {
+				}
+			} else {
+				return;
+			}
 		}
 		$scope.$apply(function () {
 			var ser_key = found_service.key || data.service;
@@ -219,15 +272,36 @@ dashboardApp.controller('RiemannDashboardCtrl', function ($scope, $sce) {
 		}
 	}
 
-	var handle_cell = function(cell, cell_info, cell_data, is_sub) {
+	var handle_cell = function(cell, cell_info, cell_data, parent_cell) {
 		var name = cell_info.name;
 		if (!name) {
 			name = cell_data.service
-			if (is_sub) {
+			if (parent_cell) {
 				var i = name.indexOf(" ");
 				name = name.substring(i+1)
 			}
 		}
+
+		var format_fun = cell_info.format || function(v) {return numberFixed(v.metric, 4);};
+		var cell_value = "";
+		try {
+			cell_value = $sce.trustAsHtml(format_fun(cell_data));
+		} catch (ex) {
+			cell_value = $sce.trustAsHtml("?");
+		}
+		cell['value'] = cell_value;
+
+		if (cell_info.group) {
+			parent_cell['groups'] = parent_cell['groups'] || {};
+			var group = parent_cell['groups'][cell_info.group] || {};
+			group[cell_data.service] = {
+				value: cell_value,
+				name: $sce.trustAsHtml(name)
+			};
+			parent_cell['groups'][cell_info.group] = group;
+			return false; // don't add to values
+		}
+
 		cell['name'] = name;
 		if (cell_info.state_key) {
 			if (cell_info.state_key == cell_data.service) {
@@ -244,17 +318,11 @@ dashboardApp.controller('RiemannDashboardCtrl', function ($scope, $sce) {
 		}
 		cell['history'] = cell['history'] || get_storage_history(cell_data.host, cell_data.service);
 		cell['history'].push(cell_data.metric);
-		var max = is_sub?max_history_sub:max_history;
+		var max = parent_cell?max_history_sub:max_history;
 		if (cell['history'].length > max) {
 			cell['history'].splice(0, (cell['history'].length - max));
 		}
 		set_storage_history(cell_data.host, cell_data.service, cell['history']);
-		var format_fun = cell_info.format || function(v) {return v.metric.toFixed(4);};
-		try {
-			cell['value'] = $sce.trustAsHtml(format_fun(cell_data));
-		} catch (ex) {
-			cell['value'] = "?"
-		}
 		if (cell_info.graph) {
 			cell['sparklines'] = _.map(cell['history'], function(val, i) {
 				return i+":"+val;
@@ -264,10 +332,11 @@ dashboardApp.controller('RiemannDashboardCtrl', function ($scope, $sce) {
 			cell['values'] = cell['values'] || {};
 			var val_info = cell_info.values[cell_data.service] || {};
 			var sub_cell = cell['values'][cell_data.service] || {};
-
-			handle_cell(sub_cell, val_info, cell_data, true);
-			cell['values'][cell_data.service] = sub_cell;
+			if (handle_cell(sub_cell, val_info, cell_data, cell) ) {
+				cell['values'][cell_data.service] = sub_cell;
+			}
 		}
+		return true;
 	};
 
 	var showError = function(text) {
