@@ -172,22 +172,38 @@ dashboardApp.controller('RiemannDashboardCtrl', function ($scope, $sce) {
 			key: "exodoc",
 			name: "exodoc",
 			img: "document",
+			state_key: "exodoc",
 			values: {
-				"exodoc active users": {
-					name: "Users",
-					format: int_format
+				"exodoc web": {
+					name: "django",
+					format: state_format
 				},
-				"exodoc documents": {
-					name: "Docs",
-					format: int_format
+				"exodoc api": {
+					name: "node.js",
+					format: state_format
 				},
-				"exodoc documents waiting": {
-					name: "Transform",
-					format: int_format
+				"exodoc active_users": {
+					name: "Users"
 				},
-				"exodoc files": {
-					name: "Files",
-					format: int_format
+				"exodoc doc_total": {
+					name: '<span class="glyphicon glyphicon-book"></span>',
+					group: "documents"
+				},
+				"exodoc doc_error": {
+					name: '<span class="glyphicon glyphicon-warning-sign"></span>',
+					group: "documents"
+				},
+				"exodoc doc_need_transform": {
+					name: '<span class="glyphicon glyphicon-transfer"></span>',
+					group: "documents"
+				},
+				"exodoc file_error": {
+					name: '<span class="glyphicon glyphicon-warning-sign"></span>',
+					group: "file"
+				},
+				"exodoc file_ready": {
+					name: '<span class="glyphicon glyphicon-thumbs-up"></span>',
+					group: "file"
 				}
 			}
 		},
@@ -196,7 +212,19 @@ dashboardApp.controller('RiemannDashboardCtrl', function ($scope, $sce) {
 			state_key: "redis",
 			name: "redis",
 			img: "hdd",
-			values: "all"
+			values: {
+				"redis instantaneous_ops_per_sec": {
+					format: unit_format("/s",4),
+					name: "Ops"
+				}
+			}
+		},
+		'couchdb*': {
+			key: "couchdb",
+			state_key: "couchdb",
+			name: "couchdb",
+			img: "hdd",
+			values: "*"
 		}
 	};
 	var services = _.map(service_info, function(v, k) {
