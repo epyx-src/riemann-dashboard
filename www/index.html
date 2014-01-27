@@ -25,10 +25,12 @@
 				{{error}}
 			</div>
 			<table style="width:100%;">
-				<tbody>
-					<tr ng-repeat="service in available_services">
+				<tbody class="host-list">
+					<tr>
 						<td ng-repeat="(host, host_services) in dashboard" ng-style="td_style">
-							<riemanncell templatecell="host_services[service].template_cell" data="host_services[service]"></riemanncell>
+							<div ng-repeat="service in available_services" class="td-cell">
+								<riemanncell templatecell="host_services[service].template_cell" data="host_services[service]"></riemanncell>
+							</div>
 						</td>
 					</tr>
 				</tbody>

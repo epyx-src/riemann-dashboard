@@ -6,7 +6,7 @@
 	<div ng-if="data.values">
 		<table class="sub-values">
 			<tr ng-repeat="(key, val) in data.values">
-				<td class="sub-name" ng-class="val.classes">{{ val.name }}</td>
+				<td class="sub-name" ng-class="val.classes"><span ng-bind-html="val.name"></span></td>
 				<td>
 					<div class="sub-value"><span ng-bind-html="val.value"></span></div>
 				</td>

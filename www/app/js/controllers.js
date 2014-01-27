@@ -54,12 +54,14 @@ dashboardApp.controller('RiemannDashboardCtrl', function ($scope, $sce) {
 			img: "memory",
 			format: percent_format,
 			graph: true,
-			group: "Health"
+			group: "Health",
+			name: "mem"
 		},
 		'disk*': {
 			img: "hdd",
 			format: percent_format,
-			group: "Health"
+			group: "Health",
+			name: '<span class="glyphicon glyphicon glyphicon-hdd"></span>'
 		},
 		'nginx*': {
 			key: "ningx",
@@ -189,7 +191,7 @@ dashboardApp.controller('RiemannDashboardCtrl', function ($scope, $sce) {
 					name: "Users"
 				},
 				"exodoc doc_total": {
-					name: '<span class="glyphicon glyphicon-book"></span>',
+					name: '<span class="glyphicon glyphicon-ok"></span>',
 					group: "documents"
 				},
 				"exodoc doc_error": {
@@ -214,7 +216,7 @@ dashboardApp.controller('RiemannDashboardCtrl', function ($scope, $sce) {
 			key: "redis",
 			state_key: "redis",
 			name: "redis",
-			img: "hdd",
+			img: "database",
 			format: state_format,
 			values: {
 				"redis instantaneous_ops_per_sec": {
@@ -422,7 +424,7 @@ dashboardApp.controller('RiemannDashboardCtrl', function ($scope, $sce) {
 			return false; // don't add to values ( it is grouped )
 		}
 
-		cell['name'] = name;
+		cell['name'] = $sce.trustAsHtml(name);
 		if (cell_info.state_key) {
 			if (cell_info.state_key == cell_data.service) {
 				cell['state'] = cell_data.state;
