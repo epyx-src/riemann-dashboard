@@ -254,12 +254,10 @@ dashboardApp.controller('RiemannDashboardCtrl', function ($scope, $sce) {
 			values: "*"
 		}
 	};
-	var services = _.map(service_info, function(v, k) {
-		return v.key || k;
-	});
 	var max_history = 150;
 	var max_history_sub = 50;
-	$scope.available_services = services;
+
+	$scope.available_services = [];
 	$scope.dashboard = {};
 	$scope.error = "";
 	$scope.td_style = {width: '100%'};
@@ -282,6 +280,9 @@ dashboardApp.controller('RiemannDashboardCtrl', function ($scope, $sce) {
 		all_events[data.host+":"+data.service] = data
  	};
 
+	/**
+	 * Setup interval to display the content of the table 'all_event'
+	 */
 	setInterval(function() {
 		var to_check = all_events;
 		all_events = {};
@@ -290,6 +291,10 @@ dashboardApp.controller('RiemannDashboardCtrl', function ($scope, $sce) {
 		})
 	}, window.REFRESH_RATE);
 
+	/**
+	 * Handle json riemann data
+	 * @param data
+	 */
 	var handleMessage = function(data) {
 		var found_service = null;
 		found_service = service_info[data.service];
