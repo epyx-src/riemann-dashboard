@@ -30,14 +30,14 @@ var unit_format = function(unit, fixed) {
 
 dashboardApp.controller('RiemannDashboardCtrl', function ($scope, $sce) {
 	/*
-	 * "riemann service name" : {
+	 * "riemann service name" : { // service name can be followed by '*' to tell the renderer to create an aggregation of values
 	 *    format: function | function(val), format the metric, result can be HTML
 	 *    img: string | image name to use ( img-name in css )
 	 *    graph: boolea | display sparline graph, not available in group
 	 *    state_key: string | only for root cell, riemann service name for cell state
 	 *    key: string | for root cell, unique key for the cell ( replace riemann service )
 	 *	  values: "*" or dict | sub-values dictionary with same format as root cell
-	 *	  group: string | only for sub-cell, group values together.
+	 *	  group: string | group value in the same cell.
 	 * }
 	 */
 	var service_info = {
@@ -47,17 +47,19 @@ dashboardApp.controller('RiemannDashboardCtrl', function ($scope, $sce) {
 		'cpu': {
 			img:"services",
 			format: percent_format,
-			graph: true
+			graph: true,
+			group: "Health"
 		},
 		'memory': {
 			img: "memory",
 			format: percent_format,
-			graph: true
+			graph: true,
+			group: "Health"
 		},
 		'disk*': {
-			key: "disk",
 			img: "hdd",
-			format: percent_format
+			format: percent_format,
+			group: "Health"
 		},
 		'nginx*': {
 			key: "ningx",
@@ -114,23 +116,23 @@ dashboardApp.controller('RiemannDashboardCtrl', function ($scope, $sce) {
 				},
 				"riak node_gets": {
 					graph: true,
-					format: unit_format("/s",4)
+					format: unit_format("",4)
 				},
 				"riak node_puts": {
 					graph: true,
-					format: unit_format("/s",4)
+					format: unit_format("",4)
 				},
 				"riak vnode_gets": {
 					graph: true,
-					format: unit_format("/s",4)
+					format: unit_format("",4)
 				},
 				"riak vnode_puts": {
 					graph: true,
-					format: unit_format("/s",4)
+					format: unit_format("",4)
 				},
 				"riak read_repairs": {
 					graph: true,
-					format: unit_format("/s",4)
+					format: unit_format("",4)
 				},
 				'riak ring': {
 					img: "heart",
@@ -213,6 +215,7 @@ dashboardApp.controller('RiemannDashboardCtrl', function ($scope, $sce) {
 			state_key: "redis",
 			name: "redis",
 			img: "hdd",
+			format: state_format,
 			values: {
 				"redis instantaneous_ops_per_sec": {
 					format: unit_format("/s",4),
@@ -235,14 +238,14 @@ dashboardApp.controller('RiemannDashboardCtrl', function ($scope, $sce) {
 			values: "*"
 		},
 		'actarus*': {
-			key: "actarus",
+			key: "transform",
 			state_key: "actarus",
 			name: "actarus",
 			img: "transform",
 			values: "*"
 		},
 		'actarus-dev*': {
-			key: "actarus-dev",
+			key: "transform-dev",
 			state_key: "actarus-dev",
 			name: "actarus-dev",
 			img: "transform",
@@ -294,9 +297,6 @@ dashboardApp.controller('RiemannDashboardCtrl', function ($scope, $sce) {
 		}
 		if (!found_service) {
 			if (window.HANDLE_UNKNOWN_SERVICE) {
-				if ($scope.available_services.indexOf(data.service) == -1) {
-					$scope.available_services.push(data.service)
-				}
 				found_service = {
 				}
 			} else {
@@ -307,15 +307,51 @@ dashboardApp.controller('RiemannDashboardCtrl', function ($scope, $sce) {
 		$scope.$apply(function () {
 			var ser_key = found_service.key || data.service;
 			var host = $scope.dashboard[data.host] || {};
-			var cell = host[ser_key] || {};
-			handle_cell(cell, found_service, data);
-			cell['desc'] = data.description;
-			cell['host'] = data.host;
+			if (found_service.group) {
+				var group_name = found_service.group;
+				var cell = host[group_name] || {};
+				cell['host'] = data.host;
+				cell['name'] = group_name;
+				cell.values = cell.values || {};
+				sub_cell = cell.values[ser_key] || {};
+				var info = _.clone(found_service);
+				// do not pass cell_info with group in it, if so we will have 2 level of nesting
+				delete info.group;
+				handle_cell(sub_cell, info, data, cell);
+				cell.values[ser_key] = sub_cell;
+				host[group_name] = cell;
+				var state = "ok";
+				// if any sub values is critical, put the cell in critical
+				_.each(cell.values, function(k) {
+					if (k.state == 'critical') {
+						state = 'critical';
+					}
+				});
+				cell['state'] = state;
+				_setup_cell_classes(cell, "heart");
+			} else {
+				var cell = host[ser_key] || {};
+				cell['desc'] = data.description;
+				cell['host'] = data.host;
+				handle_cell(cell, found_service, data);
+				host[ser_key] = cell;
+			}
 
 
-			host[ser_key] = cell;
 			$scope.dashboard[data.host] = host;
+
+			var all_services = [];
 			$scope.td_style = {width: (100/ _.size($scope.dashboard))+"%"};
+
+			// setup all services array
+			_.each($scope.dashboard, function(cell) {
+				_.each(cell, function(data, service) {
+					if (!_.contains(all_services, service)) {
+						all_services.push(service)
+					}
+				});
+			});
+			$scope.available_services = _.sortBy(all_services, function(x) {return x;});
 		});
 	}
 
@@ -345,6 +381,15 @@ dashboardApp.controller('RiemannDashboardCtrl', function ($scope, $sce) {
 		}
 	}
 
+	var _setup_cell_classes = function(cell, img) {
+		cell['classes'] = "img-"+img+" state-"+cell['state'];
+		if (cell['state'] == 'critical') {
+			cell['classes'] += " animated pulse"
+		} else if (cell['state'] == 'warning') {
+			cell['classes'] += " animated bounce"
+		}
+	}
+
 	var handle_cell = function(cell, cell_info, cell_data, parent_cell) {
 		var name = cell_info.name;
 		if (!name) {
@@ -355,7 +400,9 @@ dashboardApp.controller('RiemannDashboardCtrl', function ($scope, $sce) {
 			}
 		}
 
-		var format_fun = cell_info.format || function(v) {return numberFixed(v.metric, 4);};
+		var format_fun = cell_info.format || function(v) {
+			return numberFixed(v.metric, 4);
+		};
 		var cell_value = "";
 		try {
 			cell_value = $sce.trustAsHtml(format_fun(cell_data));
@@ -364,7 +411,7 @@ dashboardApp.controller('RiemannDashboardCtrl', function ($scope, $sce) {
 		}
 		cell['value'] = cell_value;
 
-		if (cell_info.group) {
+		if (parent_cell && cell_info.group) {
 			parent_cell['groups'] = parent_cell['groups'] || {};
 			var group = parent_cell['groups'][cell_info.group] || {};
 			group[cell_data.service] = {
@@ -383,12 +430,8 @@ dashboardApp.controller('RiemannDashboardCtrl', function ($scope, $sce) {
 		} else {
 			cell['state'] = cell_data.state;
 		}
-		cell['classes'] = "img-"+cell_info.img+" state-"+cell['state'];
-		if (cell['state'] == 'critical') {
-			cell['classes'] += " animated pulse"
-		} else if (cell['state'] == 'warning') {
-			cell['classes'] += " animated bounce"
-		}
+		_setup_cell_classes(cell, cell_info.img);
+
 		cell['history'] = cell['history'] || get_storage_history(cell_data.host, cell_data.service);
 		cell['history'].push(cell_data.metric);
 		var max = parent_cell?max_history_sub:max_history;
@@ -444,9 +487,19 @@ dashboardApp.controller('RiemannDashboardCtrl', function ($scope, $sce) {
 				handleCallback({
 					data: JSON.stringify({
 						host:'test',
-						service:'test state',
+						service:'cpu',
 						state:'ok',
-						metric:1
+						metric:0.5
+					})
+				})
+			});
+			setTimeout(function() {
+				handleCallback({
+					data: JSON.stringify({
+						host:'test',
+						service:'memory',
+						state:'ok',
+						metric:0.2
 					})
 				})
 			});
