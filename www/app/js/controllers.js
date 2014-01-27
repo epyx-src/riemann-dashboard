@@ -27,19 +27,19 @@ var unit_format = function(unit, fixed) {
 	}
 };
 
-var desc_format = function(val) {
-	return "<span>"+val.description+"</span>";
-};
-
-var memory_format = function(val) {
-	var lines = val.description.split("\n");
-	var elms = _.map(lines, function(l) {
-		return "<div>"+l+"</div>"
-	});
-	return elms.join("");
-};
 
 dashboardApp.controller('RiemannDashboardCtrl', function ($scope, $sce) {
+	/*
+	 * "riemann service name" : {
+	 *    format: function | function(val), format the metric, result can be HTML
+	 *    img: string | image name to use ( img-name in css )
+	 *    graph: boolea | display sparline graph, not available in group
+	 *    state_key: string | only for root cell, riemann service name for cell state
+	 *    key: string | for root cell, unique key for the cell ( replace riemann service )
+	 *	  values: "*" or dict | sub-values dictionary with same format as root cell
+	 *	  group: string | only for sub-cell, group values together.
+	 * }
+	 */
 	var service_info = {
 		'test state': {
 			format: state_format
@@ -83,7 +83,7 @@ dashboardApp.controller('RiemannDashboardCtrl', function ($scope, $sce) {
 					format: int_format,
 				},
 				"nginx reading": {
-					name: '<span class="glyphicon glyphicon-log-out"></span>',
+					name: 'R',
 					format: int_format,
 					graph: true,
 					group: "access",
@@ -95,7 +95,7 @@ dashboardApp.controller('RiemannDashboardCtrl', function ($scope, $sce) {
 					group: "access",
 				},
 				"nginx writing": {
-					name: '<span class="glyphicon glyphicon-log-in"></span>',
+					name: 'W',
 					format: int_format,
 					graph: true,
 					group: "access",
@@ -202,7 +202,7 @@ dashboardApp.controller('RiemannDashboardCtrl', function ($scope, $sce) {
 					group: "file"
 				},
 				"exodoc file_ready": {
-					name: '<span class="glyphicon glyphicon-thumbs-up"></span>',
+					name: '<span class="glyphicon glyphicon-ok"></span>',
 					group: "file"
 				}
 			}
@@ -237,6 +237,9 @@ dashboardApp.controller('RiemannDashboardCtrl', function ($scope, $sce) {
 	$scope.error = "";
 	$scope.td_style = {width: '100%'};
 
+	// queue of incoming events
+	var all_events = {};
+
 	// handles the callback from the received event
  	var handleCallback = function (msg) {
 		try {
@@ -246,9 +249,21 @@ dashboardApp.controller('RiemannDashboardCtrl', function ($scope, $sce) {
 			showError(ex);
 			setTimeout(function() {
 				location.reload();
-			});
+			},1);
 			return;
 		}
+		all_events[data.host+":"+data.service] = data
+ 	};
+
+	setInterval(function() {
+		var to_check = all_events;
+		all_events = {};
+		_.each(to_check, function(v) {
+			handleMessage(v);
+		})
+	}, window.REFRESH_RATE);
+
+	var handleMessage = function(data) {
 		var found_service = null;
 		found_service = service_info[data.service];
 		if (!found_service) {
@@ -256,7 +271,7 @@ dashboardApp.controller('RiemannDashboardCtrl', function ($scope, $sce) {
 			found_service = service_info[main_service+"*"]
 		}
 		if (!found_service) {
-			if (window.ADD_UNKNOWN_SERVICE) {
+			if (window.HANDLE_UNKNOWN_SERVICE) {
 				if ($scope.available_services.indexOf(data.service) == -1) {
 					$scope.available_services.push(data.service)
 				}
@@ -266,6 +281,7 @@ dashboardApp.controller('RiemannDashboardCtrl', function ($scope, $sce) {
 				return;
 			}
 		}
+
 		$scope.$apply(function () {
 			var ser_key = found_service.key || data.service;
 			var host = $scope.dashboard[data.host] || {};
@@ -277,9 +293,9 @@ dashboardApp.controller('RiemannDashboardCtrl', function ($scope, $sce) {
 
 			host[ser_key] = cell;
 			$scope.dashboard[data.host] = host;
-			$scope.td_style = {width: (100/ _.keys($scope.dashboard).length)+"%"};
+			$scope.td_style = {width: (100/ _.size($scope.dashboard))+"%"};
 		});
- 	};
+	}
 
 	/**
 	 * Store history data in local browser store
@@ -310,7 +326,7 @@ dashboardApp.controller('RiemannDashboardCtrl', function ($scope, $sce) {
 	var handle_cell = function(cell, cell_info, cell_data, parent_cell) {
 		var name = cell_info.name;
 		if (!name) {
-			name = cell_data.service
+			name = cell_data.service;
 			if (parent_cell) {
 				var i = name.indexOf(" ");
 				name = name.substring(i+1)
@@ -334,7 +350,7 @@ dashboardApp.controller('RiemannDashboardCtrl', function ($scope, $sce) {
 				name: $sce.trustAsHtml(name)
 			};
 			parent_cell['groups'][cell_info.group] = group;
-			return false; // don't add to values
+			return false; // don't add to values ( it is grouped )
 		}
 
 		cell['name'] = name;
@@ -374,6 +390,7 @@ dashboardApp.controller('RiemannDashboardCtrl', function ($scope, $sce) {
 		return true;
 	};
 
+	// Display header error
 	var showError = function(text) {
 		$scope.error = text
 	};
@@ -416,10 +433,13 @@ dashboardApp.controller('RiemannDashboardCtrl', function ($scope, $sce) {
 			showError("SSE not available")
 		}
 	};
-	setTimeout(connect_sse);
+	// postpone connection
+	setTimeout(connect_sse,1);
 });
 
-
+/**
+ * jquery sparkline angular integration
+ */
 dashboardApp.directive("sparkline", function() {
     return {
         restrict:"E",
@@ -443,6 +463,9 @@ dashboardApp.directive("sparkline", function() {
     };
 });
 
+/**
+ * Riemann cell display
+ */
 dashboardApp.directive("riemanncell", function() {
     return {
         restrict:"E",
