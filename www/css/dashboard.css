@@ -67,6 +67,13 @@
 	background-image: url('/img/heart.png');
 }
 
+.img-database:before {
+	background-image: url('/img/database.png');
+}
+
+.img-transform:before {
+	background-image: url('/img/transform.png');
+}
 
 .riemann-cell {
 	height: 100%;

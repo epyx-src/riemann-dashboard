@@ -54,7 +54,8 @@ dashboardApp.controller('RiemannDashboardCtrl', function ($scope, $sce) {
 			format: percent_format,
 			graph: true
 		},
-		'disk /': {
+		'disk*': {
+			key: "disk",
 			img: "hdd",
 			format: percent_format
 		},
@@ -225,13 +226,34 @@ dashboardApp.controller('RiemannDashboardCtrl', function ($scope, $sce) {
 			name: "couchdb",
 			img: "hdd",
 			values: "*"
+		},
+		'postgres*': {
+			key: "postgres",
+			state_key: "postgres",
+			name: "postgres",
+			img: "database",
+			values: "*"
+		},
+		'actarus*': {
+			key: "actarus",
+			state_key: "actarus",
+			name: "actarus",
+			img: "transform",
+			values: "*"
+		},
+		'actarus-dev*': {
+			key: "actarus-dev",
+			state_key: "actarus-dev",
+			name: "actarus-dev",
+			img: "transform",
+			values: "*"
 		}
 	};
 	var services = _.map(service_info, function(v, k) {
 		return v.key || k;
 	});
 	var max_history = 150;
-	var max_history_sub = 30;
+	var max_history_sub = 50;
 	$scope.available_services = services;
 	$scope.dashboard = {};
 	$scope.error = "";
