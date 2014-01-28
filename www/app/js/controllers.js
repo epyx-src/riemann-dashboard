@@ -192,23 +192,23 @@ dashboardApp.controller('RiemannDashboardCtrl', function ($scope, $sce) {
 				},
 				"exodoc doc_total": {
 					name: '<span class="glyphicon glyphicon-ok"></span>',
-					group: "documents"
+					group: "Publish docs"
 				},
 				"exodoc doc_error": {
 					name: '<span class="glyphicon glyphicon-warning-sign"></span>',
-					group: "documents"
+					group: "Publish docs"
 				},
 				"exodoc doc_need_transform": {
 					name: '<span class="glyphicon glyphicon-transfer"></span>',
-					group: "documents"
+					group: "Publish docs"
 				},
 				"exodoc file_error": {
 					name: '<span class="glyphicon glyphicon-warning-sign"></span>',
-					group: "file"
+					group: "Drive files"
 				},
 				"exodoc file_ready": {
 					name: '<span class="glyphicon glyphicon-ok"></span>',
-					group: "file"
+					group: "Drive files"
 				}
 			}
 		},
