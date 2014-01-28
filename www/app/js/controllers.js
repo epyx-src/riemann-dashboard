@@ -254,6 +254,11 @@ dashboardApp.controller('RiemannDashboardCtrl', function ($scope, $sce) {
 			values: "*"
 		}
 	};
+	var relevent_hosts = [
+		/^cs-node-/,
+		/^exodoc/,
+	];
+	
 	var max_history = 150;
 	var max_history_sub = 50;
 
@@ -297,6 +302,18 @@ dashboardApp.controller('RiemannDashboardCtrl', function ($scope, $sce) {
 	 */
 	var handleMessage = function(data) {
 		var found_service = null;
+		var match = false;
+		_.each(relevent_hosts, function(val) {
+			if (_.isRegExp(val) && val.test(data.host)) {
+				match = true;
+			}
+			if (_.isString(val) && val == data.host) {
+				match = true;
+			}
+		});
+		if (!match){
+			return;
+		}
 		found_service = service_info[data.service];
 		if (!found_service) {
 			var main_service = data.service.split(" ")[0];
