@@ -257,8 +257,9 @@ dashboardApp.controller('RiemannDashboardCtrl', function ($scope, $sce) {
 	var relevent_hosts = [
 		/^cs-node-/,
 		/^exodoc/,
+		/^dev-exodoc/,
 	];
-	
+
 	var max_history = 150;
 	var max_history_sub = 50;
 
