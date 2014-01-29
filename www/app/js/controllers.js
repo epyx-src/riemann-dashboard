@@ -247,7 +247,7 @@ dashboardApp.controller('RiemannDashboardCtrl', function ($scope, $sce) {
 					group: "Drive files"
 				},
 				"exodoc file_ready": {
-					name: '<span class="glyphicon glyphicon-align-justify"></span>',
+					name: '<span class="glyphicon glyphicon-ok"></span>',
 					group: "Drive files"
 				}
 			}
