@@ -22,7 +22,7 @@
 	<body>
 		<div ng-controller="RiemannDashboardCtrl">
 			<div ng-if="error" class="alert alert-danger">
-				{{error}}
+				<span ng-bind="error"></span>
 			</div>
 			<table style="width:100%;">
 				<tbody class="host-list">

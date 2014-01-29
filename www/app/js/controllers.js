@@ -27,6 +27,33 @@ var unit_format = function(unit, fixed) {
 	}
 };
 
+var get_cached_data = function() {
+	if (!!window.localStorage) {
+		var key = "riemann.services";
+		var data = window.localStorage.getItem(key) || "{}";
+		var services = JSON.parse(data);
+		// filter cached host that do not match config
+		var hosts = _.filter(_.keys(services), function(k) {
+			var ok = false;
+			_.each(window.DISPLAY_HOSTS, function(h) {
+				if (h.test(k)) {
+					ok = true;
+				}
+			});
+			return ok;
+		});
+		services = _.pick(services, hosts);
+		return services;
+	}
+	return {};
+};
+
+var set_cached_data = function(services) {
+	if (!!window.localStorage) {
+		var key = "riemann.services";
+		window.localStorage.setItem(key, JSON.stringify(services))
+	}
+}
 
 dashboardApp.controller('RiemannDashboardCtrl', function ($scope, $sce) {
 	/*
@@ -187,11 +214,24 @@ dashboardApp.controller('RiemannDashboardCtrl', function ($scope, $sce) {
 					name: "node.js",
 					format: state_format
 				},
-				"exodoc active_users": {
-					name: "Users"
+				"exodoc user_active": {
+					name: '<span class="glyphicon glyphicon-align-justify"></span>',
+					group: "Users"
+				},
+				"exodoc user_week_login": {
+					name: '<span class="glyphicon glyphicon-log-in"></span>',
+					group: "Users"
+				},
+				"exodoc user_week_create": {
+					name: '<span class="glyphicon glyphicon-arrow-up"></span>',
+					group: "Users"
+				},
+				"exodoc user_90_inactive": {
+					name: '<span class="glyphicon glyphicon-eye-close"></span>',
+					group: "Users"
 				},
 				"exodoc doc_total": {
-					name: '<span class="glyphicon glyphicon-ok"></span>',
+					name: '<span class="glyphicon glyphicon-align-justify"></span>',
 					group: "Publish docs"
 				},
 				"exodoc doc_error": {
@@ -207,7 +247,7 @@ dashboardApp.controller('RiemannDashboardCtrl', function ($scope, $sce) {
 					group: "Drive files"
 				},
 				"exodoc file_ready": {
-					name: '<span class="glyphicon glyphicon-ok"></span>',
+					name: '<span class="glyphicon glyphicon-align-justify"></span>',
 					group: "Drive files"
 				}
 			}
@@ -254,11 +294,8 @@ dashboardApp.controller('RiemannDashboardCtrl', function ($scope, $sce) {
 			values: "*"
 		}
 	};
-	var relevent_hosts = [
-		/^cs-node-/,
-		/^exodoc/,
-		/^dev-exodoc/,
-	];
+
+	var display_hosts = window.DISPLAY_HOSTS || [/.*/];
 
 	var max_history = 150;
 	var max_history_sub = 50;
@@ -269,7 +306,7 @@ dashboardApp.controller('RiemannDashboardCtrl', function ($scope, $sce) {
 	$scope.td_style = {width: '100%'};
 
 	// queue of incoming events
-	var all_events = {};
+	var all_events = get_cached_data();
 
 	// handles the callback from the received event
  	var handleCallback = function (msg) {
@@ -286,16 +323,20 @@ dashboardApp.controller('RiemannDashboardCtrl', function ($scope, $sce) {
 		all_events[data.host+":"+data.service] = data
  	};
 
-	/**
-	 * Setup interval to display the content of the table 'all_event'
-	 */
-	setInterval(function() {
+	var swap_buffer = function() {
 		var to_check = all_events;
+		set_cached_data(to_check);
 		all_events = {};
 		_.each(to_check, function(v) {
 			handleMessage(v);
 		})
-	}, window.REFRESH_RATE);
+	};
+
+	/**
+	 * Setup interval to display the content of the table 'all_event'
+	 */
+	setInterval(swap_buffer, window.REFRESH_RATE);
+	setTimeout(swap_buffer,10);
 
 	/**
 	 * Handle json riemann data
@@ -304,7 +345,7 @@ dashboardApp.controller('RiemannDashboardCtrl', function ($scope, $sce) {
 	var handleMessage = function(data) {
 		var found_service = null;
 		var match = false;
-		_.each(relevent_hosts, function(val) {
+		_.each(display_hosts, function(val) {
 			if (_.isRegExp(val) && val.test(data.host)) {
 				match = true;
 			}
