@@ -249,6 +249,14 @@ dashboardApp.controller('RiemannDashboardCtrl', function ($scope, $sce) {
 				"exodoc file_ready": {
 					name: '<span class="glyphicon glyphicon-ok"></span>',
 					group: "Drive files"
+				},
+				"exodoc oauth2_token_total": {
+					name: '<span class="glyphicon glyphicon-align-justify"></span>',
+					group: "oAuth2 tokens"
+				},
+				"exodoc oauth2_token_active": {
+					name: '<span class="glyphicon glyphicon-time"></span>',
+					group: "oAuth2 tokens"
 				}
 			}
 		},
