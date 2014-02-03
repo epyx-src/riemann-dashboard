@@ -67,6 +67,7 @@ var create_graphite_url = function(w,h, title, host, series) {
 		minorGridLineColor: "#007700",
 		majorGridLineColor: "#009900",
 		title: title,
+		areaMode: 'first',
 		_uniq: (1 / (new Date()).getTime())
 	});
 	var colors = [];
@@ -133,7 +134,8 @@ dashboardApp.controller('RiemannDashboardCtrl', function ($scope, $sce) {
 				"nginx active": {
 					name: "Active",
 					format: int_format,
-					graph: true
+					graph: true,
+					disabled: true,
 				},
 				"nginx handled": {
 					name: "Handled",
@@ -148,25 +150,29 @@ dashboardApp.controller('RiemannDashboardCtrl', function ($scope, $sce) {
 					format: int_format,
 					graph: true,
 					group: "access",
+					disabled: true,
 				},
 				"nginx waiting": {
 					name: '<span class="glyphicon glyphicon glyphicon-repeat"></span>',
 					format: int_format,
 					graph: true,
 					group: "access",
+					disabled: true,
 				},
 				"nginx writing": {
 					name: 'W',
 					format: int_format,
 					graph: true,
 					group: "access",
+					disabled: true,
 				}
 			},
 			graphite: {
-				'activities': [
-					{target: "nginx reading", color:"#00dd00"},
-					{target: "nginx writing", color:"#228888"},
-					{target: "nginx waiting", color:"#990066"}
+				'access': [
+					{target: "nginx active", color:"#009900"},
+					{target: "nginx reading", color:"yellow"},
+					{target: "nginx writing", color:"#8866ff"},
+					{target: "nginx waiting", color:"#990066"},
 				]
 			}
 		},
@@ -181,11 +187,13 @@ dashboardApp.controller('RiemannDashboardCtrl', function ($scope, $sce) {
 				},
 				"riak node_gets": {
 					graph: true,
-					format: unit_format("",4)
+					format: unit_format("",4),
+					disabled: true,
 				},
 				"riak node_puts": {
 					graph: true,
-					format: unit_format("",4)
+					format: unit_format("",4),
+					disabled: true,
 				},
 				"riak vnode_gets": {
 					graph: true,
@@ -207,41 +215,47 @@ dashboardApp.controller('RiemannDashboardCtrl', function ($scope, $sce) {
 				'riak get 50': {
 					group:"get (ms)",
 					format: unit_format("",4),
-					name: "50"
+					name: "50",
+					disabled: true
 				},
 				'riak get 95': {
 					group:"get (ms)",
 					format: unit_format("",4),
-					name: "95"
+					name: "95",
+					disabled: true
 				},
 				'riak get 99': {
 					group:"get (ms)",
 					format: unit_format("",4),
-					name: "99"
+					name: "99",
+					disabled: true
 				},
 				'riak put 50': {
 					group:"put (ms)",
 					format: unit_format("",4),
-					name: "50"
+					name: "50",
+					disabled: true
 				},
 				'riak put 95': {
 					group:"put (ms)",
 					format: unit_format("",4),
-					name: "95"
+					name: "95",
+					disabled: true
 				},
 				'riak put 99': {
 					group:"put (ms)",
 					format: unit_format("",4),
-					name: "99"
+					name: "99",
+					disabled: true
 				}
 			},
 			graphite: {
-				'puts': [
+				'puts ms': [
 					{target: "riak put 99", color:"#99dd00"},
 					{target: "riak put 95", color:"#228800"},
 					{target: "riak put 50", color:"#005500"}
 				],
-				'gets': [
+				'gets ms': [
 					{target: "riak get 99", color:"#99dd00"},
 					{target: "riak get 95", color:"#228800"},
 					{target: "riak get 50", color:"#005500"}
@@ -326,7 +340,44 @@ dashboardApp.controller('RiemannDashboardCtrl', function ($scope, $sce) {
 			state_key: "couchdb",
 			name: "couchdb",
 			img: "hdd",
-			values: "*"
+			values: {
+				'couchdb read max': {
+					name: '<span class="glyphicon glyphicon-chevron-up"></span>',
+					group:"read /s"
+				},
+				'couchdb read mean': {
+					name: '<span class="glyphicon glyphicon-minus"></span>',
+					group:"read /s"
+				},
+				'couchdb read min': {
+					name: '<span class="glyphicon glyphicon-chevron-down"></span>',
+					group:"read /s"
+				},
+				'couchdb write max': {
+					name: '<span class="glyphicon glyphicon-chevron-up"></span>',
+					group:"write /s"
+				},
+				'couchdb write mean': {
+					name: '<span class="glyphicon glyphicon-minus"></span>',
+					group:"write /s"
+				},
+				'couchdb write min': {
+					name: '<span class="glyphicon glyphicon-chevron-down"></span>',
+					group:"write /s"
+				},
+				'couchdb request max': {
+					name: '<span class="glyphicon glyphicon-chevron-up"></span>',
+					group:"request time ms"
+				},
+				'couchdb request mean': {
+					name:'<span class="glyphicon glyphicon-minus"></span>',
+					group:"request time ms"
+				},
+				'couchdb request min': {
+					name: '<span class="glyphicon glyphicon-chevron-down"></span>',
+					group:"request time ms"
+				}
+			}
 		},
 		'postgres*': {
 			key: "postgres",
@@ -513,6 +564,9 @@ dashboardApp.controller('RiemannDashboardCtrl', function ($scope, $sce) {
 	}
 
 	var handle_cell = function(cell, cell_info, cell_data, parent_cell) {
+		if (cell_info.disabled) {
+			return false;
+		}
 		var name = cell_info.name;
 		if (!name) {
 			name = cell_data.service;
