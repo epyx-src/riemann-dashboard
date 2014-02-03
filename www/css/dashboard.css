@@ -209,3 +209,7 @@ table {
 .host-list td {
 	padding: 5px;
 }
+
+.graphite-graph {
+	float:right;
+}

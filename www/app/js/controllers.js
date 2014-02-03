@@ -53,7 +53,36 @@ var set_cached_data = function(services) {
 		var key = "riemann.services";
 		window.localStorage.setItem(key, JSON.stringify(services))
 	}
-}
+};
+
+
+var create_graphite_url = function(w,h, title, host, series) {
+	var query = $.param({
+		from: '-24hours',
+		until: 'now',
+		height: h || 100,
+		width: w || 100,
+		bgcolor: "003300",
+		fgcolor: "CCFFCC",
+		minorGridLineColor: "#007700",
+		majorGridLineColor: "#009900",
+		title: title,
+		_uniq: (1 / (new Date()).getTime())
+	});
+	var colors = [];
+	_.each(series, function(data){
+		colors.push(data.color || "green");
+		query = query + "&" + $.param({
+			target: host+"."+data.target.replace(/ /g,".").replace(/[//]/, "")
+		});
+	});
+	query = query + "&" + $.param({
+		colorList: colors.join(",")
+	});
+	return window.GRAPHITE_URL + "?" + query;
+};
+
+
 
 dashboardApp.controller('RiemannDashboardCtrl', function ($scope, $sce) {
 	/*
@@ -132,6 +161,13 @@ dashboardApp.controller('RiemannDashboardCtrl', function ($scope, $sce) {
 					graph: true,
 					group: "access",
 				}
+			},
+			graphite: {
+				'activities': [
+					{target: "nginx reading", color:"#00dd00"},
+					{target: "nginx writing", color:"#228888"},
+					{target: "nginx waiting", color:"#990066"}
+				]
 			}
 		},
 		'riak*': {
@@ -198,6 +234,18 @@ dashboardApp.controller('RiemannDashboardCtrl', function ($scope, $sce) {
 					format: unit_format("",4),
 					name: "99"
 				}
+			},
+			graphite: {
+				'puts': [
+					{target: "riak put 99", color:"#99dd00"},
+					{target: "riak put 95", color:"#228800"},
+					{target: "riak put 50", color:"#005500"}
+				],
+				'gets': [
+					{target: "riak get 99", color:"#99dd00"},
+					{target: "riak get 95", color:"#228800"},
+					{target: "riak get 50", color:"#005500"}
+				]
 			}
 		},
 		'exodoc*': {
@@ -525,6 +573,16 @@ dashboardApp.controller('RiemannDashboardCtrl', function ($scope, $sce) {
 			if (handle_cell(sub_cell, val_info, cell_data, cell) ) {
 				cell['values'][cell_data.service] = sub_cell;
 			}
+		}
+		if (cell_info.graphite) {
+			cell['graphite'] = {};
+			_.each(cell_info.graphite, function(graph_info, key) {
+				cell['graphite'][key] = create_graphite_url(
+					200,200, key, cell_data.host,graph_info
+				);
+			});
+		} else {
+			delete cell['graphite'];
 		}
 		return true;
 	};
