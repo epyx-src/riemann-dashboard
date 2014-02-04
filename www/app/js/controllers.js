@@ -68,7 +68,7 @@ var create_graphite_url = function(w,h, title, host, series) {
 		majorGridLineColor: "#009900",
 		title: title,
 		areaMode: 'first',
-		_uniq: (1 / (new Date()).getTime())
+		_uniq: (1 / Math.floor((new Date()).getTime() / 30000.0))
 	});
 	var colors = [];
 	_.each(series, function(data){
@@ -632,7 +632,7 @@ dashboardApp.controller('RiemannDashboardCtrl', function ($scope, $sce) {
 			cell['graphite'] = {};
 			_.each(cell_info.graphite, function(graph_info, key) {
 				cell['graphite'][key] = create_graphite_url(
-					200,200, key, cell_data.host,graph_info
+					"IMG_WIDTH", 200, key, cell_data.host,graph_info
 				);
 			});
 		} else {
@@ -734,5 +734,25 @@ dashboardApp.directive("riemanncell", function() {
             data:"=data"
         },
         templateUrl: 'app/partials/riemanncell.html'
+    };
+});
+
+
+dashboardApp.directive("graphite", function() {
+    return {
+        restrict:"E",
+        scope:{
+            data:"="
+        },
+        //template: "<div class='tpl'></div>",
+        compile: function(tElement, tAttrs, transclude){
+			tElement.replaceWith('<div style="width:100%;display: block;" data="data"><img src=""></div>');
+            return function(scope, element, attrs){
+				scope.$watch("data", function(value){
+					var graphite_url = scope.data.replace(/IMG_WIDTH/g, ""+element.width());
+					element.find("img").attr("src", graphite_url);
+				}, true);
+            };
+        }
     };
 });

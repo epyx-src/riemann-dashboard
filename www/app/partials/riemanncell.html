@@ -34,7 +34,8 @@
 	</div>
 	<div ng-if="data.graphite" class="graphite">
 		<div ng-repeat="(key, graph_url) in data.graphite">
-			<img class="graphite-graph" src="{{graph_url}}">
+			<graphite style="width:100%;display: block;" data="graph_url"></graphite>
 		</div>
 	</div>
+
 </div>
