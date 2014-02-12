@@ -304,6 +304,22 @@ dashboardApp.controller('RiemannDashboardCtrl', function ($scope, $sce) {
 					name: '<span class="glyphicon glyphicon-transfer"></span>',
 					group: "Publish docs"
 				},
+				"exodoc doc_public": {
+					name: 'P',
+					group: "Doc sec. level"
+				},
+				"exodoc doc_internal": {
+					name: 'I',
+					group: "Doc sec. level"
+				},
+				"exodoc doc_confidential": {
+					name: 'C',
+					group: "Doc sec. level"
+				},
+				"exodoc doc_secret": {
+					name: 'S',
+					group: "Doc sec. level"
+				},
 				"exodoc file_error": {
 					name: '<span class="glyphicon glyphicon-warning-sign"></span>',
 					group: "Drive files"
@@ -319,6 +335,14 @@ dashboardApp.controller('RiemannDashboardCtrl', function ($scope, $sce) {
 				"exodoc oauth2_token_active": {
 					name: '<span class="glyphicon glyphicon-time"></span>',
 					group: "oAuth2 tokens"
+				},
+				"exodoc coupon_available": {
+					name: '<span class="glyphicon glyphicon-pause"></span>',
+					group: "Coupons"
+				},
+				"exodoc coupon_used": {
+					name: '<span class="glyphicon glyphicon-play"></span>',
+					group: "Coupons"
 				}
 			}
 		},
@@ -411,6 +435,8 @@ dashboardApp.controller('RiemannDashboardCtrl', function ($scope, $sce) {
 	$scope.dashboard = {};
 	$scope.error = "";
 	$scope.td_style = {width: '100%'};
+	$scope.last_update = "never";
+	var last_update = null;
 
 	// queue of incoming events
 	var all_events = get_cached_data();
@@ -436,8 +462,19 @@ dashboardApp.controller('RiemannDashboardCtrl', function ($scope, $sce) {
 		all_events = {};
 		_.each(to_check, function(v) {
 			handleMessage(v);
-		})
+		});
+		last_update = new Date();
 	};
+
+	setInterval(function(){
+		if (last_update) {
+			$scope.$apply(function () {
+				var now = new Date();
+				var dt = ((now - last_update) / 1000).toFixed(0);
+				$scope.last_update = now.toLocaleTimeString()+" ["+dt+"]";
+			});
+		}
+	}, 1000);
 
 	/**
 	 * Setup interval to display the content of the table 'all_event'
@@ -609,10 +646,10 @@ dashboardApp.controller('RiemannDashboardCtrl', function ($scope, $sce) {
 		_setup_cell_classes(cell, cell_info.img);
 
 		cell['history'] = cell['history'] || get_storage_history(cell_data.host, cell_data.service);
-		cell['history'].push(cell_data.metric);
+		cell['history'].unshift(cell_data.metric);
 		var max = parent_cell?max_history_sub:max_history;
 		if (cell['history'].length > max) {
-			cell['history'].splice(0, (cell['history'].length - max));
+			cell['history'] = cell['history'].splice(0, max);
 		}
 		set_storage_history(cell_data.host, cell_data.service, cell['history']);
 		if (cell_info.graph) {
@@ -716,7 +753,8 @@ dashboardApp.directive("sparkline", function() {
                     element.sparkline('html',{
 						type:'line',
 						lineColor:'#aaf',
-						fillColor: 'rgba(255,255,255,0.2)'
+						fillColor: 'rgba(255,255,255,0.2)',
+						chartRangeMin: 0,
 					});
                 });
             };

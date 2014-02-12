@@ -22,9 +22,9 @@
 	left: 0px;
 	right: 5px;
 	background-repeat: no-repeat;
-	background-size: 48px;
+	background-size: 33%;
 	background-position: 100% 0%;
-	opacity: 0.1;
+	opacity: 0.05;
 }
 
 .img-document:before {
@@ -212,4 +212,21 @@ table {
 
 .graphite-graph {
 	float:right;
+}
+
+.clock {
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	height: 30px;
+	z-index:2;
+	text-align: center;
+	color: #aea;
+	font-family: digital, courier, monospace;
+}
+
+.clock span {
+	padding: 1px 5px;
+	background: black;
 }
