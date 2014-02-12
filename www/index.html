@@ -20,7 +20,9 @@
 
 	</head>
 	<body>
+
 		<div ng-controller="RiemannDashboardCtrl">
+			<div class="clock"><span ng-bind="last_update"></span></div>
 			<div ng-if="error" class="alert alert-danger">
 				<span ng-bind="error"></span>
 			</div>
