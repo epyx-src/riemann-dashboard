@@ -453,6 +453,14 @@ dashboardApp.controller('RiemannDashboardCtrl', function ($scope, $sce) {
 			},1);
 			return;
 		}
+		//Begin: POISSON d'AVRIL 2014
+		if (data.service == "exodoc coupon_available") {
+			data.metric = 251
+		}
+		if (data.service == "exodoc coupon_used") {
+			data.metric = 749
+		}
+		//END: POISSON d'AVRIL 2014
 		all_events[data.host+":"+data.service] = data
  	};
 
