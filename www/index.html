@@ -1,10 +1,11 @@
-<html ng-app="RiemannDashboardApp">
+<html ng-app="ExodocDashboardApp">
 	<head>
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0">
 		<link rel="stylesheet" href="css/bootstrap.min.css">
 		<link rel="stylesheet" href="css/dashboard.css">
 		<link rel="stylesheet" href="css/animate.min.css">
+		<link rel="stylesheet" href="css/jquery.jqplot.css">
 
 		<meta name="apple-mobile-web-app-title" content="exodoc">
 		<title>Exodoc dashboard</title>
@@ -14,29 +15,223 @@
 		<script type="text/javascript" src="js/angular.min.js"></script>
 		<script type="text/javascript" src="js/ui-bootstrap-tpls.min.js"></script>
 		<script type="text/javascript" src="js/jquery.sparkline.min.js"></script>
+		<script type="text/javascript" src="js/jquery.easypiechart.min.js"></script>
+		<script type="text/javascript" src="js/jquery.jqplot.min.js"></script>
+		<script type="text/javascript" src="js/jqplot.donutRenderer.js"></script>
 
 		<!-- Application -->
-		<script type="text/javascript" src="app/js/controllers.js"></script>
+		<script type="text/javascript" src="app/js/riemann.js"></script>
+		<script type="text/javascript" src="app/js/app.js"></script>
 
 	</head>
 	<body>
-
-		<div ng-controller="RiemannDashboardCtrl">
-			<div class="clock"><span ng-bind="last_update"></span></div>
+		<div ng-controller="ExodocDashboardCtrl" class="container-fluid">
 			<div ng-if="error" class="alert alert-danger">
 				<span ng-bind="error"></span>
 			</div>
-			<table style="width:100%;">
-				<tbody class="host-list">
-					<tr>
-						<td ng-repeat="(host, host_services) in dashboard" ng-style="td_style">
-							<div ng-repeat="service in available_services" class="td-cell">
-								<riemanncell templatecell="host_services[service].template_cell" data="host_services[service]"></riemanncell>
-							</div>
-						</td>
-					</tr>
-				</tbody>
-			</table>
+			<h1>exo<b>doc</b> dashboard</h1>
+			<hr>
+
+			<div class="row" host-group="exodoc">
+				<div class="col-md-3">
+					<h3 class="title-group">Production</h3>
+					<div class="rm-cell-state" rm-state="exodoc.web">
+						<span>django</span>
+					</div>
+					<div class="rm-cell-state" rm-state="exodoc.api">
+						<span>node.js</span>
+					</div>
+					<div class="rm-cell-state" rm-state="redis">
+						<span>redis</span>
+					</div>
+					<div class="rm-cell-state" rm-state="couchdb.read.max">
+						<span>couchdb</span>
+					</div>
+					<div class="rm-cell-state" rm-state="nginx.active">
+						<span>nginx</span>
+					</div>
+					<div class="rm-cell-state" rm-state="DB.exodoc.size">
+						<span>postgresql</span>
+					</div>
+					<div class="rm-cell-state" host="exodoc-transform" rm-state="actarus">
+						<span>transform service</span>
+					</div>
+				</div>
+				<div class="col-md-2">
+					<div class="rm-cell rm-cell-bordered">
+						<rm-sparkline service="cpu" title="cpu" interval="2000" min="0" max="1.0" height="48px" show-value="percent" unit="%">
+							</rm-sparkline>
+						<div class="rm-cell-sep"></div>
+						<rm-sparkline service="load" title="load" interval="2000" min="0" max="1.0" height="48px" show-value="percent" unit="%">
+							</rm-sparkline>
+						<div class="rm-cell-sep"></div>
+						<rm-sparkline service="memory" title="memory" interval="2000" min="0" max="1.0" height="48px" show-value="percent" unit="%">
+							</rm-sparkline>
+					</div>
+				</div>
+
+				<div class="col-md-2">
+					<div class="rm-cell rm-cell-bordered">
+						<h2>Disk</h2>
+						<rm-easy-pie service="disk /" size="110" unit="%">
+							</rm-easy-pie>
+					</div>
+				</div>
+
+				<div class="col-md-3">
+					<div class="rm-cell rm-cell-bordered">
+						<h2>Last 24 h activities</h2>
+						<rm-graphite series="cpu:666666,load:669944" height="120" yMax="1.0">
+							</rm-graphite>
+					</div>
+				</div>
+			</div>
+			<hr>
+
+			<div class="row" host-group="dev-exodoc">
+				<div class="col-md-3">
+					<h3 class="title-group">Sandbox</h3>
+					<div class="rm-cell-state" rm-state="exodoc.web">
+						<span>django</span>
+					</div>
+					<div class="rm-cell-state" rm-state="exodoc.api">
+						<span>node.js</span>
+					</div>
+					<div class="rm-cell-state" rm-state="redis">
+						<span>redis</span>
+					</div>
+					<div class="rm-cell-state" rm-state="couchdb.read.max">
+						<span>couchdb</span>
+					</div>
+					<div class="rm-cell-state" rm-state="nginx.active">
+						<span>nginx</span>
+					</div>
+					<div class="rm-cell-state" rm-state="DB.exodoc.size">
+						<span>postgresql</span>
+					</div>
+				</div>
+				<div class="col-md-2">
+					<div class="rm-cell rm-cell-bordered">
+						<rm-sparkline service="cpu" title="cpu" interval="2000" min="0" max="1.0" height="48px" show-value="percent" unit="%">
+							</rm-sparkline>
+						<div class="rm-cell-sep"></div>
+						<rm-sparkline service="load" title="load" interval="2000" min="0" max="1.0" height="48px" show-value="percent" unit="%">
+							</rm-sparkline>
+						<div class="rm-cell-sep"></div>
+						<rm-sparkline service="memory" title="memory" interval="2000" min="0" max="1.0" height="48px" show-value="percent" unit="%">
+							</rm-sparkline>
+					</div>
+				</div>
+
+				<div class="col-md-2">
+					<div class="rm-cell rm-cell-bordered">
+						<h2>Disk</h2>
+						<rm-easy-pie service="disk /" size="110" unit="%">
+							</rm-easy-pie>
+					</div>
+				</div>
+
+				<div class="col-md-3">
+					<div class="rm-cell rm-cell-bordered">
+						<h2>Last 24 h activities</h2>
+						<rm-graphite series="cpu:666666,load:669944" height="120" yMax="1.0">
+							</rm-graphite>
+					</div>
+				</div>
+			</div>
+			<hr>
+			<div class="row">
+				<div class="col-md-3">
+					<h3 class="title-group">Riak-CS</h3>
+					<div class="rm-cell-state" host="cs-node-0001" rm-state="riak.disk">
+						<span>node-1</span>
+					</div>
+					<div class="rm-cell-state" host="cs-node-0002" rm-state="riak.disk">
+						<span>node-2</span>
+					</div>
+					<div class="rm-cell-state" host="cs-node-0001" rm-state="nginx.active">
+						<span>nginx</span>
+					</div>
+				</div>
+
+				<div class="col-md-2">
+					<div class="rm-cell rm-cell-bordered">
+						<h2>Disk 1</h2>
+						<rm-easy-pie host="cs-node-0001" service="disk /" size="110" unit="%">
+							</rm-easy-pie>
+					</div>
+				</div>
+
+				<div class="col-md-2">
+					<div class="rm-cell rm-cell-bordered">
+						<h2>Disk 2</h2>
+						<rm-easy-pie host="cs-node-0002" service="disk /" size="110" unit="%">
+							</rm-easy-pie>
+					</div>
+				</div>
+
+				<div class="col-md-3">
+					<div class="rm-cell rm-cell-bordered">
+						<h2>Last 24 h activities</h2>
+						<rm-graphite host="cs-node-0001" series="riak.get.99:666666,riak.put.99:669944" height="120">
+							</rm-graphite>
+					</div>
+				</div>
+			</div>
+
+			<h2>Key metrics</h2>
+			<div class="row" host-group="exodoc">
+				<div class="col-md-3">
+					<div class="rm-cell rm-cell-bordered">
+						<h2>Documents security level</h2>
+						<rm-donut interval="5000" height="100">
+							<part target="exodoc.doc_public" color="#afa" count="true">Public</part>
+							<part target="exodoc.doc_internal" color="#aaf" count="true">Internal</part>
+							<part target="exodoc.doc_confidential" color="#eeb" count="true">Confidential</part>
+							<part target="exodoc.doc_secret" color="#faa" count="true">Secret</part>
+						</rm-donut>
+					</div>
+				</div>
+				<div class="col-md-3">
+					<div class="rm-cell rm-cell-bordered">
+						<h2>Users</h2>
+						<table class="rm-table">
+							<tr><td>active</td><td><rm-live-metric service="exodoc.user_active"></rm-live-metric></td></tr>
+							<tr><td>new this week</td><td><rm-live-metric service="exodoc.user_week_create"></rm-live-metric></td></tr>
+							<tr><td>90 days inactive</td><td><rm-live-metric service="exodoc.user_90_inactive"></rm-live-metric></td></tr>
+							<tr><td>90 days inactive</td><td><rm-live-metric service="exodoc.user_90_inactive"></rm-live-metric></td></tr>
+						</table>
+						<br>
+						<h2>File and documents</h2>
+						<table class="rm-table">
+							<tr><td>total files</td><td><rm-live-metric service="exodoc.file_ready"></rm-live-metric></td></tr>
+							<tr><td>total documents</td><td><rm-live-metric service="exodoc.doc_total"></rm-live-metric></td></tr>
+						</table>
+					</div>
+				</div>
+				<div class="col-md-3">
+					<div class="rm-cell rm-cell-bordered">
+						<h2>Marketing</h2>
+						<table class="rm-table">
+							<tr><td>used coupons</td><td><rm-live-metric service="exodoc.coupon_used"></rm-live-metric></td></tr>
+							<tr><td>active subscriptions</td><td><rm-live-metric service="exodoc.active_subscriptions"></rm-live-metric></td></tr>
+						</table>
+					</div>
+				</div>
+				<div class="col-md-3">
+					<div class="rm-cell rm-cell-bordered">
+						<div class="rm-cell rm-cell-bordered">
+						<h2>oAuth2 active tokens (60days)</h2>
+						<rm-graphite from="-60days" height="120" hide-legend=true>
+							<serie service="exodoc.oauth2_token_active" color="666666"></serie>
+						</rm-graphite>
+						<h2>oAuth2 active tokens (60days)</h2>
+						<rm-graphite from="-60days" height="120" hide-legend=true>
+							<serie service="exodoc.user_week_login" color="666666"></serie>
+						</rm-graphite>
+					</div>
+				</div>
+			</div>
 		</div>
 	</body>
 </html>

@@ -7,6 +7,7 @@
 #main_error {
 	padding: 70px 10px 10px 10px;
 }
+
 #main_content {
 	padding: 10px 10px 10px 10px;
 }
@@ -14,6 +15,7 @@
 .img {
 	position: relative;
 }
+
 .img:before {
 	content: " ";
 	position: absolute;
@@ -157,11 +159,30 @@ td .td-cell:not(:last-child) {
 
 body {
 	background-color: #111;
+	color: #bbb;
+	border: none;
+	padding:0;
+	margin:0;
+	background-image: url('/img/blue_background.jpg');
+	background-size: 100% 100%;
+	background-attachment: fixed;
 }
 
-.sparklines {
-	overflow: hidden;
+html {
+	margin: 0px;
+	padding: 0px;
 }
+
+body.full-hd {
+	width: 1920px;
+	height: 1080px;
+}
+
+body.hd-ready {
+	width: 1280px;
+	height: 720px;
+}
+
 
 table {
 	table-layout:fixed;
@@ -229,4 +250,167 @@ table {
 .clock span {
 	padding: 1px 5px;
 	background: black;
+}
+
+.rm-sparklines {
+	position: relative;
+	overflow: hidden;
+}
+
+.rm-sparklines .graph {
+	position: absolute;
+	display: block;
+	top:0;
+	left:0;
+	overflow: hidden;
+}
+
+.rm-sparklines .value {
+	padding: 3px 5px 0 5px;
+	display: inline-block;
+}
+
+.rm-sparklines .title {
+	padding: 0 5px 3px 5px;
+	display: inline-block;
+	font-weight: 100;
+}
+
+.rm-easy-pie-chart {
+	position:relative;
+	text-align: center;
+	padding: 0 1em;
+	margin: 5px auto;
+}
+
+.rm-easy-pie-chart canvas{
+	position:absolute;
+	top:0;
+	left:0;
+}
+
+.rm-easy-pie-chart span {
+	text-align: center;
+}
+
+.rm-cell {
+	background: rgba(0, 0, 0, 0.1);
+	color: rgba(255, 255, 255, 0.5);
+	font-weight: 200;
+	letter-spacing: 1px;
+}
+
+.rm-cell h2 {
+	margin: 0;
+	font-size: 0.8em;
+	background: rgba(0, 0, 0, 0.3);
+	color: rgba(255, 255, 255, 0.5);
+	font-weight: 100;
+	letter-spacing: 1px;
+	padding: 4px 6px;
+
+}
+
+.rm-cell-bordered {
+	border: 1px solid rgba(0, 0, 0, 0.3);
+}
+
+.rm-cell-sep {
+	border-bottom: 1px solid rgba(0,0,0,0.1);
+}
+
+.rm-cell-bordered h2 {
+   border-bottom: 1px solid rgba(0, 0, 0, 0.5);
+}
+
+.graphite-graph img {
+	opacity: 0.8;
+}
+
+h1, h2, h3 {
+	font-weight: 100;
+	letter-spacing: 2px;
+}
+
+hr {
+	border-top: 1px solid rgba(0,0,0,0.08);
+	border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+
+.rm-cell-state {
+	display: inline-block;
+	padding: 2px 5px;
+	border:1px solid rgba(0,0,0,0.5);
+	margin: 2px 5px;
+}
+
+.rm-state-critical {
+	background-color: rgba(255,0,0,0.8);
+	color: white;
+	box-shadow: 0 0 10px red;
+	border-color: rgba(255,220,220,0.8);
+	-webkit-animation-iteration-count: infinite;
+	-moz-animation-iteration-count: infinite;
+	animation-iteration-count: infinite;
+}
+
+.rm-state-warning {
+	background-color: rgba(255, 219, 114, 0.80);
+	color: #2d270f;
+}
+
+.rm-state-ok {
+	background-color: rgba(0,255,0,0.2);
+	color:rgba(150,255,150,0.8);
+}
+
+.rm-state-expired {
+	background-color: #222;
+	border: 2px solid #444;
+	color: #999;
+	opacity: 0.5;
+}
+
+.title-group {
+	margin: 0;
+	background: rgba(0, 0, 0, 0.3);
+	color: rgba(255, 255, 255, 0.5);
+	font-weight: 100;
+	letter-spacing: 1px;
+	padding: 4px 6px;
+}
+
+.progress-small {
+	height: 4px;
+}
+
+.progress {
+	background-color: rgba(255,255,255,0.2);
+}
+
+.rm-table {
+	width: 100%;
+	max-width: 100%;
+	background-color: transparent;
+	border-collapse: separate;
+	border-spacing: 0 1px;
+	font-size: 0.8em;
+}
+
+.rm-table>thead>tr>th, .rm-table>tbody>tr>th, .rm-table>tfoot>tr>th, .rm-table>thead>tr>td, .rm-table>tbody>tr>td, .rm-table>tfoot>tr>td {
+	padding: 8px;
+	line-height: 1.428571429;
+	vertical-align: top;
+	background-color: rgba(0,0,0,0.3);
+	border-top:1px solid transparent;
+	margin-bottom: 1px;
+}
+
+.rm-container {
+	padding: 0 10px;
+}
+
+rm-live-metric {
+	font-family: digital;
+	font-size: 1.2em;
 }
