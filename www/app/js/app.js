@@ -327,6 +327,7 @@ dashboardApp.directive("rmGraphite", ['$interval', function($interval) {
 			var height = tAttrs.height;
 			var width = tAttrs.width;
 			var yMax = tAttrs.ymax;
+			var yMin = tAttrs.ymin;
 			var hideLegend = tAttrs.hideLegend;
 
 			tElement.find("serie").each(function() {
@@ -372,6 +373,9 @@ dashboardApp.directive("rmGraphite", ['$interval', function($interval) {
 					if ( yMax != undefined) {
 						options['yMax'] = yMax;
 					}
+					if ( yMin != undefined) {
+						options['yMin'] = yMin;
+					}
 					if ( hideLegend != undefined) {
 						options['hideLegend'] = hideLegend;
 					}
@@ -405,8 +409,12 @@ dashboardApp.directive("rmDonut", ['$interval', 'RiemannService', function($inte
 			var host = find_host(tElement, tAttrs);
 			var title = tAttrs.title || "";
 			var interval = parseInt(tAttrs.interval || "100000");
+			var height = tAttrs.height;
 			var id = "pizza-"+(id_counter++);
 			var $chart = $('<div id="'+id+'">');
+			if (height != undefined) {
+				$chart.css("height", height);
+			}
 			var series = [];
 			tElement.find("part").each(function(i, elm) {
 				var $elm = $(elm);
@@ -466,7 +474,39 @@ dashboardApp.directive("rmDonut", ['$interval', 'RiemannService', function($inte
 				timeout_id = $interval(function() {
         			update(); // update plot
       			}, interval);
-				update();
+				setTimeout(function() {
+					update();
+				}, 1000);
+
+			};
+		}
+	};
+}]);
+
+
+/* display a clock */
+dashboardApp.directive("rmFlipClock", ['$interval', function($interval) {
+	return {
+        restrict:"E",
+		compile: function(tElement, tAttrs, transclude){
+			var interval = parseInt(tAttrs.interval || "1000");
+			return function(scope, element, attrs){
+				var timeout_id = null;
+				function digit(x) {
+					return (x < 10)?"0"+x:x;
+				}
+				function update() {
+					var d = new Date();
+					element.text(
+						digit(d.getHours())+":"+ digit(d.getMinutes())+":"+ digit(d.getSeconds())
+					)
+				}
+				element.on('$destroy', function() {
+        			$interval.cancel(timeout_id);
+      			});
+				timeout_id = $interval(function() {
+        			update(); // update plot
+      			}, interval);
 			};
 		}
 	};

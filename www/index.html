@@ -29,35 +29,35 @@
 			<div ng-if="error" class="alert alert-danger">
 				<span ng-bind="error"></span>
 			</div>
-			<h1>exo<b>doc</b> dashboard</h1>
+			<h1>exo<b>doc</b> dashboard <rm-flip-clock class="pull-right"></rm-flip-clock></h1>
 			<hr>
 
 			<div class="row" host-group="exodoc">
-				<div class="col-md-3">
+				<div class="col-lg-3">
 					<h3 class="title-group">Production</h3>
-					<div class="rm-cell-state" rm-state="exodoc.web">
+					<div class="rm-cell-state-2x" rm-state="exodoc.web">
 						<span>django</span>
 					</div>
-					<div class="rm-cell-state" rm-state="exodoc.api">
+					<div class="rm-cell-state-2x" rm-state="exodoc.api">
 						<span>node.js</span>
 					</div>
-					<div class="rm-cell-state" rm-state="redis">
+					<div class="rm-cell-state-2x" rm-state="redis">
 						<span>redis</span>
 					</div>
-					<div class="rm-cell-state" rm-state="couchdb.read.max">
+					<div class="rm-cell-state-2x" rm-state="couchdb.read.max">
 						<span>couchdb</span>
 					</div>
-					<div class="rm-cell-state" rm-state="nginx.active">
+					<div class="rm-cell-state-2x" rm-state="nginx.active">
 						<span>nginx</span>
 					</div>
-					<div class="rm-cell-state" rm-state="DB.exodoc.size">
+					<div class="rm-cell-state-2x" rm-state="DB.exodoc.size">
 						<span>postgresql</span>
 					</div>
-					<div class="rm-cell-state" host="exodoc-transform" rm-state="actarus">
+					<div class="rm-cell-state-2x" host="exodoc-transform" rm-state="actarus">
 						<span>transform service</span>
 					</div>
 				</div>
-				<div class="col-md-2">
+				<div class="col-lg-2">
 					<div class="rm-cell rm-cell-bordered">
 						<rm-sparkline service="cpu" title="cpu" interval="2000" min="0" max="1.0" height="48px" show-value="percent" unit="%">
 							</rm-sparkline>
@@ -70,47 +70,59 @@
 					</div>
 				</div>
 
-				<div class="col-md-2">
+				<div class="col-lg-1">
 					<div class="rm-cell rm-cell-bordered">
 						<h2>Disk</h2>
-						<rm-easy-pie service="disk /" size="110" unit="%">
+						<rm-easy-pie service="disk /" size="80" unit="%">
 							</rm-easy-pie>
 					</div>
 				</div>
 
-				<div class="col-md-3">
+				<div class="col-lg-3">
 					<div class="rm-cell rm-cell-bordered">
 						<h2>Last 24 h activities</h2>
-						<rm-graphite series="cpu:666666,load:669944" height="120" yMax="1.0">
+						<rm-graphite series="cpu:666666,load:669944" height="150" yMax="1.0">
 							</rm-graphite>
 					</div>
 				</div>
+
+				<div class="col-lg-3">
+					<div class="rm-cell rm-cell-bordered">
+						<h2>nginx 7 days activities</h2>
+						<rm-graphite from="-7days" height="150" yMax="1.0">
+							<serie service="nginx.active" color="444444"></serie>
+							<serie service="nginx.reading" color="448844"></serie>
+							<serie service="nginx.writing" color="444488"></serie>
+						</rm-graphite>
+					</div>
+				</div>
+
 			</div>
 			<hr>
 
 			<div class="row" host-group="dev-exodoc">
-				<div class="col-md-3">
+				<div class="col-lg-3">
 					<h3 class="title-group">Sandbox</h3>
-					<div class="rm-cell-state" rm-state="exodoc.web">
+					<div class="rm-cell-state-2x" rm-state="exodoc.web">
 						<span>django</span>
 					</div>
-					<div class="rm-cell-state" rm-state="exodoc.api">
+					<div class="rm-cell-state-2x" rm-state="exodoc.api">
 						<span>node.js</span>
 					</div>
-					<div class="rm-cell-state" rm-state="redis">
+					<div class="rm-cell-state-2x" rm-state="redis">
 						<span>redis</span>
 					</div>
-					<div class="rm-cell-state" rm-state="couchdb.read.max">
+					<div class="rm-cell-state-2x" rm-state="couchdb.read.max">
 						<span>couchdb</span>
 					</div>
-					<div class="rm-cell-state" rm-state="nginx.active">
+					<div class="rm-cell-state-2x" rm-state="nginx.active">
 						<span>nginx</span>
 					</div>
-					<div class="rm-cell-state" rm-state="DB.exodoc.size">
+					<div class="rm-cell-state-2x" rm-state="DB.exodoc.size">
 						<span>postgresql</span>
 					</div>
 				</div>
-				<div class="col-md-2">
+				<div class="col-lg-2">
 					<div class="rm-cell rm-cell-bordered">
 						<rm-sparkline service="cpu" title="cpu" interval="2000" min="0" max="1.0" height="48px" show-value="percent" unit="%">
 							</rm-sparkline>
@@ -123,68 +135,98 @@
 					</div>
 				</div>
 
-				<div class="col-md-2">
+				<div class="col-lg-1">
 					<div class="rm-cell rm-cell-bordered">
 						<h2>Disk</h2>
-						<rm-easy-pie service="disk /" size="110" unit="%">
+						<rm-easy-pie service="disk /" size="80" unit="%">
 							</rm-easy-pie>
 					</div>
 				</div>
 
-				<div class="col-md-3">
+				<div class="col-lg-3">
 					<div class="rm-cell rm-cell-bordered">
 						<h2>Last 24 h activities</h2>
-						<rm-graphite series="cpu:666666,load:669944" height="120" yMax="1.0">
+						<rm-graphite series="cpu:666666,load:669944" height="130" yMax="1.0">
 							</rm-graphite>
+					</div>
+				</div>
+
+				<div class="col-lg-3">
+					<div class="rm-cell rm-cell-bordered">
+						<h2>nginx 7 days activities</h2>
+						<rm-graphite from="-7days" height="130" yMax="1.0">
+							<serie service="nginx.active" color="444444"></serie>
+							<serie service="nginx.reading" color="448844"></serie>
+							<serie service="nginx.writing" color="444488"></serie>
+						</rm-graphite>
 					</div>
 				</div>
 			</div>
+
 			<hr>
+
 			<div class="row">
-				<div class="col-md-3">
+				<div class="col-lg-3">
 					<h3 class="title-group">Riak-CS</h3>
-					<div class="rm-cell-state" host="cs-node-0001" rm-state="riak.disk">
+					<div class="rm-cell-state-2x" host="cs-node-0001" rm-state="riak.disk">
 						<span>node-1</span>
 					</div>
-					<div class="rm-cell-state" host="cs-node-0002" rm-state="riak.disk">
+					<div class="rm-cell-state-2x" host="cs-node-0002" rm-state="riak.disk">
 						<span>node-2</span>
 					</div>
-					<div class="rm-cell-state" host="cs-node-0001" rm-state="nginx.active">
+					<div class="rm-cell-state-2x" host="cs-node-0001" rm-state="nginx.active">
 						<span>nginx</span>
 					</div>
 				</div>
-
-				<div class="col-md-2">
+				<div class="col-lg-2">
+					<div class="rm-cell rm-cell-bordered">
+						<rm-sparkline host="cs-node-0001" service="cpu" title="cpu node 1" interval="2000" min="0" max="1.0" height="36px" show-value="percent" unit="%">
+							</rm-sparkline>
+						<rm-sparkline host="cs-node-0001" service="memory" title="memory node 1" interval="2000" min="0" max="1.0" height="36px" show-value="percent" unit="%">
+							</rm-sparkline>
+						<div class="rm-cell-sep"></div>
+						<rm-sparkline host="cs-node-0002" service="cpu" title="cpu node 2" interval="2000" min="0" max="1.0" height="36px" show-value="percent" unit="%">
+							</rm-sparkline>
+						<rm-sparkline host="cs-node-0002" service="memory" title="memory node 2" interval="2000" min="0" max="1.0" height="36px" show-value="percent" unit="%">
+							</rm-sparkline>
+					</div>
+				</div>
+				<div class="col-lg-1">
 					<div class="rm-cell rm-cell-bordered">
 						<h2>Disk 1</h2>
-						<rm-easy-pie host="cs-node-0001" service="disk /" size="110" unit="%">
+						<rm-easy-pie host="cs-node-0001" service="disk /" size="80" unit="%">
 							</rm-easy-pie>
 					</div>
 				</div>
 
-				<div class="col-md-2">
+				<div class="col-lg-3">
 					<div class="rm-cell rm-cell-bordered">
-						<h2>Disk 2</h2>
-						<rm-easy-pie host="cs-node-0002" service="disk /" size="110" unit="%">
-							</rm-easy-pie>
+						<h2>Last 24 h get/put</h2>
+						<rm-graphite host="cs-node-0001" height="120">
+							<serie service="riak.get.50" color="444466"></serie>
+							<serie service="riak.get.99" color="8888AA"></serie>
+							<serie service="riak.put.50" color="664444"></serie>
+							<serie service="riak.put.99" color="AA8888"></serie>
+						</rm-graphite>
 					</div>
 				</div>
 
-				<div class="col-md-3">
+				<div class="col-lg-3">
 					<div class="rm-cell rm-cell-bordered">
-						<h2>Last 24 h activities</h2>
-						<rm-graphite host="cs-node-0001" series="riak.get.99:666666,riak.put.99:669944" height="120">
-							</rm-graphite>
+						<h2>disk last month</h2>
+						<rm-graphite from="-1month" host="cs-node-0001" height="120" yMin="0">
+							<serie service="riak.disk" color="444444"></serie>
+						</rm-graphite>
 					</div>
 				</div>
 			</div>
 
 			<h2>Key metrics</h2>
 			<div class="row" host-group="exodoc">
-				<div class="col-md-3">
+				<div class="col-lg-3">
 					<div class="rm-cell rm-cell-bordered">
 						<h2>Documents security level</h2>
-						<rm-donut interval="5000" height="100">
+						<rm-donut interval="60000" height="250">
 							<part target="exodoc.doc_public" color="#afa" count="true">Public</part>
 							<part target="exodoc.doc_internal" color="#aaf" count="true">Internal</part>
 							<part target="exodoc.doc_confidential" color="#eeb" count="true">Confidential</part>
@@ -192,14 +234,14 @@
 						</rm-donut>
 					</div>
 				</div>
-				<div class="col-md-3">
+				<div class="col-lg-3">
 					<div class="rm-cell rm-cell-bordered">
 						<h2>Users</h2>
 						<table class="rm-table">
 							<tr><td>active</td><td><rm-live-metric service="exodoc.user_active"></rm-live-metric></td></tr>
 							<tr><td>new this week</td><td><rm-live-metric service="exodoc.user_week_create"></rm-live-metric></td></tr>
 							<tr><td>90 days inactive</td><td><rm-live-metric service="exodoc.user_90_inactive"></rm-live-metric></td></tr>
-							<tr><td>90 days inactive</td><td><rm-live-metric service="exodoc.user_90_inactive"></rm-live-metric></td></tr>
+							<tr><td>active oauth2</td><td><rm-live-metric service="exodoc.oauth2_token_active"></rm-live-metric></td></tr>
 						</table>
 						<br>
 						<h2>File and documents</h2>
@@ -209,7 +251,7 @@
 						</table>
 					</div>
 				</div>
-				<div class="col-md-3">
+				<div class="col-lg-3">
 					<div class="rm-cell rm-cell-bordered">
 						<h2>Marketing</h2>
 						<table class="rm-table">
@@ -218,7 +260,7 @@
 						</table>
 					</div>
 				</div>
-				<div class="col-md-3">
+				<div class="col-lg-3">
 					<div class="rm-cell rm-cell-bordered">
 						<div class="rm-cell rm-cell-bordered">
 						<h2>oAuth2 active tokens (60days)</h2>

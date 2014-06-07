@@ -30,7 +30,10 @@ RiemannService.prototype.all_events = function() {
 };
 
 RiemannService.prototype.reconnect_sse = function() {
-	setTimeout(self.connect_sse, 1000);
+	var self = this;
+	setTimeout(function() {
+		self.connect_sse();
+	}, 1000);
 	try {
 		this.source.close();
 	} catch (ex) {
