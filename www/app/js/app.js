@@ -72,12 +72,16 @@ dashboardApp.directive("rmEasyPie", ['$interval', 'RiemannService', function($in
 				var old_metric = null;
 				var old_state = null;
 				var bar_color = "rgba(200,255,220,0.5)";
+				var bat_color_fun = function() {
+					return bar_color;
+				};
+
 				var options = {
 					animate: 2000,
 					size: size,
 					trackColor: "rgba(0,0,0,0.5)",
-					barColor: function() {return bar_color;},
-					lineWidth: (size / 10)
+					barColor: bat_color_fun,
+					lineWidth: (size / 15)
 				};
 				$(element).easyPieChart(options);
 				$(element).find("span").css("line-height", size+"px");
@@ -88,9 +92,6 @@ dashboardApp.directive("rmEasyPie", ['$interval', 'RiemannService', function($in
 					var metric = date.metric;
 					var state = date.state;
 					if (old_metric != metric) {
-						if (metric > 0.5) {
-							bar_color = "rgba(255,255,255, 0.1)";
-						}
 						$(element).data('easyPieChart').update(metric * 100);
 						$(element).find("span").text(
 							percent_format(metric)
@@ -349,17 +350,25 @@ dashboardApp.directive("rmGraphite", ['$interval', function($interval) {
 			var from = tAttrs.from || "-24hours";
 			var until = tAttrs.until || "now";
 			var interval = parseInt(tAttrs.interval || "60000");
-			var title = tAttrs.title;
 			var height = tAttrs.height;
 			var width = tAttrs.width;
-			var yMax = tAttrs.ymax;
-			var yMin = tAttrs.ymin;
-			var hideLegend = tAttrs.hideLegend;
+
+			/* Grab additional attribute and use them as is in graphit parameters */
+			var ATTRIBUTES = [
+				"title", "yMax", "yMin", "hideLegend",
+				"hideYAxis"
+			];
+			var graph_options = {};
+			_.each(ATTRIBUTES, function(v) {
+				if (tAttrs[v] != undefined) {
+					graph_options[v] = tAttrs[v];
+				}
+			});
 
 			tElement.find("serie").each(function() {
 				var $elm = $(this);
 				series.push({
-					target: $elm.attr("service"),
+					target: $elm.attr("service") || "",
 					color: $elm.attr("color")
 				});
 			});
@@ -367,7 +376,7 @@ dashboardApp.directive("rmGraphite", ['$interval', function($interval) {
 				_.each(tAttrs.series.split(","), function(serie) {
 					var vals = serie.split(":");
 					var data = {
-						target: vals[0]
+						target: vals[0] || ""
 					};
 					if (vals.length > 1) {
 						data.color = vals[1];
@@ -379,10 +388,11 @@ dashboardApp.directive("rmGraphite", ['$interval', function($interval) {
 			return function(scope, element, attrs){
 				var timeout_id = null;
 				function update() {
-					var options = {
+					var options = _.extend({
 						from: from,
 						until: until
-					};
+					}, graph_options);
+
 					if ( height != undefined) {
 						options['height'] = height;
 					} else {
@@ -392,18 +402,6 @@ dashboardApp.directive("rmGraphite", ['$interval', function($interval) {
 						options['width'] = width;
 					} else {
 						options['width'] = element.width();
-					}
-					if ( title != undefined) {
-						options['title'] = title;
-					}
-					if ( yMax != undefined) {
-						options['yMax'] = yMax;
-					}
-					if ( yMin != undefined) {
-						options['yMin'] = yMin;
-					}
-					if ( hideLegend != undefined) {
-						options['hideLegend'] = hideLegend;
 					}
 					var graphite_url = create_graphite_url(host, series, options);
 					element.find("img").attr("src", graphite_url);

@@ -73,6 +73,9 @@
 						<div class="rm-cell-sep"></div>
 						<rm-sparkline service="memory" title="memory" interval="2000" min="0" max="1.0" height="48px" show-value="percent" unit="%">
 							</rm-sparkline>
+						<div class="rm-cell-sep"></div>
+						<rm-sparkline service="nginx.active" title="nginx" interval="2000" min="0" height="48px" show-value="fixed-0" unit="">
+							</rm-sparkline>
 					</div>
 				</div>
 
@@ -86,16 +89,21 @@
 
 				<div class="col-lg-3">
 					<div class="rm-cell rm-cell-bordered">
-						<h2>Last 24 h activities</h2>
-						<rm-graphite series="cpu:666666,load:669944" height="150" yMax="1.0">
-							</rm-graphite>
+						<h2>CPU 24h</h2>
+						<rm-graphite height="80" yMax="1.0" hide-legend="true" hide-y-axis="true">
+							<serie service="cpu" color="666666"></serie>
+						</rm-graphite>
+						<h2>memory 24h</h2>
+						<rm-graphite height="80" yMax="1.0" hide-legend="true" hide-y-axis="true">
+							<serie service="memory" color="666666"></serie>
+						</rm-graphite>
 					</div>
 				</div>
 
 				<div class="col-lg-3">
 					<div class="rm-cell rm-cell-bordered">
 						<h2>nginx 7 days activities</h2>
-						<rm-graphite from="-7days" height="150" yMax="1.0">
+						<rm-graphite from="-7days" height="150" >
 							<serie service="nginx.active" color="444444"></serie>
 							<serie service="nginx.reading" color="448844"></serie>
 							<serie service="nginx.writing" color="444488"></serie>
@@ -160,7 +168,7 @@
 				<div class="col-lg-3">
 					<div class="rm-cell rm-cell-bordered">
 						<h2>nginx 7 days activities</h2>
-						<rm-graphite from="-7days" height="130" yMax="1.0">
+						<rm-graphite from="-7days" height="130">
 							<serie service="nginx.active" color="444444"></serie>
 							<serie service="nginx.reading" color="448844"></serie>
 							<serie service="nginx.writing" color="444488"></serie>
@@ -199,7 +207,7 @@
 				</div>
 				<div class="col-lg-1">
 					<div class="rm-cell rm-cell-bordered">
-						<h2>Disk 1</h2>
+						<h2>Storage</h2>
 						<rm-easy-pie host="cs-node-0001" service="disk /" size="80" unit="%">
 							</rm-easy-pie>
 					</div>
@@ -207,7 +215,7 @@
 
 				<div class="col-lg-3">
 					<div class="rm-cell rm-cell-bordered">
-						<h2>Last 48 h get/put (n1)</h2>
+						<h2>Last 48 h get/put [n1]</h2>
 						<rm-graphite from="-48hours" host="cs-node-0001" height="120" hide-legend="true">
 							<serie service="riak.get.50" color="444466"></serie>
 							<serie service="riak.get.99" color="8888AA"></serie>
@@ -221,7 +229,7 @@
 
 				<div class="col-lg-3">
 					<div class="rm-cell rm-cell-bordered">
-						<h2>Last 48 h get/put (n2)</h2>
+						<h2>Last 48 h get/put [n2]</h2>
 						<rm-graphite from="-48hours" host="cs-node-0002" height="120" hide-legend="true">
 							<serie service="riak.get.50" color="444466"></serie>
 							<serie service="riak.get.99" color="8888AA"></serie>
@@ -256,8 +264,7 @@
 							<tr><td>90 days inactive</td><td><rm-live-metric service="exodoc.user_90_inactive"></rm-live-metric></td></tr>
 							<tr><td>active oauth2</td><td><rm-live-metric service="exodoc.oauth2_token_active"></rm-live-metric></td></tr>
 						</table>
-						<br>
-						<h2>File and documents</h2>
+						<h2>Files and documents</h2>
 						<table class="rm-table">
 							<tr><td>total files</td><td><rm-live-metric service="exodoc.file_ready"></rm-live-metric></td></tr>
 							<tr><td>total documents</td><td><rm-live-metric service="exodoc.doc_total"></rm-live-metric></td></tr>
