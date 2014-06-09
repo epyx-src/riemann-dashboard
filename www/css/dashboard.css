@@ -12,7 +12,7 @@ body {
 	border: none;
 	padding:0;
 	margin:0;
-	background-image: url('/img/blue_background.jpg');
+	background-image: url('/img/background.jpg');
 	background-size: 100% 100%;
 	background-attachment: fixed;
 }
@@ -93,9 +93,10 @@ table {
 	background: rgba(0, 0, 0, 0.3);
 	color: rgba(255, 255, 255, 0.5);
 	font-weight: 100;
-	letter-spacing: 1px;
 	padding: 4px 6px;
-
+	letter-spacing: 2px;
+	text-transform: uppercase;
+	text-shadow: 0 0 2px black;
 }
 
 .rm-cell-bordered {
@@ -140,7 +141,7 @@ hr {
 	padding: 3px 7px;
 	border:1px solid rgba(0,0,0,0.5);
 	margin: 3px 7px;
-	font-size: 1.5em;
+	font-size: 1.3em;
 	font-weight: 100;
 	letter-spacing: 2px;
 }
@@ -200,11 +201,16 @@ hr {
 
 .rm-table>thead>tr>th, .rm-table>tbody>tr>th, .rm-table>tfoot>tr>th, .rm-table>thead>tr>td, .rm-table>tbody>tr>td, .rm-table>tfoot>tr>td {
 	padding: 8px;
-	line-height: 1.428571429;
+	line-height: 1.2;
 	vertical-align: top;
-	background-color: rgba(0,0,0,0.3);
+	background-color: rgba(0,0,0,0.15);
 	border-top:1px solid transparent;
 	margin-bottom: 1px;
+}
+
+.rm-table tr td:first-child {
+	color: rgba(200,222,255,0.8);
+	text-shadow: 0 0 2px black;
 }
 
 .rm-container {
@@ -214,6 +220,7 @@ hr {
 rm-live-metric {
 	font-size: 1.2em;
 	font-weight: 100;
+	display: inline-block;
 }
 
 .jqplot-target {
@@ -227,3 +234,31 @@ rm-flip-clock {
 	-webkit-transform: -webkit-scale(0.5);
 	transform: scale(0.5);
 }
+
+.rm-legend {
+	display: inline-block;
+	font-size: 0.8em;
+	line-height: 0.8em;
+	padding: 1px 3px;
+
+}
+
+.rm-legend .color {
+	display: inline-block;
+	width: 1.2em;
+	height: 1.2em;
+	border: 1px solid rgba(0,0,0, 0.5);
+	opacity: 0.8;
+	vertical-align: middle;
+}
+
+.rm-legend .title {
+	display: inline-block;
+	font-weight: 100;
+	height: 1.2em;
+	line-height: 1.2em;
+	color: rgba(255, 255, 255, 0.5);
+	vertical-align: middle;
+	letter-spacing: 1px;
+}
+

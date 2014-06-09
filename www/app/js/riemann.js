@@ -10,12 +10,21 @@ RiemannService.prototype.handle_error = function(err, stop) {
 	this.reconnect_sse()
 };
 
+var last_call = null;
 RiemannService.prototype.handle_callback = function(msg) {
 	try {
 		var data = JSON.parse(msg.data);
+		var now = new Date();
+		if (!last_call || last_call.getMinutes() != now.getMinutes()) {
+			console.log("Received ", now);
+			last_call = now;
+		}
 	} catch (ex) {
 		this.handle_error(ex);
 		return;
+	}
+	if (data.service.indexOf("a") == 0) {
+		console.log(data);
 	}
 	this._all_events[data.host+":"+data.service] = data;
 
@@ -31,15 +40,15 @@ RiemannService.prototype.all_events = function() {
 
 RiemannService.prototype.reconnect_sse = function() {
 	var self = this;
-	setTimeout(function() {
-		self.connect_sse();
-	}, 1000);
 	try {
 		this.source.close();
 	} catch (ex) {
 		console.error(ex);
 	}
 	this.source = null;
+	setTimeout(function() {
+		self.connect_sse();
+	}, 1000);
 };
 
 RiemannService.prototype.connect_sse = function() {

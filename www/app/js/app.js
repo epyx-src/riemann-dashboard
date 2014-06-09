@@ -70,11 +70,13 @@ dashboardApp.directive("rmEasyPie", ['$interval', 'RiemannService', function($in
 			return function(scope, element, attrs){
 				var timeout_id = null;
 				var old_metric = null;
+				var old_state = null;
+				var bar_color = "rgba(200,255,220,0.5)";
 				var options = {
 					animate: 2000,
 					size: size,
 					trackColor: "rgba(0,0,0,0.5)",
-					barColor: "rgba(200,255,220,0.5)",
+					barColor: function() {return bar_color;},
 					lineWidth: (size / 10)
 				};
 				$(element).easyPieChart(options);
@@ -82,13 +84,30 @@ dashboardApp.directive("rmEasyPie", ['$interval', 'RiemannService', function($in
 				$(element).css("font-size", (size/6)+"px");
 				$(element).css("width",size+"px");
 				function update() {
-					var metric = riemann_service.get(host, service).metric;
+					var date = riemann_service.get(host, service);
+					var metric = date.metric;
+					var state = date.state;
 					if (old_metric != metric) {
+						if (metric > 0.5) {
+							bar_color = "rgba(255,255,255, 0.1)";
+						}
 						$(element).data('easyPieChart').update(metric * 100);
 						$(element).find("span").text(
 							percent_format(metric)
 						);
 						old_metric = metric
+					}
+					if (old_state != state) {
+						if (state == 'warning') {
+							bar_color = "rgba(255,100,100, 0.8)";
+						} else if (state == 'critical') {
+							bar_color = "rgba(200,180,100, 0.8)";
+						} else if (state == 'ok') {
+							bar_color = "rgba(200,255,220,0.5)";
+						} else {
+							bar_color = "rgba(255,255,255, 0.2)";
+						}
+						old_state = state;
 					}
       			}
 				element.on('$destroy', function() {
@@ -131,8 +150,11 @@ dashboardApp.directive("rmSparkline", ['$interval', 'RiemannService', function($
 					}
 					var options = {
 						type:'line',
-						lineColor:'#aaf',
-						fillColor: 'rgba(255,255,255,0.2)',
+						lineColor:'rgba(255,255,255,0.5)',
+						fillColor: 'rgba(255,255,255,0.1)',
+						minSpotColor: false,
+						maxSpotColor: false,
+						spotColor: 'white',
 						height: height
 					};
 					$(element).find("span.value").css({
@@ -264,6 +286,9 @@ dashboardApp.directive("rmState", ['$interval', 'RiemannService', function($inte
 						return;
 					}
 					var state = riemann_data.state;
+					if (!state) {
+						state = "critical"
+					}
 					if (old_state != state) {
 						element.removeClass("rm-state-"+old_state);
 						element.addClass("rm-state-"+state);
@@ -271,8 +296,9 @@ dashboardApp.directive("rmState", ['$interval', 'RiemannService', function($inte
 							element.addClass("animated pulse")
 						} else if (state == 'warning') {
 							element.addClass("animated bounce")
+						} else {
+							element.removeClass("animated bounce pulse")
 						}
-
 						old_state = state;
 					}
       			}
@@ -508,6 +534,16 @@ dashboardApp.directive("rmFlipClock", ['$interval', function($interval) {
         			update(); // update plot
       			}, interval);
 			};
+		}
+	};
+}]);
+
+/* Legend display */
+dashboardApp.directive("rmLegend", ['$interval', function($interval) {
+	return {
+        restrict:"E",
+		compile: function(tElement, tAttrs, transclude){
+			return tElement.replaceWith('<div class="rm-legend"><span class="color" style="background-color:'+tAttrs.color+';"></span> <span class="title">'+tElement.text()+'</span>');
 		}
 	};
 }]);
