@@ -78,19 +78,7 @@ RiemannService.prototype.get_cached_data = function() {
 			var key = "exodoc.services";
 			var data = window.localStorage.getItem(key) || "{}";
 			console.log("data", data);
-			var services = JSON.parse(data);
-			// filter cached host that do not match config
-			var hosts = _.filter(_.keys(services), function(k) {
-				var ok = false;
-				_.each(window.DISPLAY_HOSTS, function(h) {
-					if (h.test(k)) {
-						ok = true;
-					}
-				});
-				return ok;
-			});
-			services = _.pick(services, hosts);
-			return services;
+			return JSON.parse(data);
 		} catch (ex) {
 			console.error(ex);
 		}
