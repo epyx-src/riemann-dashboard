@@ -23,9 +23,6 @@ RiemannService.prototype.handle_callback = function(msg) {
 		this.handle_error(ex);
 		return;
 	}
-	if (data.service.indexOf("a") == 0) {
-		console.log(data);
-	}
 	this._all_events[data.host+":"+data.service] = data;
 
 };
@@ -77,7 +74,6 @@ RiemannService.prototype.get_cached_data = function() {
 		try {
 			var key = "exodoc.services";
 			var data = window.localStorage.getItem(key) || "{}";
-			console.log("data", data);
 			return JSON.parse(data);
 		} catch (ex) {
 			console.error(ex);
