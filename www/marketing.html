@@ -24,7 +24,7 @@
 		<script type="text/javascript" src="app/js/app.js"></script>
 
 	</head>
-	<body style="background-image: url('/img/background.jpg');">
+	<body style="background-color: #777;">
 		<div ng-controller="ExodocDashboardCtrl" class="container-fluid">
 			<div ng-if="error" class="alert alert-danger">
 				<span ng-bind="error"></span>
@@ -112,71 +112,6 @@
 				</div>
 
 			</div>
-			<hr>
-
-			<div class="row" host-group="dev-exodoc">
-				<div class="col-lg-3">
-					<h3 class="title-group">Sandbox</h3>
-					<div class="rm-cell-state-2x" rm-state="exodoc.web">
-						<span>django</span>
-					</div>
-					<div class="rm-cell-state-2x" rm-state="exodoc.api">
-						<span>node.js</span>
-					</div>
-					<div class="rm-cell-state-2x" rm-state="redis">
-						<span>redis</span>
-					</div>
-					<div class="rm-cell-state-2x" rm-state="couchdb.read.max">
-						<span>couchdb</span>
-					</div>
-					<div class="rm-cell-state-2x" rm-state="nginx.active">
-						<span>nginx</span>
-					</div>
-					<div class="rm-cell-state-2x" rm-state="DB.exodoc.size">
-						<span>postgresql</span>
-					</div>
-				</div>
-				<div class="col-lg-2">
-					<div class="rm-cell rm-cell-bordered">
-						<rm-sparkline service="cpu" title="cpu" interval="2000" min="0" max="1.0" height="48px" show-value="percent" unit="%">
-							</rm-sparkline>
-						<div class="rm-cell-sep"></div>
-						<rm-sparkline service="load" title="load" interval="2000" min="0" max="1.0" height="48px" show-value="percent" unit="%">
-							</rm-sparkline>
-						<div class="rm-cell-sep"></div>
-						<rm-sparkline service="memory" title="memory" interval="2000" min="0" max="1.0" height="48px" show-value="percent" unit="%">
-							</rm-sparkline>
-					</div>
-				</div>
-
-				<div class="col-lg-1">
-					<div class="rm-cell rm-cell-bordered">
-						<h2>Disk</h2>
-						<rm-easy-pie service="disk /" size="80" unit="%">
-							</rm-easy-pie>
-					</div>
-				</div>
-
-				<div class="col-lg-3">
-					<div class="rm-cell rm-cell-bordered">
-						<h2>Last 24 h activities</h2>
-						<rm-graphite series="cpu:666666,load:669944" height="130" yMax="1.0">
-							</rm-graphite>
-					</div>
-				</div>
-
-				<div class="col-lg-3">
-					<div class="rm-cell rm-cell-bordered">
-						<h2>nginx 7 days activities</h2>
-						<rm-graphite from="-7days" height="130">
-							<serie service="nginx.active" color="444444"></serie>
-							<serie service="nginx.reading" color="448844"></serie>
-							<serie service="nginx.writing" color="444488"></serie>
-						</rm-graphite>
-					</div>
-				</div>
-			</div>
-
 			<hr>
 
 			<div class="row">
