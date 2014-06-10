@@ -63,7 +63,7 @@ dashboardApp.directive("rmEasyPie", ['$interval', 'RiemannService', function($in
 		compile: function(tElement, tAttrs, transclude){
 			var service = tAttrs.service;
 			var host = find_host(tElement, tAttrs);
-			var interval = parseInt(tAttrs.interval || "1000");
+			var interval = parseInt(tAttrs.interval || "3000");
 			var unit = tAttrs.unit || "";
 			var size = tAttrs.size || 110;
 			tElement.replaceWith('<div id="easy-pie-'+(id_count++)+'" class="rm-easy-pie-chart" data-percent="0"><span>0</span>'+unit+'</div>');
@@ -131,7 +131,7 @@ dashboardApp.directive("rmSparkline", ['$interval', 'RiemannService', function($
 		compile: function(tElement, tAttrs, transclude){
 			var service = tAttrs.service;
 			var host = find_host(tElement, tAttrs);
-			var interval = parseInt(tAttrs.interval || "2000");
+			var interval = parseInt(tAttrs.interval || "3000");
 			var nb_elements = parseInt(tAttrs.nb_elements || "100");
 			var min = tAttrs.min;
 			var max = tAttrs.max;
@@ -242,7 +242,7 @@ dashboardApp.directive("rmLiveMetric", ['$interval', 'RiemannService', function(
 		compile: function(tElement, tAttrs, transclude){
 			var service = tAttrs.service;
 			var host = find_host(tElement, tAttrs);
-			var interval = parseInt(tAttrs.interval || "1000");
+			var interval = parseInt(tAttrs.interval || "3000");
 			var format = tAttrs.format
 			return function(scope, element, attrs){
 				var timeout_id = null;
@@ -276,7 +276,7 @@ dashboardApp.directive("rmState", ['$interval', 'RiemannService', function($inte
 		compile: function(tElement, tAttrs, transclude){
 			var service = tAttrs.service || tAttrs.rmState;
 			var host = find_host(tElement, tAttrs);
-			var interval = parseInt(tAttrs.interval || "1000");
+			var interval = parseInt(tAttrs.interval || "3000");
 			return function(scope, element, attrs){
 				var timeout_id = null;
 				var old_state = null;

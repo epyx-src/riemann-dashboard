@@ -53,7 +53,7 @@
 					<div class="rm-cell-state-2x" rm-state="DB.exodoc.size">
 						<span>postgresql</span>
 					</div>
-					<div class="rm-cell-state-2x" host="exodoc-transform" rm-state="actarus">
+					<div class="rm-cell-state-2x" host="exodoc-transform." rm-state="actarus">
 						<span>transform service</span>
 					</div>
 					<div class="rm-cell-state-2x" host="sentry" rm-state="cpu">
@@ -90,11 +90,11 @@
 				<div class="col-lg-3">
 					<div class="rm-cell rm-cell-bordered">
 						<h2>CPU 24h</h2>
-						<rm-graphite height="80" yMax="1.0" hide-legend="true" hide-y-axis="true">
+						<rm-graphite height="70" yMax="1.0" hide-legend="true" hide-y-axis="true">
 							<serie service="cpu" color="666666"></serie>
 						</rm-graphite>
 						<h2>memory 24h</h2>
-						<rm-graphite height="80" yMax="1.0" hide-legend="true" hide-y-axis="true">
+						<rm-graphite height="70" yMax="1.0" hide-legend="true" hide-y-axis="true">
 							<serie service="memory" color="666666"></serie>
 						</rm-graphite>
 					</div>
@@ -103,7 +103,7 @@
 				<div class="col-lg-3">
 					<div class="rm-cell rm-cell-bordered">
 						<h2>nginx 7 days activities</h2>
-						<rm-graphite from="-7days" height="150" >
+						<rm-graphite from="-7days" height="120" >
 							<serie service="nginx.active" color="444444"></serie>
 							<serie service="nginx.reading" color="448844"></serie>
 							<serie service="nginx.writing" color="444488"></serie>
