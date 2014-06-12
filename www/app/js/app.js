@@ -281,6 +281,7 @@ dashboardApp.directive("rmLiveMetric", ['$interval', 'RiemannService', function(
 			var host = find_host(tElement, tAttrs);
 			var interval = parseInt(tAttrs.interval || "3000");
 			var format = tAttrs.format;
+			tElement.replaceWith('<span class="live-metric"></span>');
 			return function(scope, element, attrs){
 				var timeout_id = null;
 				var old_metric = null;
@@ -595,7 +596,7 @@ dashboardApp.directive("rmLive", ['$interval', 'RiemannService', function($inter
 			var host = find_host(tElement, tAttrs);
 			var format = tAttrs.format;
 			script = "(function() { return "+script+"})()";
-			tElement.replaceWith("<span></span>");
+			tElement.replaceWith('<span class="live-metric"></span>');
 			return function(scope, element, attrs){
 				var timeout_id = null;
 				function update() {

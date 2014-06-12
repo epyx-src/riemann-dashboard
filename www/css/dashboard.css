@@ -230,7 +230,7 @@ hr {
 	padding: 0 10px;
 }
 
-rm-live-metric {
+.live-metric {
 	font-size: 1.2em;
 	font-weight: 100;
 	display: inline-block;

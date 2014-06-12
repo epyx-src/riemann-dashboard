@@ -248,7 +248,7 @@
 				<div class="col-lg-3">
 					<div class="rm-cell rm-cell-bordered">
 						<h2>Documents security level</h2>
-						<rm-donut interval="2h" height="250">
+						<rm-donut interval="5m" height="250">
 							<part target="exodoc.doc_public" color="#afa" count="true">Public</part>
 							<part target="exodoc.doc_internal" color="#aaf" count="true">Internal</part>
 							<part target="exodoc.doc_confidential" color="#eeb" count="true">Confid.</part>
@@ -268,30 +268,26 @@
 						<h2>Files</h2>
 						<table class="rm-table">
 							<tr><td>total files</td><td><rm-live-metric service="exodoc.file_ready"></rm-live-metric></td></tr>
+							<tr><td>total size</td><td><rm-live-metric format="file-size" service="exodoc.file_total_size"></rm-live-metric></td></tr>
 						</table>
 					</div>
 				</div>
 				<div class="col-lg-2">
-					<div class="rm-cell rm-cell-bordered" interval-default="10m">
+					<div class="rm-cell rm-cell-bordered" interval-default="5m">
 						<h2>Documents</h2>
 						<table class="rm-table">
 							<tr><td>total</td><td><rm-live-metric service="exodoc.doc_total"></rm-live-metric></td></tr>
+							<tr><td>total size</td><td><rm-live-metric format="file-size" service="exodoc.doc_total_size"></rm-live-metric></td></tr>
 							<tr><td>download count</td><td>
 								<rm-live-metric service="exodoc.doc_total_download"></rm-live-metric>
 								<span class="label-alpha pull-right">
 									<rm-live format="percent-1">service("exodoc.doc_total_download").metric / service("exodoc.doc_total").metric</rm-live> %
 								</span>
-								<div style="display: block; width:100%;">
-									<rm-progress service="exodoc.doc_total_download" max="metric:exodoc.doc_total"></rm-progress>
-								</div>
 							</td></tr>
 							<tr><td>open count</td><td><rm-live-metric service="exodoc.doc_total_open"></rm-live-metric>
 								<span class="label-alpha pull-right">
 									<rm-live format="percent-1">service("exodoc.doc_total_open").metric / service("exodoc.doc_total").metric</rm-live> %
 								</span>
-								<div style="display: block; width:100%;">
-									<rm-progress service="exodoc.doc_total_open" max="metric:exodoc.doc_total"></rm-progress>
-								</div>
 							</td></tr>
 							<tr><td>org count</td><td><rm-live-metric service="exodoc.org_count"></rm-live-metric></td></tr>
 							<tr><td>library count</td><td><rm-live-metric service="exodoc.library_count"></rm-live-metric></td></tr>
@@ -300,18 +296,21 @@
 					</div>
 				</div>
 				<div class="col-lg-2">
-					<div class="rm-cell rm-cell-bordered" interval-default="10m">
+					<div class="rm-cell rm-cell-bordered" interval-default="5m">
 						<h2>Marketing</h2>
 						<table class="rm-table">
 							<tr><td>used coupons</td><td><rm-live-metric service="exodoc.coupon_used"></rm-live-metric></td></tr>
 							<tr><td>active subscriptions</td><td><rm-live-metric service="exodoc.active_subscriptions"></rm-live-metric></td></tr>
 							<tr><td>storage sold</td><td><rm-live-metric format="file-size" service="exodoc.account_size_sold"></rm-live-metric>
-								<span class="label-alpha">
+								<span class="label-alpha pull-right">
 									<rm-live format="percent-1">service("exodoc.account_size_sold").metric / (400 * 1024 * 1024 * 1024 )</rm-live> %
 								</span>
-								<div style="display: block; width:100%;">
-									<rm-progress service="exodoc.account_size_sold" max="429496729600"></rm-progress>
-								</div>
+							</td></tr>
+							<tr><td>storage used</td><td>
+								<rm-live format="file-size">service("exodoc.file_total_size").metric + service("exodoc.doc_total_size").metric</rm-live>
+								<span class="label-alpha pull-right">
+									<rm-live format="percent-1">service("exodoc.account_size_sold").metric / ( service("exodoc.file_total_size").metric + service("exodoc.doc_total_size").metric )</rm-live> %
+								</span>
 							</td></tr>
 						</table>
 					</div>
