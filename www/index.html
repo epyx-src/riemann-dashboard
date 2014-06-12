@@ -18,6 +18,7 @@
 		<script type="text/javascript" src="js/jquery.easypiechart.min.js"></script>
 		<script type="text/javascript" src="js/jquery.jqplot.min.js"></script>
 		<script type="text/javascript" src="js/jqplot.donutRenderer.js"></script>
+		<script type="text/javascript" src="js/juration.js"></script>
 
 		<!-- Application -->
 		<script type="text/javascript" src="app/js/riemann.js"></script>
@@ -25,7 +26,7 @@
 
 	</head>
 	<body style="background-image: url('/img/background.jpg');">
-		<div ng-controller="ExodocDashboardCtrl" class="container-fluid">
+		<div ng-controller="ExodocDashboardCtrl" class="container-fluid" interval-default="10s">
 			<div ng-if="error" class="alert alert-danger">
 				<span ng-bind="error"></span>
 			</div>
@@ -64,17 +65,17 @@
 					</div>
 				</div>
 				<div class="col-lg-2">
-					<div class="rm-cell rm-cell-bordered">
-						<rm-sparkline service="cpu" title="cpu" interval="2000" min="0" max="1.0" height="48px" show-value="percent" unit="%">
+					<div class="rm-cell rm-cell-bordered" interval-default="2s">
+						<rm-sparkline service="cpu" title="cpu" min="0" max="1.0" height="48px" show-value="percent" unit="%">
 							</rm-sparkline>
 						<div class="rm-cell-sep"></div>
-						<rm-sparkline service="load" title="load" interval="2000" min="0" max="1.0" height="48px" show-value="percent" unit="%">
+						<rm-sparkline service="load" title="load" min="0" max="1.0" height="48px" show-value="percent" unit="%">
 							</rm-sparkline>
 						<div class="rm-cell-sep"></div>
-						<rm-sparkline service="memory" title="memory" interval="2000" min="0" max="1.0" height="48px" show-value="percent" unit="%">
+						<rm-sparkline service="memory" title="memory" min="0" max="1.0" height="48px" show-value="percent" unit="%">
 							</rm-sparkline>
 						<div class="rm-cell-sep"></div>
-						<rm-sparkline service="nginx.active" title="nginx" interval="2000" min="0" height="48px" show-value="fixed-0" unit="">
+						<rm-sparkline service="nginx.active" title="nginx" min="0" height="48px" show-value="fixed-0" unit="">
 							</rm-sparkline>
 					</div>
 				</div>
@@ -89,12 +90,12 @@
 
 				<div class="col-lg-3">
 					<div class="rm-cell rm-cell-bordered">
-						<h2>CPU 24h</h2>
-						<rm-graphite height="70" yMax="1.0" hide-legend="true" hide-y-axis="true">
-							<serie service="cpu" color="666666"></serie>
+						<h2>Load 24h</h2>
+						<rm-graphite height="70" y-max="1.0" hide-legend="true" hide-y-axis="true">
+							<serie service="load" color="666666"></serie>
 						</rm-graphite>
 						<h2>memory 24h</h2>
-						<rm-graphite height="70" yMax="1.0" hide-legend="true" hide-y-axis="true">
+						<rm-graphite height="70" y-max="1.0" hide-legend="true" hide-y-axis="true">
 							<serie service="memory" color="666666"></serie>
 						</rm-graphite>
 					</div>
@@ -137,14 +138,14 @@
 					</div>
 				</div>
 				<div class="col-lg-2">
-					<div class="rm-cell rm-cell-bordered">
-						<rm-sparkline service="cpu" title="cpu" interval="2000" min="0" max="1.0" height="48px" show-value="percent" unit="%">
+					<div class="rm-cell rm-cell-bordered" interval-default="2s">
+						<rm-sparkline service="cpu" title="cpu" min="0" max="1.0" height="48px" show-value="percent" unit="%">
 							</rm-sparkline>
 						<div class="rm-cell-sep"></div>
-						<rm-sparkline service="load" title="load" interval="2000" min="0" max="1.0" height="48px" show-value="percent" unit="%">
+						<rm-sparkline service="load" title="load" min="0" max="1.0" height="48px" show-value="percent" unit="%">
 							</rm-sparkline>
 						<div class="rm-cell-sep"></div>
-						<rm-sparkline service="memory" title="memory" interval="2000" min="0" max="1.0" height="48px" show-value="percent" unit="%">
+						<rm-sparkline service="memory" title="memory" min="0" max="1.0" height="48px" show-value="percent" unit="%">
 							</rm-sparkline>
 					</div>
 				</div>
@@ -193,15 +194,15 @@
 					</div>
 				</div>
 				<div class="col-lg-2">
-					<div class="rm-cell rm-cell-bordered">
-						<rm-sparkline host="cs-node-0001" service="cpu" title="cpu node 1" interval="2000" min="0" max="1.0" height="36px" show-value="percent" unit="%">
+					<div class="rm-cell rm-cell-bordered" interval-default="2s">
+						<rm-sparkline host="cs-node-0001" service="cpu" title="cpu node 1" min="0" max="1.0" height="36px" show-value="percent" unit="%">
 							</rm-sparkline>
-						<rm-sparkline host="cs-node-0001" service="memory" title="memory node 1" interval="2000" min="0" max="1.0" height="36px" show-value="percent" unit="%">
+						<rm-sparkline host="cs-node-0001" service="memory" title="memory node 1" min="0" max="1.0" height="36px" show-value="percent" unit="%">
 							</rm-sparkline>
 						<div class="rm-cell-sep"></div>
-						<rm-sparkline host="cs-node-0002" service="cpu" title="cpu node 2" interval="2000" min="0" max="1.0" height="36px" show-value="percent" unit="%">
+						<rm-sparkline host="cs-node-0002" service="cpu" title="cpu node 2" min="0" max="1.0" height="36px" show-value="percent" unit="%">
 							</rm-sparkline>
-						<rm-sparkline host="cs-node-0002" service="memory" title="memory node 2" interval="2000" min="0" max="1.0" height="36px" show-value="percent" unit="%">
+						<rm-sparkline host="cs-node-0002" service="memory" title="memory node 2" min="0" max="1.0" height="36px" show-value="percent" unit="%">
 							</rm-sparkline>
 					</div>
 				</div>
@@ -247,7 +248,7 @@
 				<div class="col-lg-3">
 					<div class="rm-cell rm-cell-bordered">
 						<h2>Documents security level</h2>
-						<rm-donut interval="60000" height="250">
+						<rm-donut interval="2h" height="250">
 							<part target="exodoc.doc_public" color="#afa" count="true">Public</part>
 							<part target="exodoc.doc_internal" color="#aaf" count="true">Internal</part>
 							<part target="exodoc.doc_confidential" color="#eeb" count="true">Confid.</part>
@@ -264,19 +265,54 @@
 							<tr><td>90 days inactive</td><td><rm-live-metric service="exodoc.user_90_inactive"></rm-live-metric></td></tr>
 							<tr><td>active oauth2</td><td><rm-live-metric service="exodoc.oauth2_token_active"></rm-live-metric></td></tr>
 						</table>
-						<h2>Files and documents</h2>
+						<h2>Files</h2>
 						<table class="rm-table">
 							<tr><td>total files</td><td><rm-live-metric service="exodoc.file_ready"></rm-live-metric></td></tr>
-							<tr><td>total documents</td><td><rm-live-metric service="exodoc.doc_total"></rm-live-metric></td></tr>
 						</table>
 					</div>
 				</div>
 				<div class="col-lg-2">
-					<div class="rm-cell rm-cell-bordered">
+					<div class="rm-cell rm-cell-bordered" interval-default="10m">
+						<h2>Documents</h2>
+						<table class="rm-table">
+							<tr><td>total</td><td><rm-live-metric service="exodoc.doc_total"></rm-live-metric></td></tr>
+							<tr><td>download count</td><td>
+								<rm-live-metric service="exodoc.doc_total_download"></rm-live-metric>
+								<span class="label-alpha pull-right">
+									<rm-live format="percent-1">service("exodoc.doc_total_download").metric / service("exodoc.doc_total").metric</rm-live> %
+								</span>
+								<div style="display: block; width:100%;">
+									<rm-progress service="exodoc.doc_total_download" max="metric:exodoc.doc_total"></rm-progress>
+								</div>
+							</td></tr>
+							<tr><td>open count</td><td><rm-live-metric service="exodoc.doc_total_open"></rm-live-metric>
+								<span class="label-alpha pull-right">
+									<rm-live format="percent-1">service("exodoc.doc_total_open").metric / service("exodoc.doc_total").metric</rm-live> %
+								</span>
+								<div style="display: block; width:100%;">
+									<rm-progress service="exodoc.doc_total_open" max="metric:exodoc.doc_total"></rm-progress>
+								</div>
+							</td></tr>
+							<tr><td>org count</td><td><rm-live-metric service="exodoc.org_count"></rm-live-metric></td></tr>
+							<tr><td>library count</td><td><rm-live-metric service="exodoc.library_count"></rm-live-metric></td></tr>
+							<tr><td>topic count</td><td><rm-live-metric service="exodoc.topic_count"></rm-live-metric></td></tr>
+						</table>
+					</div>
+				</div>
+				<div class="col-lg-2">
+					<div class="rm-cell rm-cell-bordered" interval-default="10m">
 						<h2>Marketing</h2>
 						<table class="rm-table">
 							<tr><td>used coupons</td><td><rm-live-metric service="exodoc.coupon_used"></rm-live-metric></td></tr>
 							<tr><td>active subscriptions</td><td><rm-live-metric service="exodoc.active_subscriptions"></rm-live-metric></td></tr>
+							<tr><td>storage sold</td><td><rm-live-metric format="file-size" service="exodoc.account_size_sold"></rm-live-metric>
+								<span class="label-alpha">
+									<rm-live format="percent-1">service("exodoc.account_size_sold").metric / (400 * 1024 * 1024 * 1024 )</rm-live> %
+								</span>
+								<div style="display: block; width:100%;">
+									<rm-progress service="exodoc.account_size_sold" max="429496729600"></rm-progress>
+								</div>
+							</td></tr>
 						</table>
 					</div>
 				</div>

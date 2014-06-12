@@ -3,15 +3,29 @@ function number_fixed(x, d) {
     return x.toFixed(d).replace(/\.?0+$/, '');
 }
 
-var percent_format = function(val) {
-	return number_fixed((val * 100.0), 0)
+var percent_format = function(val, precision) {
+	return number_fixed((val * 100.0), precision?precision:0)
+};
+
+var humanFileSize = function(bytes, si) {
+    var thresh = si ? 1000 : 1024;
+    if(bytes < thresh) return bytes + ' B';
+    var units = si ? ['kB','MB','GB','TB','PB','EB','ZB','YB'] : ['KiB','MiB','GiB','TiB','PiB','EiB','ZiB','YiB'];
+    var u = -1;
+    do {
+        bytes /= thresh;
+        ++u;
+    } while(bytes >= thresh);
+    return bytes.toFixed(1)+' '+units[u];
 };
 
 var FORMATS = {
-	"percent": 	percent_format,
+	"percent": percent_format,
+	"percent-1":  function(val) {return percent_format(val,1);},
 	"fixed-0":  function(val) {return number_fixed(val,0);},
 	"fixed-1":  function(val) {return number_fixed(val,1);},
-	"fixed-2":  function(val) {return number_fixed(val,2);}
+	"fixed-2":  function(val) {return number_fixed(val,2);},
+	"file-size": function(val) {return humanFileSize(val, null);}
 };
 
 var apply_format = function(val, format) {
@@ -51,7 +65,27 @@ var find_host = function(tElement, tAttrs) {
 		throw "Missing host value for element " + tElement;
 	}
 	return host;
-}
+};
+
+var find_interval =  function(tElement, tAttrs, default_value) {
+	var interval = tAttrs.interval;
+	if (interval == undefined) {
+		var elm = tElement.closest("[interval-default]");
+		if (elm.length) {
+			interval = elm.attr("interval-default")
+		}
+	}
+	if (interval == undefined) {
+		interval = default_value || "1000";
+	}
+	var ret = null;
+	if (isNaN(interval)) {
+		ret = juration.parse(""+interval) * 1000;
+	} else {
+		ret = parseInt(interval);
+	}
+	return ret;
+};
 
 /**
  * Display easy pie on a given service
@@ -63,7 +97,7 @@ dashboardApp.directive("rmEasyPie", ['$interval', 'RiemannService', function($in
 		compile: function(tElement, tAttrs, transclude){
 			var service = tAttrs.service;
 			var host = find_host(tElement, tAttrs);
-			var interval = parseInt(tAttrs.interval || "3000");
+			var interval = find_interval(tElement, tAttrs, 3000);
 			var unit = tAttrs.unit || "";
 			var size = tAttrs.size || 110;
 			tElement.replaceWith('<div id="easy-pie-'+(id_count++)+'" class="rm-easy-pie-chart" data-percent="0"><span>0</span>'+unit+'</div>');
@@ -88,9 +122,9 @@ dashboardApp.directive("rmEasyPie", ['$interval', 'RiemannService', function($in
 				$(element).css("font-size", (size/6)+"px");
 				$(element).css("width",size+"px");
 				function update() {
-					var date = riemann_service.get(host, service);
-					var metric = date.metric;
-					var state = date.state;
+					var r_data = riemann_service.get(host, service);
+					var metric = r_data.metric;
+					var state = r_data.state;
 					if (old_metric != metric) {
 						$(element).data('easyPieChart').update(metric * 100);
 						$(element).find("span").text(
@@ -131,14 +165,14 @@ dashboardApp.directive("rmSparkline", ['$interval', 'RiemannService', function($
 		compile: function(tElement, tAttrs, transclude){
 			var service = tAttrs.service;
 			var host = find_host(tElement, tAttrs);
-			var interval = parseInt(tAttrs.interval || "3000");
+			var interval = find_interval(tElement, tAttrs, 3000);
 			var nb_elements = parseInt(tAttrs.nb_elements || "100");
 			var min = tAttrs.min;
 			var max = tAttrs.max;
 			var height = parseInt(tAttrs.height || "16");
 			var title = tAttrs.title || "";
 			var show_value = tAttrs.showValue || false;
-			var unit = tAttrs.unit || ""
+			var unit = tAttrs.unit || "";
 			tElement.replaceWith('<div class="rm-sparklines"><div class="graph"></div><span class="value">&nbsp;</span><br><span class="title">'+title+'</span></div>');
 			return function(scope, element, attrs){
 				var timeout_id = null;
@@ -156,7 +190,8 @@ dashboardApp.directive("rmSparkline", ['$interval', 'RiemannService', function($
 						minSpotColor: false,
 						maxSpotColor: false,
 						spotColor: 'white',
-						height: height
+						height: height,
+						disableInteraction: true
 					};
 					$(element).find("span.value").css({
 						"line-height": (height/2)+"px",
@@ -166,6 +201,7 @@ dashboardApp.directive("rmSparkline", ['$interval', 'RiemannService', function($
 						"line-height": (height/3)+"px",
 						"font-size": (height/3.5)+"px"
 					});
+					$(element).css("height", height);
 					if (min != undefined) {
 						options['chartRangeMin'] = parseFloat(min);
 					}
@@ -199,9 +235,9 @@ dashboardApp.directive("rmProgress", ['$interval', 'RiemannService', function($i
 		compile: function(tElement, tAttrs, transclude){
 			var service = tAttrs.service;
 			var host = find_host(tElement, tAttrs);
-			var interval = parseInt(tAttrs.interval || "10000");
+			var interval = find_interval(tElement, tAttrs, "10s");
 			var max = tAttrs.max;
-			tElement.replaceWith('<div class="progress progress-small"><div class="progress-bar progress-bar-primary"></div></div>');
+			tElement.replaceWith('<div class="progress progress-alpha progress-small"><div class="progress-bar progress-bar-primary"></div></div>');
 			return function(scope, element, attrs){
 				var timeout_id = null;
 				var old_metric = [];
@@ -213,6 +249,7 @@ dashboardApp.directive("rmProgress", ['$interval', 'RiemannService', function($i
 					} else if (max) {
 						real_max = parseInt(""+max)
 					}
+
 					if (old_metric != metric) {
 						var width = ((metric * 100) / real_max);
 						$(element).find(".progress-bar").css("width",width);
@@ -243,7 +280,7 @@ dashboardApp.directive("rmLiveMetric", ['$interval', 'RiemannService', function(
 			var service = tAttrs.service;
 			var host = find_host(tElement, tAttrs);
 			var interval = parseInt(tAttrs.interval || "3000");
-			var format = tAttrs.format
+			var format = tAttrs.format;
 			return function(scope, element, attrs){
 				var timeout_id = null;
 				var old_metric = null;
@@ -276,7 +313,7 @@ dashboardApp.directive("rmState", ['$interval', 'RiemannService', function($inte
 		compile: function(tElement, tAttrs, transclude){
 			var service = tAttrs.service || tAttrs.rmState;
 			var host = find_host(tElement, tAttrs);
-			var interval = parseInt(tAttrs.interval || "3000");
+			var interval = find_interval(tElement, tAttrs, "3s");
 			return function(scope, element, attrs){
 				var timeout_id = null;
 				var old_state = null;
@@ -349,7 +386,7 @@ dashboardApp.directive("rmGraphite", ['$interval', function($interval) {
 			var series = [];
 			var from = tAttrs.from || "-24hours";
 			var until = tAttrs.until || "now";
-			var interval = parseInt(tAttrs.interval || "60000");
+			var interval = find_interval(tElement, tAttrs, "60s");
 			var height = tAttrs.height;
 			var width = tAttrs.width;
 
@@ -432,7 +469,7 @@ dashboardApp.directive("rmDonut", ['$interval', 'RiemannService', function($inte
 		compile: function(tElement, tAttrs, transclude){
 			var host = find_host(tElement, tAttrs);
 			var title = tAttrs.title || "";
-			var interval = parseInt(tAttrs.interval || "100000");
+			var interval = find_interval(tElement, tAttrs, "10s");
 			var height = tAttrs.height;
 			var id = "pizza-"+(id_counter++);
 			var $chart = $('<div id="'+id+'">');
@@ -481,14 +518,13 @@ dashboardApp.directive("rmDonut", ['$interval', 'RiemannService', function($inte
 			return function(scope, element, attrs){
 				var timeout_id = null;
 				function update() {
-					data = _.map(series, function(v) {
+					plot.series[0].data = _.map(series, function(v) {
 						var metric = riemann_service.get(host, v.target).metric || 0;
 						return [
 							v.label + (v.count?"&nbsp;<span style='float:right; color:rgba(0,0,0,0.7)'>"+metric+"</span>":""),
 							metric
 						];
 					});
-					plot.series[0].data = data;
 					plot.replot();
       			}
 				element.on('$destroy', function() {
@@ -513,7 +549,7 @@ dashboardApp.directive("rmFlipClock", ['$interval', function($interval) {
 	return {
         restrict:"E",
 		compile: function(tElement, tAttrs, transclude){
-			var interval = parseInt(tAttrs.interval || "1000");
+			var interval = find_interval(tElement, tAttrs, 1000);
 			return function(scope, element, attrs){
 				var timeout_id = null;
 				function digit(x) {
@@ -531,6 +567,9 @@ dashboardApp.directive("rmFlipClock", ['$interval', function($interval) {
 				timeout_id = $interval(function() {
         			update(); // update plot
       			}, interval);
+				setTimeout(function() {
+					update();
+				}, 1000);
 			};
 		}
 	};
@@ -542,6 +581,48 @@ dashboardApp.directive("rmLegend", ['$interval', function($interval) {
         restrict:"E",
 		compile: function(tElement, tAttrs, transclude){
 			return tElement.replaceWith('<div class="rm-legend"><span class="color" style="background-color:'+tAttrs.color+';"></span> <span class="title">'+tElement.text()+'</span>');
+		}
+	};
+}]);
+
+/* Riemann live eval */
+dashboardApp.directive("rmLive", ['$interval', 'RiemannService', function($interval, riemann_service) {
+	return {
+        restrict:"E",
+		compile: function(tElement, tAttrs, transclude){
+			var interval = find_interval(tElement, tAttrs, "3s");
+			var script = $(tElement).text();
+			var host = find_host(tElement, tAttrs);
+			var format = tAttrs.format;
+			script = "(function() { return "+script+"})()";
+			tElement.replaceWith("<span></span>");
+			return function(scope, element, attrs){
+				var timeout_id = null;
+				function update() {
+					var service = function(str) {
+						return riemann_service.get(host, str);
+					};
+					var ret = "";
+					try {
+						ret = eval(script);
+					} catch ( ex ) {
+						ret = '<span class="label label-danger">'+ex+'</span>';
+					}
+					if (format != undefined) {
+						ret = apply_format(ret, format);
+					}
+					$(element).html(ret);
+				}
+				element.on('$destroy', function() {
+        			$interval.cancel(timeout_id);
+      			});
+				timeout_id = $interval(function() {
+        			update(); // update plot
+      			}, interval);
+				setTimeout(function() {
+					update();
+				}, 1000);
+			};
 		}
 	};
 }]);
