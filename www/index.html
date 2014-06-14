@@ -26,7 +26,7 @@
 
 	</head>
 	<body style="background-image: url('/img/background.jpg');">
-		<div ng-controller="ExodocDashboardCtrl" class="container-fluid" interval-default="10s">
+		<div ng-controller="ExodocDashboardCtrl" class="container-fluid" interval-default="30s">
 			<div ng-if="error" class="alert alert-danger">
 				<span ng-bind="error"></span>
 			</div>
@@ -161,7 +161,7 @@
 				<div class="col-lg-3">
 					<div class="rm-cell rm-cell-bordered">
 						<h2>Last 24 h activities</h2>
-						<rm-graphite series="cpu:666666,load:669944" height="130" yMax="1.0">
+						<rm-graphite series="cpu:666666,load:669944" height="130" y-max="1.0">
 							</rm-graphite>
 					</div>
 				</div>
@@ -193,16 +193,29 @@
 						<span>nginx</span>
 					</div>
 				</div>
-				<div class="col-lg-2">
-					<div class="rm-cell rm-cell-bordered" interval-default="2s">
-						<rm-sparkline host="cs-node-0001" service="cpu" title="cpu node 1" min="0" max="1.0" height="36px" show-value="percent" unit="%">
-							</rm-sparkline>
-						<rm-sparkline host="cs-node-0001" service="memory" title="memory node 1" min="0" max="1.0" height="36px" show-value="percent" unit="%">
+				<div class="col-lg-1">
+					<div class="rm-cell rm-cell-bordered" interval-default="3s" host-group="cs-node-0001">
+						<h2>Node 1</h2>
+						<rm-sparkline service="cpu" title="cpu" min="0" max="1.0" height="36px" show-value="percent" unit="%">
 							</rm-sparkline>
 						<div class="rm-cell-sep"></div>
-						<rm-sparkline host="cs-node-0002" service="cpu" title="cpu node 2" min="0" max="1.0" height="36px" show-value="percent" unit="%">
+						<rm-sparkline service="memory" title="memory" min="0" max="1.0" height="36px" show-value="percent" unit="%">
 							</rm-sparkline>
-						<rm-sparkline host="cs-node-0002" service="memory" title="memory node 2" min="0" max="1.0" height="36px" show-value="percent" unit="%">
+						<div class="rm-cell-sep"></div>
+						<rm-sparkline service="load" title="load" min="0" max="1.0" height="36px" show-value="percent" unit="%">
+							</rm-sparkline>
+					</div>
+				</div>
+				<div class="col-lg-1">
+					<div class="rm-cell rm-cell-bordered" interval-default="3s" host-group="cs-node-0002">
+						<h2>Node 2</h2>
+						<rm-sparkline service="cpu" title="cpu" min="0" max="1.0" height="36px" show-value="percent" unit="%">
+							</rm-sparkline>
+						<div class="rm-cell-sep"></div>
+						<rm-sparkline service="memory" title="memory" min="0" max="1.0" height="36px" show-value="percent" unit="%">
+							</rm-sparkline>
+						<div class="rm-cell-sep"></div>
+						<rm-sparkline service="load" title="load" min="0" max="1.0" height="36px" show-value="percent" unit="%">
 							</rm-sparkline>
 					</div>
 				</div>
@@ -260,15 +273,30 @@
 					<div class="rm-cell rm-cell-bordered">
 						<h2>Users</h2>
 						<table class="rm-table">
-							<tr><td>active</td><td><rm-live-metric service="exodoc.user_active"></rm-live-metric></td></tr>
-							<tr><td>new this week</td><td><rm-live-metric service="exodoc.user_week_create"></rm-live-metric></td></tr>
-							<tr><td>90 days inactive</td><td><rm-live-metric service="exodoc.user_90_inactive"></rm-live-metric></td></tr>
-							<tr><td>active oauth2</td><td><rm-live-metric service="exodoc.oauth2_token_active"></rm-live-metric></td></tr>
+							<tr><td>active</td><td><rm-live-metric service="exodoc.user_active"></rm-live-metric>
+								<span class="label-alpha pull-right">
+									<rm-tendency service="exodoc.user_active" from="-7days"></rm-tendency>
+								</span>
+							</td></tr>
+							<tr><td>90 days inactive</td><td>
+								<rm-live-metric service="exodoc.user_90_inactive"></rm-live-metric>
+								<span class="label-alpha pull-right">
+									<rm-tendency service="exodoc.user_90_inactive" from="-90days"></rm-tendency>
+								</span>
+							</td></tr>
+							<tr><td>active oauth2</td><td>
+								<rm-live-metric service="exodoc.oauth2_token_active"></rm-live-metric>
+								<span class="label-alpha pull-right">
+									<rm-tendency service="exodoc.oauth2_token_active" from="-2days"></rm-tendency>
+								</span>
+							</td></tr>
 						</table>
 						<h2>Files</h2>
 						<table class="rm-table">
-							<tr><td>total files</td><td><rm-live-metric service="exodoc.file_ready"></rm-live-metric></td></tr>
-							<tr><td>total size</td><td><rm-live-metric format="file-size" service="exodoc.file_total_size"></rm-live-metric></td></tr>
+							<tr><td>count</td><td><rm-live-metric service="exodoc.file_ready"></rm-live-metric></td></tr>
+							<tr><td>size</td><td><rm-live-metric format="file-size" service="exodoc.file_total_size"></rm-live-metric></td></tr>
+							<tr><td>duplication</td><td><rm-live-metric format="percent" service="exodoc.file_copy"></rm-live-metric> %</td></tr>
+							<tr><td>change factor</td><td><rm-live-metric format="fixed-2" service="exodoc.file_avg_version"></rm-live-metric></td></tr>
 						</table>
 					</div>
 				</div>
@@ -281,12 +309,12 @@
 							<tr><td>download count</td><td>
 								<rm-live-metric service="exodoc.doc_total_download"></rm-live-metric>
 								<span class="label-alpha pull-right">
-									<rm-live format="percent-1">service("exodoc.doc_total_download").metric / service("exodoc.doc_total").metric</rm-live> %
+									<rm-live format="percent">service("exodoc.doc_total_download").metric / service("exodoc.doc_total").metric</rm-live> %
 								</span>
 							</td></tr>
 							<tr><td>open count</td><td><rm-live-metric service="exodoc.doc_total_open"></rm-live-metric>
 								<span class="label-alpha pull-right">
-									<rm-live format="percent-1">service("exodoc.doc_total_open").metric / service("exodoc.doc_total").metric</rm-live> %
+									<rm-live format="percent">service("exodoc.doc_total_open").metric / service("exodoc.doc_total").metric</rm-live> %
 								</span>
 							</td></tr>
 							<tr><td>org count</td><td><rm-live-metric service="exodoc.org_count"></rm-live-metric></td></tr>
@@ -303,13 +331,13 @@
 							<tr><td>active subscriptions</td><td><rm-live-metric service="exodoc.active_subscriptions"></rm-live-metric></td></tr>
 							<tr><td>storage sold</td><td><rm-live-metric format="file-size" service="exodoc.account_size_sold"></rm-live-metric>
 								<span class="label-alpha pull-right">
-									<rm-live format="percent-1">service("exodoc.account_size_sold").metric / (400 * 1024 * 1024 * 1024 )</rm-live> %
+									<rm-live format="percent">service("exodoc.account_size_sold").metric / (400 * 1024 * 1024 * 1024 )</rm-live> %
 								</span>
 							</td></tr>
 							<tr><td>storage used</td><td>
 								<rm-live format="file-size">service("exodoc.file_total_size").metric + service("exodoc.doc_total_size").metric</rm-live>
 								<span class="label-alpha pull-right">
-									<rm-live format="percent-1">service("exodoc.account_size_sold").metric / ( service("exodoc.file_total_size").metric + service("exodoc.doc_total_size").metric )</rm-live> %
+									<rm-live format="percent">service("exodoc.account_size_sold").metric / ( service("exodoc.file_total_size").metric + service("exodoc.doc_total_size").metric )</rm-live> %
 								</span>
 							</td></tr>
 						</table>

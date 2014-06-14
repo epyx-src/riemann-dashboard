@@ -281,4 +281,32 @@ rm-flip-clock {
 	border: 1px solid black;
 	padding: 0.1em 0.2em;
 	border-radius: 0.2em;
+	font-size:0.8em;
+}
+
+.graphite-tendency {
+	white-space: nowrap;
+}
+
+.graphite-tendency-up {
+	white-space: nowrap;
+	color: rgb(100,200,100);
+}
+
+.graphite-tendency-down {
+	white-space: nowrap;
+	color: rgb(200,100,100);
+}
+
+
+.graphite-tendency {
+	white-space: nowrap;
+}
+
+.graphite-tendency-up i.glyphicon:before {
+	content: "\e093";
+}
+
+.graphite-tendency-down i.glyphicon:before {
+	content: "\e094";
 }

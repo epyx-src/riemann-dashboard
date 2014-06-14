@@ -191,7 +191,8 @@ dashboardApp.directive("rmSparkline", ['$interval', 'RiemannService', function($
 						maxSpotColor: false,
 						spotColor: 'white',
 						height: height,
-						disableInteraction: true
+						disableInteraction: true,
+						width: "100%",
 					};
 					$(element).find("span.value").css({
 						"line-height": (height/2)+"px",
@@ -458,6 +459,75 @@ dashboardApp.directive("rmGraphite", ['$interval', function($interval) {
 	};
 }]);
 
+/**
+ * display a tendency ( up or down ) in percent of a given service
+ * use graphite from and until to get boundaries.
+ */
+dashboardApp.directive("rmTendency", ['$interval', function($interval) {
+	var create_graphite_url = function(host, service, from) {
+		var graphite_target = host+"."+service.replace(/ /g,".").replace(/[//]/, "");
+		var summarize = from.substring(1); // remove "-" from from
+		var options = {
+			_uniq: (1 / Math.floor((new Date()).getTime() / 30000.0)),
+			format: "json",
+			until: "now",
+			from: from,
+			target: 'summarize(derivative('+graphite_target+'), "'+summarize+'")'
+		};
+		var query = $.param(options);
+		return window.GRAPHITE_URL + "?" + query;
+	};
+	return {
+        restrict:"E",
+		compile: function(tElement, tAttrs, transclude){
+			var host = find_host(tElement, tAttrs);
+			var service =  tAttrs.service;
+			var from = tAttrs.from || "-24hours";
+			var interval = find_interval(tElement, tAttrs, "60s");
+			var $text = $('<span class="graphite-tendency-text"></span>');
+			var $icon = $('<i class="glyphicon glyphicon-minus"></i>');
+			tElement.replaceWith(
+				$('<span class="graphite-tendency">').append(
+					$text, $icon
+				)
+			);
+
+			return function(scope, element, attrs){
+				var timeout_id = null;
+
+				function update() {
+					var graphite_url = create_graphite_url(host, service, from);
+					$.get(graphite_url, function(data) {
+						if (data) {
+							var points = data[0].datapoints;
+							var value = points[points.length-1][0];
+							element.removeClass("graphite-tendency-up", "graphite-tendency-down");
+							var text = ""+value;
+							if (value > 0 ) {
+								element.addClass("graphite-tendency-up");
+								text = "+"+text
+							} else if (value < 0 ) {
+								element.addClass("graphite-tendency-down");
+							}
+							$text.text(text);
+						} else {
+							$text.text("-");
+						}
+					})
+      			}
+				element.on('$destroy', function() {
+        			$interval.cancel(timeout_id);
+      			});
+				timeout_id = $interval(function() {
+        			update(); // update DOM
+      			}, interval);
+				setTimeout(function() {
+					update();
+				}, 1000);
+			};
+		}
+	};
+}]);
 
 /**
  * display pizza pie chart
@@ -550,7 +620,7 @@ dashboardApp.directive("rmFlipClock", ['$interval', function($interval) {
 	return {
         restrict:"E",
 		compile: function(tElement, tAttrs, transclude){
-			var interval = find_interval(tElement, tAttrs, 1000);
+			var interval = 1000;
 			return function(scope, element, attrs){
 				var timeout_id = null;
 				function digit(x) {
@@ -568,9 +638,6 @@ dashboardApp.directive("rmFlipClock", ['$interval', function($interval) {
 				timeout_id = $interval(function() {
         			update(); // update plot
       			}, interval);
-				setTimeout(function() {
-					update();
-				}, 1000);
 			};
 		}
 	};
