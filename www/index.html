@@ -337,7 +337,7 @@
 							<tr><td>storage used</td><td>
 								<rm-live format="file-size">service("exodoc.file_total_size").metric + service("exodoc.doc_total_size").metric</rm-live>
 								<span class="label-alpha pull-right">
-									<rm-live format="percent">service("exodoc.account_size_sold").metric / ( service("exodoc.file_total_size").metric + service("exodoc.doc_total_size").metric )</rm-live> %
+									<rm-live format="percent">( service("exodoc.file_total_size").metric + service("exodoc.doc_total_size").metric ) / service("exodoc.account_size_sold").metric </rm-live> %
 								</span>
 							</td></tr>
 						</table>
