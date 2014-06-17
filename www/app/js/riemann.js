@@ -1,5 +1,8 @@
+
 function RiemannService() {
-	this._all_events = this.get_cached_data()
+	this._all_events = this.get_cached_data();
+	this.last_call = null;
+	this.TIMEOUT_RELOAD = 1000 * 60 * 5;
 }
 
 RiemannService.prototype.handle_error = function(err, stop) {
@@ -10,21 +13,25 @@ RiemannService.prototype.handle_error = function(err, stop) {
 	this.reconnect_sse()
 };
 
-var last_call = null;
 RiemannService.prototype.handle_callback = function(msg) {
 	try {
 		var data = JSON.parse(msg.data);
-		var now = new Date();
-		if (!last_call || last_call.getMinutes() != now.getMinutes()) {
-			console.log("Received ", now);
-			last_call = now;
-		}
+		this.last_call = new Date();
 	} catch (ex) {
 		this.handle_error(ex);
 		return;
 	}
 	this._all_events[data.host+":"+data.service] = data;
 
+};
+
+RiemannService.prototype.stop = function() {
+	if (this._check_interval) {
+		clearInterval(this._check_interval);
+	}
+	if (this._cache_interval) {
+		clearInterval(this._cache_interval);
+	}
 };
 
 RiemannService.prototype.all_events = function() {
@@ -37,6 +44,7 @@ RiemannService.prototype.all_events = function() {
 
 RiemannService.prototype.reconnect_sse = function() {
 	var self = this;
+	self.last_call = null;
 	try {
 		this.source.close();
 	} catch (ex) {
@@ -86,7 +94,6 @@ RiemannService.prototype.update_cached_data = function() {
 	if (!!window.localStorage) {
 		var key = "exodoc.services";
 		window.localStorage.setItem(key, JSON.stringify(self._all_events));
-		console.log("Data cached")
 	}
 };
 
@@ -94,9 +101,15 @@ RiemannService.prototype.start = function() {
 	var self = this;
 	console.log("Riemann service starting");
 	this.connect_sse();
-	setInterval(function() {
+	self._cache_interval = setInterval(function() {
 		self.update_cached_data()
-	}, 60000)
+	}, 60000);
+	self._check_interval = setInterval(function() {
+		var now = new Date();
+		if (self.last_call && (now - self.last_call) > self.TIMEOUT_RELOAD ) {
+			self.reconnect_sse()
+		}
+	}, 1000);
 };
 
 RiemannService.prototype.get = function(host, service) {

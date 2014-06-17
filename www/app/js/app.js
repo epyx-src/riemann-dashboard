@@ -46,16 +46,9 @@ dashboardApp.factory('RiemannService', function() {
 });
 
 dashboardApp.controller('ExodocDashboardCtrl',['$scope', '$interval', 'RiemannService', function($scope, $interval, riemann_service) {
-	$scope.all_events = {};
-
 	$scope.refresh = function() {
-		console.log("Refresh");
 		location.reload();
 	};
-
-	$interval(function() {
-		$scope.all_events = riemann_service.all_events()
-	}, 2000)
 }]);
 
 
