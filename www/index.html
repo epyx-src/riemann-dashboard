@@ -19,6 +19,7 @@
 		<script type="text/javascript" src="js/jquery.jqplot.min.js"></script>
 		<script type="text/javascript" src="js/jqplot.donutRenderer.js"></script>
 		<script type="text/javascript" src="js/juration.js"></script>
+		<script type="text/javascript" src="js/cssua.js"></script>
 
 		<!-- Application -->
 		<script type="text/javascript" src="app/js/riemann.js"></script>
@@ -236,8 +237,8 @@
 							<serie service="riak.put.50" color="664444"></serie>
 							<serie service="riak.put.99" color="AA8888"></serie>
 						</rm-graphite>
-						<rm-legend color="#8888AA">download</rm-legend>
-						<rm-legend color="#AA8888">upload</rm-legend>
+						<rm-legend color="#8888AA">download (50,99)</rm-legend>
+						<rm-legend color="#AA8888">upload (50,99)</rm-legend>
 					</div>
 				</div>
 
@@ -250,8 +251,8 @@
 							<serie service="riak.put.50" color="664444"></serie>
 							<serie service="riak.put.99" color="AA8888"></serie>
 						</rm-graphite>
-						<rm-legend color="#8888AA">download</rm-legend>
-						<rm-legend color="#AA8888">upload</rm-legend>
+						<rm-legend color="#8888AA">download (50,99)</rm-legend>
+						<rm-legend color="#AA8888">upload (50,99)</rm-legend>
 					</div>
 				</div>
 			</div>
@@ -306,20 +307,14 @@
 						<table class="rm-table">
 							<tr><td>total</td><td><rm-live-metric service="exodoc.doc_total"></rm-live-metric></td></tr>
 							<tr><td>total size</td><td><rm-live-metric format="file-size" service="exodoc.doc_total_size"></rm-live-metric></td></tr>
+							<tr><td>duplication</td><td><rm-live-metric format="percent" service="exodoc.doc_copy"></rm-live-metric> %</td></tr>
+							<tr><td>change factor</td><td><rm-live-metric format="fixed-2" service="exodoc.doc_avg_version"></rm-live-metric></td></tr>
 							<tr><td>download count</td><td>
 								<rm-live-metric service="exodoc.doc_total_download"></rm-live-metric>
 								<span class="label-alpha pull-right">
 									<rm-live format="percent">service("exodoc.doc_total_download").metric / service("exodoc.doc_total").metric</rm-live> %
 								</span>
 							</td></tr>
-							<tr><td>open count</td><td><rm-live-metric service="exodoc.doc_total_open"></rm-live-metric>
-								<span class="label-alpha pull-right">
-									<rm-live format="percent">service("exodoc.doc_total_open").metric / service("exodoc.doc_total").metric</rm-live> %
-								</span>
-							</td></tr>
-							<tr><td>org count</td><td><rm-live-metric service="exodoc.org_count"></rm-live-metric></td></tr>
-							<tr><td>library count</td><td><rm-live-metric service="exodoc.library_count"></rm-live-metric></td></tr>
-							<tr><td>topic count</td><td><rm-live-metric service="exodoc.topic_count"></rm-live-metric></td></tr>
 						</table>
 					</div>
 				</div>
@@ -340,12 +335,14 @@
 									<rm-live format="percent">( service("exodoc.file_total_size").metric + service("exodoc.doc_total_size").metric ) / service("exodoc.account_size_sold").metric </rm-live> %
 								</span>
 							</td></tr>
+							<tr><td>org count</td><td><rm-live-metric service="exodoc.org_count"></rm-live-metric></td></tr>
+							<tr><td>library count</td><td><rm-live-metric service="exodoc.library_count"></rm-live-metric></td></tr>
+							<tr><td>topic count</td><td><rm-live-metric service="exodoc.topic_count"></rm-live-metric></td></tr>
 						</table>
 					</div>
 				</div>
 				<div class="col-lg-3">
 					<div class="rm-cell rm-cell-bordered">
-						<div class="rm-cell rm-cell-bordered">
 						<h2>oAuth2 active tokens (60 days)</h2>
 						<rm-graphite from="-60days" height="120" hide-legend=true>
 							<serie service="exodoc.oauth2_token_active" color="666666"></serie>

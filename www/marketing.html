@@ -19,166 +19,20 @@
 		<script type="text/javascript" src="js/jquery.jqplot.min.js"></script>
 		<script type="text/javascript" src="js/jqplot.donutRenderer.js"></script>
 		<script type="text/javascript" src="js/juration.js"></script>
+		<script type="text/javascript" src="js/cssua.js"></script>
 
 		<!-- Application -->
 		<script type="text/javascript" src="app/js/riemann.js"></script>
 		<script type="text/javascript" src="app/js/app.js"></script>
 
 	</head>
-	<body style="background-color: #777; background-image: url('/img/data-center.jpg');">
+	<body style="background-color: #777; background-image: url('/img/data-center.jpg'); background-size: cover;">
 		<div ng-controller="ExodocDashboardCtrl" class="container-fluid">
 			<div ng-if="error" class="alert alert-danger">
 				<span ng-bind="error"></span>
 			</div>
-			<h1>exo<b>doc</b> dashboard <rm-flip-clock class="pull-right"></rm-flip-clock></h1>
+			<h1>exo<b>doc</b> Key metrics <a class="btn-rounded btn btn-link btn-xs" ng-click="refresh()"><i class="glyphicon glyphicon-refresh"></i></a><rm-flip-clock class="pull-right"></rm-flip-clock></h1>
 			<hr>
-
-			<div class="row" host-group="exodoc">
-				<div class="col-lg-3">
-					<h3 class="title-group">Production</h3>
-					<div class="rm-cell-state-2x" rm-state="exodoc.web">
-						<span>django</span>
-					</div>
-					<div class="rm-cell-state-2x" rm-state="exodoc.api">
-						<span>node.js</span>
-					</div>
-					<div class="rm-cell-state-2x" rm-state="redis">
-						<span>redis</span>
-					</div>
-					<div class="rm-cell-state-2x" rm-state="couchdb.read.max">
-						<span>couchdb</span>
-					</div>
-					<div class="rm-cell-state-2x" rm-state="nginx.active">
-						<span>nginx</span>
-					</div>
-					<div class="rm-cell-state-2x" rm-state="DB.exodoc.size">
-						<span>postgresql</span>
-					</div>
-					<div class="rm-cell-state-2x" host="exodoc-transform." rm-state="actarus">
-						<span>transform service</span>
-					</div>
-					<div class="rm-cell-state-2x" host="sentry" rm-state="cpu">
-						<span>sentry</span>
-					</div>
-					<div class="rm-cell-state-2x" host="elasticsearch" rm-state="cpu">
-						<span>elasticsearch</span>
-					</div>
-				</div>
-				<div class="col-lg-2">
-					<div class="rm-cell rm-cell-bordered">
-						<rm-sparkline service="cpu" title="cpu" interval="2000" min="0" max="1.0" height="48px" show-value="percent" unit="%">
-							</rm-sparkline>
-						<div class="rm-cell-sep"></div>
-						<rm-sparkline service="load" title="load" interval="2000" min="0" max="1.0" height="48px" show-value="percent" unit="%">
-							</rm-sparkline>
-						<div class="rm-cell-sep"></div>
-						<rm-sparkline service="memory" title="memory" interval="2000" min="0" max="1.0" height="48px" show-value="percent" unit="%">
-							</rm-sparkline>
-						<div class="rm-cell-sep"></div>
-						<rm-sparkline service="nginx.active" title="nginx" interval="2000" min="0" height="48px" show-value="fixed-0" unit="">
-							</rm-sparkline>
-					</div>
-				</div>
-
-				<div class="col-lg-1">
-					<div class="rm-cell rm-cell-bordered">
-						<h2>Disk</h2>
-						<rm-easy-pie service="disk /" size="80" unit="%">
-							</rm-easy-pie>
-					</div>
-				</div>
-
-				<div class="col-lg-3">
-					<div class="rm-cell rm-cell-bordered">
-						<h2>CPU 24h</h2>
-						<rm-graphite height="70" yMax="1.0" hide-legend="true" hide-y-axis="true">
-							<serie service="cpu" color="666666"></serie>
-						</rm-graphite>
-						<h2>memory 24h</h2>
-						<rm-graphite height="70" yMax="1.0" hide-legend="true" hide-y-axis="true">
-							<serie service="memory" color="666666"></serie>
-						</rm-graphite>
-					</div>
-				</div>
-
-				<div class="col-lg-3">
-					<div class="rm-cell rm-cell-bordered">
-						<h2>nginx 7 days activities</h2>
-						<rm-graphite from="-7days" height="120" >
-							<serie service="nginx.active" color="444444"></serie>
-							<serie service="nginx.reading" color="448844"></serie>
-							<serie service="nginx.writing" color="444488"></serie>
-						</rm-graphite>
-					</div>
-				</div>
-
-			</div>
-			<hr>
-
-			<div class="row">
-				<div class="col-lg-3">
-					<h3 class="title-group">Riak-CS</h3>
-					<div class="rm-cell-state-2x" host="cs-node-0001" rm-state="riak.disk">
-						<span>node-1</span>
-					</div>
-					<div class="rm-cell-state-2x" host="cs-node-0002" rm-state="riak.disk">
-						<span>node-2</span>
-					</div>
-					<div class="rm-cell-state-2x" host="cs-node-0001" rm-state="nginx.active">
-						<span>nginx</span>
-					</div>
-				</div>
-				<div class="col-lg-2">
-					<div class="rm-cell rm-cell-bordered">
-						<rm-sparkline host="cs-node-0001" service="cpu" title="cpu node 1" interval="2000" min="0" max="1.0" height="36px" show-value="percent" unit="%">
-							</rm-sparkline>
-						<rm-sparkline host="cs-node-0001" service="memory" title="memory node 1" interval="2000" min="0" max="1.0" height="36px" show-value="percent" unit="%">
-							</rm-sparkline>
-						<div class="rm-cell-sep"></div>
-						<rm-sparkline host="cs-node-0002" service="cpu" title="cpu node 2" interval="2000" min="0" max="1.0" height="36px" show-value="percent" unit="%">
-							</rm-sparkline>
-						<rm-sparkline host="cs-node-0002" service="memory" title="memory node 2" interval="2000" min="0" max="1.0" height="36px" show-value="percent" unit="%">
-							</rm-sparkline>
-					</div>
-				</div>
-				<div class="col-lg-1">
-					<div class="rm-cell rm-cell-bordered">
-						<h2>Storage</h2>
-						<rm-easy-pie host="cs-node-0001" service="disk /" size="80" unit="%">
-							</rm-easy-pie>
-					</div>
-				</div>
-
-				<div class="col-lg-3">
-					<div class="rm-cell rm-cell-bordered">
-						<h2>Last 48 h get/put [n1]</h2>
-						<rm-graphite from="-48hours" host="cs-node-0001" height="120" hide-legend="true">
-							<serie service="riak.get.50" color="444466"></serie>
-							<serie service="riak.get.99" color="8888AA"></serie>
-							<serie service="riak.put.50" color="664444"></serie>
-							<serie service="riak.put.99" color="AA8888"></serie>
-						</rm-graphite>
-						<rm-legend color="#8888AA">download</rm-legend>
-						<rm-legend color="#AA8888">upload</rm-legend>
-					</div>
-				</div>
-
-				<div class="col-lg-3">
-					<div class="rm-cell rm-cell-bordered">
-						<h2>Last 48 h get/put [n2]</h2>
-						<rm-graphite from="-48hours" host="cs-node-0002" height="120" hide-legend="true">
-							<serie service="riak.get.50" color="444466"></serie>
-							<serie service="riak.get.99" color="8888AA"></serie>
-							<serie service="riak.put.50" color="664444"></serie>
-							<serie service="riak.put.99" color="AA8888"></serie>
-						</rm-graphite>
-						<rm-legend color="#8888AA">download</rm-legend>
-						<rm-legend color="#AA8888">upload</rm-legend>
-					</div>
-				</div>
-			</div>
-
-			<h2>Key metrics</h2>
 			<div class="row" host-group="exodoc">
 				<div class="col-lg-3">
 					<div class="rm-cell rm-cell-bordered">
@@ -191,37 +45,72 @@
 						</rm-donut>
 					</div>
 				</div>
-				<div class="col-lg-2">
+				<div class="col-lg-3">
 					<div class="rm-cell rm-cell-bordered">
 						<h2>Users</h2>
 						<table class="rm-table">
-							<tr><td>active</td><td><rm-live-metric service="exodoc.user_active"></rm-live-metric></td></tr>
-							<tr><td>new this week</td><td><rm-live-metric service="exodoc.user_week_create"></rm-live-metric></td></tr>
-							<tr><td>90 days inactive</td><td><rm-live-metric service="exodoc.user_90_inactive"></rm-live-metric></td></tr>
-							<tr><td>active oauth2</td><td><rm-live-metric service="exodoc.oauth2_token_active"></rm-live-metric></td></tr>
+							<tr><td>active</td><td><rm-live-metric service="exodoc.user_active"></rm-live-metric>
+								<span class="label-alpha pull-right">
+									<rm-tendency service="exodoc.user_active" from="-7days"></rm-tendency>
+								</span>
+							</td></tr>
+							<tr><td>90 days inactive</td><td>
+								<rm-live-metric service="exodoc.user_90_inactive"></rm-live-metric>
+								<span class="label-alpha pull-right">
+									<rm-tendency service="exodoc.user_90_inactive" from="-90days"></rm-tendency>
+								</span>
+							</td></tr>
+							<tr><td>active oauth2</td><td>
+								<rm-live-metric service="exodoc.oauth2_token_active"></rm-live-metric>
+								<span class="label-alpha pull-right">
+									<rm-tendency service="exodoc.oauth2_token_active" from="-2days"></rm-tendency>
+								</span>
+							</td></tr>
 						</table>
 						<h2>Files</h2>
 						<table class="rm-table">
-							<tr><td>total files</td><td><rm-live-metric service="exodoc.file_ready"></rm-live-metric></td></tr>
-							<tr><td>total size</td><td><rm-live-metric format="file-size" service="exodoc.file_total_size"></rm-live-metric></td></tr>
+							<tr><td>count</td><td><rm-live-metric service="exodoc.file_ready"></rm-live-metric></td></tr>
+							<tr><td>size</td><td><rm-live-metric format="file-size" service="exodoc.file_total_size"></rm-live-metric></td></tr>
+							<tr><td>duplication</td><td><rm-live-metric format="percent" service="exodoc.file_copy"></rm-live-metric> %</td></tr>
+							<tr><td>change factor</td><td><rm-live-metric format="fixed-2" service="exodoc.file_avg_version"></rm-live-metric></td></tr>
 						</table>
 					</div>
 				</div>
-				<div class="col-lg-2">
+				<div class="col-lg-3">
 					<div class="rm-cell rm-cell-bordered" interval-default="5m">
 						<h2>Documents</h2>
 						<table class="rm-table">
 							<tr><td>total</td><td><rm-live-metric service="exodoc.doc_total"></rm-live-metric></td></tr>
 							<tr><td>total size</td><td><rm-live-metric format="file-size" service="exodoc.doc_total_size"></rm-live-metric></td></tr>
+							<tr><td>duplication</td><td><rm-live-metric format="percent" service="exodoc.doc_copy"></rm-live-metric> %</td></tr>
+							<tr><td>change factor</td><td><rm-live-metric format="fixed-2" service="exodoc.doc_avg_version"></rm-live-metric></td></tr>
 							<tr><td>download count</td><td>
 								<rm-live-metric service="exodoc.doc_total_download"></rm-live-metric>
 								<span class="label-alpha pull-right">
-									<rm-live format="percent-1">service("exodoc.doc_total_download").metric / service("exodoc.doc_total").metric</rm-live> %
+									<rm-live format="percent">service("exodoc.doc_total_download").metric / service("exodoc.doc_total").metric</rm-live> %
 								</span>
 							</td></tr>
-							<tr><td>open count</td><td><rm-live-metric service="exodoc.doc_total_open"></rm-live-metric>
+						</table>
+					</div>
+				</div>
+			</div>
+			<hr>
+			<div class="row" host-group="exodoc">
+				<div class="col-lg-3">
+					<div class="rm-cell rm-cell-bordered" interval-default="5m">
+						<h2>Marketing</h2>
+						<table class="rm-table">
+							<tr><td>used coupons</td><td><rm-live-metric service="exodoc.coupon_used"></rm-live-metric></td></tr>
+							<tr><td>active subscriptions</td><td><rm-live-metric service="exodoc.active_subscriptions"></rm-live-metric></td></tr>
+							<tr><td>storage sold</td><td><rm-live-metric format="file-size" service="exodoc.account_size_sold"></rm-live-metric>
 								<span class="label-alpha pull-right">
-									<rm-live format="percent-1">service("exodoc.doc_total_open").metric / service("exodoc.doc_total").metric</rm-live> %
+									<rm-live format="percent">service("exodoc.account_size_sold").metric / (400 * 1024 * 1024 * 1024 )</rm-live> %
+								</span>
+							</td></tr>
+							<tr><td>storage used</td><td>
+								<rm-live format="file-size">service("exodoc.file_total_size").metric + service("exodoc.doc_total_size").metric</rm-live>
+								<span class="label-alpha pull-right">
+									<rm-live format="percent">( service("exodoc.file_total_size").metric + service("exodoc.doc_total_size").metric ) / service("exodoc.account_size_sold").metric </rm-live> %
 								</span>
 							</td></tr>
 							<tr><td>org count</td><td><rm-live-metric service="exodoc.org_count"></rm-live-metric></td></tr>
@@ -230,29 +119,8 @@
 						</table>
 					</div>
 				</div>
-				<div class="col-lg-2">
-					<div class="rm-cell rm-cell-bordered" interval-default="5m">
-						<h2>Marketing</h2>
-						<table class="rm-table">
-							<tr><td>used coupons</td><td><rm-live-metric service="exodoc.coupon_used"></rm-live-metric></td></tr>
-							<tr><td>active subscriptions</td><td><rm-live-metric service="exodoc.active_subscriptions"></rm-live-metric></td></tr>
-							<tr><td>storage sold</td><td><rm-live-metric format="file-size" service="exodoc.account_size_sold"></rm-live-metric>
-								<span class="label-alpha pull-right">
-									<rm-live format="percent-1">service("exodoc.account_size_sold").metric / (400 * 1024 * 1024 * 1024 )</rm-live> %
-								</span>
-							</td></tr>
-							<tr><td>storage used</td><td>
-								<rm-live format="file-size">service("exodoc.file_total_size").metric + service("exodoc.doc_total_size").metric</rm-live>
-								<span class="label-alpha pull-right">
-									<rm-live format="percent-1">service("exodoc.account_size_sold").metric / ( service("exodoc.file_total_size").metric + service("exodoc.doc_total_size").metric )</rm-live> %
-								</span>
-							</td></tr>
-						</table>
-					</div>
-				</div>
 				<div class="col-lg-3">
 					<div class="rm-cell rm-cell-bordered">
-						<div class="rm-cell rm-cell-bordered">
 						<h2>oAuth2 active tokens (60 days)</h2>
 						<rm-graphite from="-60days" height="120" hide-legend=true>
 							<serie service="exodoc.oauth2_token_active" color="666666"></serie>
@@ -261,6 +129,21 @@
 						<rm-graphite from="-60days" height="120" hide-legend=true>
 							<serie service="exodoc.user_week_login" color="666666"></serie>
 						</rm-graphite>
+					</div>
+				</div>
+				<div class="col-lg-3">
+					<div class="rm-cell rm-cell-bordered">
+						<h2>Storage (60 days)</h2>
+						<rm-graphite host="cs-node-0001" from="-60days" height="120" hide-legend=true>
+							<serie service="disk /" color="666666"></serie>
+						</rm-graphite>
+					</div>
+				</div>
+				<div class="col-lg-1">
+					<div class="rm-cell rm-cell-bordered">
+						<h2>Storage</h2>
+						<rm-easy-pie host="cs-node-0001" service="disk /" size="80" unit="%">
+							</rm-easy-pie>
 					</div>
 				</div>
 			</div>

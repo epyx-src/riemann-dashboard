@@ -21,6 +21,10 @@ html {
 	padding: 0px;
 }
 
+html.ua-safari body {
+	font-family: Arial, Verdana, sans-serif;
+}
+
 body.full-hd {
 	width: 1920px;
 	height: 1080px;
