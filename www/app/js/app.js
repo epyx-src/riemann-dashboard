@@ -482,6 +482,7 @@ dashboardApp.directive("rmTendency", ['$interval', function($interval) {
 			var host = find_host(tElement, tAttrs);
 			var service =  tAttrs.service;
 			var from = tAttrs.from || "-24hours";
+			var reversed = (tAttrs.reversed != undefined);
 			var interval = find_interval(tElement, tAttrs, "60s");
 			var $text = $('<span class="graphite-tendency-text"></span>');
 			var $icon = $('<i class="glyphicon glyphicon-minus"></i>');
@@ -500,13 +501,22 @@ dashboardApp.directive("rmTendency", ['$interval', function($interval) {
 						if (data) {
 							var points = data[0].datapoints;
 							var value = points[points.length-1][0];
-							element.removeClass("graphite-tendency-up", "graphite-tendency-down");
+							element.removeClass(
+								"graphite-tendency-up",
+								"graphite-tendency-down",
+								"graphite-tendency-bad",
+								"graphite-tendency-good"
+							);
 							var text = ""+value;
 							if (value > 0 ) {
+								var cls = "graphite-tendency-"+(reversed?"bad":"good");
 								element.addClass("graphite-tendency-up");
+								element.addClass(cls);
 								text = "+"+text
 							} else if (value < 0 ) {
+								var cls = "graphite-tendency-"+(reversed?"good":"bad");
 								element.addClass("graphite-tendency-down");
+								element.addClass(cls);
 							}
 							$text.text(text);
 						} else {

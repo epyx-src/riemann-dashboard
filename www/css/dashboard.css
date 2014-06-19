@@ -291,15 +291,19 @@ rm-flip-clock {
 	white-space: nowrap;
 }
 
-.graphite-tendency-up {
+.graphite-tendency-up,
+.graphite-tendency-down {
 	white-space: nowrap;
+}
+
+.graphite-tendency-good {
 	color: rgb(100,200,100);
 }
 
-.graphite-tendency-down {
-	white-space: nowrap;
+.graphite-tendency-bad {
 	color: rgb(200,100,100);
 }
+
 
 
 .graphite-tendency {
