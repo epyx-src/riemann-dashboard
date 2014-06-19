@@ -172,7 +172,9 @@ dashboardApp.directive("rmSparkline", ['$interval', 'RiemannService', function($
 			var title = tAttrs.title || "";
 			var show_value = tAttrs.showValue || false;
 			var unit = tAttrs.unit || "";
-			tElement.replaceWith('<div class="rm-sparklines"><div class="graph"></div><span class="value">&nbsp;</span><br><span class="title">'+title+'</span></div>');
+			tElement.replaceWith(
+				'<div class="rm-sparklines"><div class="graph"></div><span class="value">&nbsp;</span><br><span class="title">'+title+'</span></div>'
+			);
 			return function(scope, element, attrs){
 				var timeout_id = null;
 				var datas = [];
@@ -191,7 +193,7 @@ dashboardApp.directive("rmSparkline", ['$interval', 'RiemannService', function($
 						spotColor: 'white',
 						height: height,
 						disableInteraction: true,
-						width: "100%",
+						width: "100%"
 					};
 					$(element).find("span.value").css({
 						"line-height": (height/2)+"px",
@@ -237,7 +239,9 @@ dashboardApp.directive("rmProgress", ['$interval', 'RiemannService', function($i
 			var host = find_host(tElement, tAttrs);
 			var interval = find_interval(tElement, tAttrs, "10s");
 			var max = tAttrs.max;
-			tElement.replaceWith('<div class="progress progress-alpha progress-small"><div class="progress-bar progress-bar-primary"></div></div>');
+			tElement.replaceWith(
+				'<div class="progress progress-alpha progress-small"><div class="progress-bar progress-bar-primary"></div></div>'
+			);
 			return function(scope, element, attrs){
 				var timeout_id = null;
 				var old_metric = [];

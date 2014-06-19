@@ -136,7 +136,7 @@ hr {
 	display: inline-block;
 	padding: 2px 5px;
 	border:1px solid rgba(0,0,0,0.5);
-	margin: 2px 5px;
+	margin: 4px 4px 0 0;
 	font-weight: 100;
 	letter-spacing: 1px;
 }
@@ -145,7 +145,7 @@ hr {
 	display: inline-block;
 	padding: 3px 7px;
 	border:1px solid rgba(0,0,0,0.5);
-	margin: 3px 7px;
+	margin: 6px 6px 0 0;
 	font-size: 1.3em;
 	font-weight: 100;
 	letter-spacing: 2px;
@@ -325,4 +325,8 @@ rm-flip-clock {
 	padding: 0.5em;
 	text-align: center;
 	background-color: rgba(255,255,255,0.1);
+}
+
+.carousel-indicators {
+	opacity: 0.3;
 }
