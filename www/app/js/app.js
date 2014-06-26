@@ -543,6 +543,63 @@ dashboardApp.directive("rmTendency", ['$interval', function($interval) {
 }]);
 
 /**
+ * display a tendency ( up or down ) in percent of a given service
+ * use graphite from and until to get boundaries.
+ */
+dashboardApp.directive("rmSummarize", ['$interval', function($interval) {
+	var create_graphite_url = function(host, service, from, key) {
+		var graphite_target = host+"."+service.replace(/ /g,".").replace(/[//]/, "");
+		var summarize = from.substring(1); // remove "-" from from
+		var options = {
+			_uniq: (1 / Math.floor((new Date()).getTime() / 30000.0)),
+			format: "json",
+			until: "now",
+			from: from,
+			target: 'summarize('+graphite_target+', "'+summarize+'", "'+key+'")'
+		};
+		var query = $.param(options);
+		return window.GRAPHITE_URL + "?" + query;
+	};
+	return {
+        restrict:"E",
+		compile: function(tElement, tAttrs, transclude){
+			var host = find_host(tElement, tAttrs);
+			var service =  tAttrs.service;
+			// can be: sum, avg, max, min
+			var key =  tAttrs.key || "max";
+			var from = tAttrs.from || "-24hours";
+			var interval = find_interval(tElement, tAttrs, "60s");
+			var $text = $('<span class="graphite-text"></span>');
+			tElement.replaceWith($text);
+			return function(scope, element, attrs){
+				var timeout_id = null;
+				function update() {
+					var graphite_url = create_graphite_url(host, service, from, key);
+					$.get(graphite_url, function(data) {
+						if (data) {
+							var points = data[0].datapoints;
+							var value = points[points.length-1][0];
+							$text.text(value);
+						} else {
+							$text.text("No data");
+						}
+					})
+      			}
+				element.on('$destroy', function() {
+        			$interval.cancel(timeout_id);
+      			});
+				timeout_id = $interval(function() {
+        			update(); // update DOM
+      			}, interval);
+				setTimeout(function() {
+					update();
+				}, 1000);
+			};
+		}
+	};
+}]);
+
+/**
  * display pizza pie chart
  */
 

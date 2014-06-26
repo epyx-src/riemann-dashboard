@@ -88,6 +88,14 @@
 						<rm-easy-pie service="disk /" size="80" unit="%">
 							</rm-easy-pie>
 					</div>
+					<div class="rm-cell rm-cell-bordered">
+						<table class="rm-table">
+							<tr>
+								<td>nginx max</td>
+								<td><rm-summarize interval="10m" key="max" from="-3months" service="nginx.active"></rm-summarize></td>
+							</tr>
+						</table>
+					</div>
 				</div>
 
 				<div class="col-lg-3">
@@ -139,6 +147,7 @@
 						<span>postgresql</span>
 					</div>
 				</div>
+
 				<div class="col-lg-2">
 					<div class="rm-cell rm-cell-bordered" interval-default="2s">
 						<rm-sparkline service="cpu" title="cpu" min="0" max="1.0" height="48px" show-value="percent" unit="%">
@@ -345,11 +354,11 @@
 				<div class="col-lg-3">
 					<div class="rm-cell rm-cell-bordered">
 						<h2>oAuth2 active tokens (60 days)</h2>
-						<rm-graphite from="-60days" height="120" hide-legend=true>
+						<rm-graphite from="-60days" height="120" hide-legend=true y-min="0">
 							<serie service="exodoc.oauth2_token_active" color="666666"></serie>
 						</rm-graphite>
 						<h2>User web login (60 days)</h2>
-						<rm-graphite from="-60days" height="120" hide-legend=true>
+						<rm-graphite from="-60days" height="120" hide-legend=true y-min="0">
 							<serie service="exodoc.user_week_login" color="666666"></serie>
 						</rm-graphite>
 					</div>
