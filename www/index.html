@@ -28,14 +28,14 @@
 
 	</head>
 	<body style="background-image: url('/img/background.jpg');">
-		<div ng-controller="ExodocDashboardCtrl" class="container-fluid" interval-default="30s">
+		<div ng-controller="ExodocDashboardCtrl" class="container-fluid" interval="30s">
 			<div ng-if="error" class="alert alert-danger">
 				<span ng-bind="error"></span>
 			</div>
 			<h1>exo<b>doc</b> dashboard <a class="btn-rounded btn btn-link btn-xs" ng-click="refresh()"><i class="glyphicon glyphicon-refresh"></i></a><rm-flip-clock class="pull-right"></rm-flip-clock></h1>
 			<hr>
 
-			<div class="row" host-group="exodoc">
+			<div class="row" host="exodoc">
 				<div class="col-lg-3">
 					<h3 class="title-group">Production</h3>
 					<div class="rm-cell-state-2x" rm-state="exodoc.web">
@@ -65,9 +65,15 @@
 					<div class="rm-cell-state-2x" host="elasticsearch" rm-state="cpu">
 						<span>elasticsearch</span>
 					</div>
+					<div class="rm-cell-state-2x" host="epyx-backup" rm-state="cpu">
+						<span>cdn-backup</span>
+					</div>
+					<div class="rm-cell-state-2x" host="exodoc-jenkins" rm-state="cpu">
+						<span>postgres-backup</span>
+					</div>
 				</div>
 				<div class="col-lg-2">
-					<div class="rm-cell rm-cell-bordered" interval-default="2s">
+					<div class="rm-cell rm-cell-bordered" interval="2s">
 						<rm-sparkline service="cpu" title="cpu" min="0" max="1.0" height="48px" show-value="percent" unit="%">
 							</rm-sparkline>
 						<div class="rm-cell-sep"></div>
@@ -82,9 +88,9 @@
 					</div>
 				</div>
 
-				<div class="col-lg-1">
+				<div class="col-lg-1" host="exodoc">
 					<div class="rm-cell rm-cell-bordered">
-						<h2>Disk</h2>
+						<h2>Disk exodoc</h2>
 						<rm-easy-pie service="disk /" size="80" unit="%">
 							</rm-easy-pie>
 					</div>
@@ -98,16 +104,44 @@
 					</div>
 				</div>
 
-				<div class="col-lg-3">
+				<div class="col-lg-1" host="elasticsearch">
 					<div class="rm-cell rm-cell-bordered">
-						<h2>Load 24h</h2>
-						<rm-graphite height="70" y-max="1.0" hide-legend="true" hide-y-axis="true">
-							<serie service="load" color="666666"></serie>
-						</rm-graphite>
-						<h2>memory 24h</h2>
-						<rm-graphite height="70" y-max="1.0" hide-legend="true" hide-y-axis="true">
-							<serie service="memory" color="666666"></serie>
-						</rm-graphite>
+						<h2>ES Disk</h2>
+						<rm-easy-pie service="disk /" size="80" unit="%">
+							</rm-easy-pie>
+						<div class="rm-cell-sep"></div>
+						<rm-sparkline interval="2s" service="load" title="load" min="0" max="1.0" height="28px" show-value="percent" unit="%">
+							</rm-sparkline>
+					</div>
+				</div>
+
+				<div class="col-lg-1" host="epyx-backup">
+					<div class="rm-cell rm-cell-bordered">
+						<h2>CDN backup</h2>
+						<rm-easy-pie service="disk /mnt/data" size="80" unit="%">
+							</rm-easy-pie>
+						<table class="rm-table">
+							<tr>
+								<td class="graphite-text">
+									<rm-last-metric show-time=true service="exodoc.backup.cdn.duration" format="duration"></rm-last-metric>
+								</td>
+							</tr>
+						</table>
+					</div>
+				</div>
+
+				<div class="col-lg-1" host="exodoc-jenkins">
+					<div class="rm-cell rm-cell-bordered">
+						<h2>PG backup</h2>
+						<rm-easy-pie service="disk /mnt/backup" size="80" unit="%">
+							</rm-easy-pie>
+						<table class="rm-table">
+							<tr>
+								<td class="graphite-text">
+									<rm-last-metric show-time=true service="exodoc.backup.postgres" format="duration"></rm-last-metric>
+								</td>
+							</tr>
+						</table>
 					</div>
 				</div>
 
@@ -125,7 +159,7 @@
 			</div>
 			<hr>
 
-			<div class="row" host-group="dev-exodoc">
+			<div class="row" host="dev-exodoc">
 				<div class="col-lg-3">
 					<h3 class="title-group">Sandbox</h3>
 					<div class="rm-cell-state-2x" rm-state="exodoc.web">
@@ -137,9 +171,6 @@
 					<div class="rm-cell-state-2x" rm-state="redis">
 						<span>redis</span>
 					</div>
-					<div class="rm-cell-state-2x" rm-state="couchdb.read.max">
-						<span>couchdb</span>
-					</div>
 					<div class="rm-cell-state-2x" rm-state="nginx.active">
 						<span>nginx</span>
 					</div>
@@ -149,7 +180,7 @@
 				</div>
 
 				<div class="col-lg-2">
-					<div class="rm-cell rm-cell-bordered" interval-default="2s">
+					<div class="rm-cell rm-cell-bordered" interval="2s">
 						<rm-sparkline service="cpu" title="cpu" min="0" max="1.0" height="48px" show-value="percent" unit="%">
 							</rm-sparkline>
 						<div class="rm-cell-sep"></div>
@@ -205,7 +236,7 @@
 					</div>
 				</div>
 				<div class="col-lg-1">
-					<div class="rm-cell rm-cell-bordered" interval-default="3s" host-group="cs-node-0001">
+					<div class="rm-cell rm-cell-bordered" interval="3s" host="cs-node-0001">
 						<h2>Node 1</h2>
 						<rm-sparkline service="cpu" title="cpu" min="0" max="1.0" height="36px" show-value="percent" unit="%">
 							</rm-sparkline>
@@ -218,7 +249,7 @@
 					</div>
 				</div>
 				<div class="col-lg-1">
-					<div class="rm-cell rm-cell-bordered" interval-default="3s" host-group="cs-node-0002">
+					<div class="rm-cell rm-cell-bordered" interval="3s" host="cs-node-0002">
 						<h2>Node 2</h2>
 						<rm-sparkline service="cpu" title="cpu" min="0" max="1.0" height="36px" show-value="percent" unit="%">
 							</rm-sparkline>
@@ -268,7 +299,7 @@
 			</div>
 
 			<h2>Key metrics</h2>
-			<div class="row" host-group="exodoc">
+			<div class="row" host="exodoc">
 				<div class="col-lg-3">
 					<div class="rm-cell rm-cell-bordered">
 						<h2>Documents security level</h2>
@@ -312,7 +343,7 @@
 					</div>
 				</div>
 				<div class="col-lg-2">
-					<div class="rm-cell rm-cell-bordered" interval-default="5m">
+					<div class="rm-cell rm-cell-bordered" interval="5m">
 						<h2>Documents</h2>
 						<table class="rm-table">
 							<tr><td>total</td><td><rm-live-metric service="exodoc.doc_total"></rm-live-metric></td></tr>
@@ -329,7 +360,7 @@
 					</div>
 				</div>
 				<div class="col-lg-2">
-					<div class="rm-cell rm-cell-bordered" interval-default="5m">
+					<div class="rm-cell rm-cell-bordered" interval="5m">
 						<h2>Marketing</h2>
 						<table class="rm-table">
 							<tr><td>used coupons</td><td><rm-live-metric service="exodoc.coupon_used"></rm-live-metric></td></tr>

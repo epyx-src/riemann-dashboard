@@ -19,13 +19,37 @@ var humanFileSize = function(bytes, si) {
     return bytes.toFixed(1)+' '+units[u];
 };
 
+/**
+ * Converts milliseconds to human readeable language.
+ * X days XXh XXm
+ */
+function dhm(t){
+    var cd = 24 * 60 * 60,
+        ch = 60 * 60,
+        d = Math.floor(t / cd),
+        h = '0' + Math.floor( (t - d * cd) / ch),
+        m = '0' + Math.round( (t - d * cd - h * ch) / 60);
+	if (t < 60) {
+		return "< 1m";
+	}
+	var result = m.substr(-2)+"m";
+	if (h > 0) {
+		result = h.substr(-2)+"h "+result
+	}
+	if (d > 0)  {
+		result = d+"d "+result
+	}
+    return result;
+}
+
 var FORMATS = {
 	"percent": percent_format,
 	"percent-1":  function(val) {return percent_format(val,1);},
 	"fixed-0":  function(val) {return number_fixed(val,0);},
 	"fixed-1":  function(val) {return number_fixed(val,1);},
 	"fixed-2":  function(val) {return number_fixed(val,2);},
-	"file-size": function(val) {return humanFileSize(val, null);}
+	"file-size": function(val) {return humanFileSize(val, null);},
+	"duration": function(val) {return dhm(val);}
 };
 
 var apply_format = function(val, format) {
@@ -55,9 +79,9 @@ dashboardApp.controller('ExodocDashboardCtrl',['$scope', '$interval', 'RiemannSe
 var find_host = function(tElement, tAttrs) {
 	var host = tAttrs.host;
 	if (host == undefined) {
-		var elm = tElement.closest("[host-group]");
+		var elm = tElement.closest("[host]");
 		if (elm.length) {
-			host = elm.attr("host-group")
+			host = elm.attr("host")
 		}
 	}
 	if (!host) {
@@ -69,9 +93,9 @@ var find_host = function(tElement, tAttrs) {
 var find_interval =  function(tElement, tAttrs, default_value) {
 	var interval = tAttrs.interval;
 	if (interval == undefined) {
-		var elm = tElement.closest("[interval-default]");
+		var elm = tElement.closest("[interval]");
 		if (elm.length) {
-			interval = elm.attr("interval-default")
+			interval = elm.attr("interval")
 		}
 	}
 	if (interval == undefined) {
@@ -598,6 +622,83 @@ dashboardApp.directive("rmSummarize", ['$interval', function($interval) {
 		}
 	};
 }]);
+
+
+/**
+ * display the last metric received in a given period of time
+ * Use graphite to get value, not riemann
+ */
+dashboardApp.directive("rmLastMetric", ['$interval', function($interval) {
+	var create_graphite_url = function(host, service, from) {
+		var graphite_target = host+"."+service.replace(/ /g,".").replace(/[//]/, "");
+		var options = {
+			_uniq: (1 / Math.floor((new Date()).getTime() / 30000.0)),
+			format: "json",
+			until: "now",
+			from: from,
+			target: graphite_target
+		};
+		var query = $.param(options);
+		return window.GRAPHITE_URL + "?" + query;
+	};
+	return {
+        restrict:"E",
+		compile: function(tElement, tAttrs, transclude){
+			var host = find_host(tElement, tAttrs);
+			var service =  tAttrs.service;
+			var interval = find_interval(tElement, tAttrs, "60s");
+			var from = tAttrs.from || "-24hours";
+			var format = tAttrs.format || "";
+			var showTime = tAttrs.showTime || false;
+			var $text = $('<span class="live-last-metric"></span>');
+			var $time = $('<span class="graphite-last-time"></span>');
+			var $value = $('<span class="graphite-last-value"></span>');
+			$text.append($value);
+			$text.append($time);
+			tElement.replaceWith($text);
+			return function(scope, element, attrs){
+				var timeout_id = null;
+				function update() {
+					var graphite_url = create_graphite_url(host, service, from);
+					$.get(graphite_url, function(data) {
+						if (data && data.length) {
+							var when = "never";
+							var value = 0;
+							_.each(data[0].datapoints.reverse(), function(val) {
+								if (val[0]) {
+									when = dhm((new Date() - new Date(val[1]*1000)) / 1000);
+									value = val[0];
+								}
+							});
+							if (format != undefined) {
+								value = apply_format(value, format);
+							}
+							$value.text(value);
+							if (showTime) {
+								$time.text(when);
+							}
+						} else {
+							$value.text("-");
+							if (showTime) {
+								$time.text("-");
+							}
+						}
+					})
+      			}
+				element.on('$destroy', function() {
+        			$interval.cancel(timeout_id);
+      			});
+				timeout_id = $interval(function() {
+        			update(); // update DOM
+      			}, interval);
+				setTimeout(function() {
+					update();
+				}, 1000);
+			};
+		}
+	};
+}]);
+
 
 /**
  * display pizza pie chart

@@ -33,7 +33,7 @@
 			</div>
 			<h1>exo<b>doc</b> Key metrics <a class="btn-rounded btn btn-link btn-xs" ng-click="refresh()"><i class="glyphicon glyphicon-refresh"></i></a><rm-flip-clock class="pull-right"></rm-flip-clock></h1>
 			<hr>
-			<div class="row" host-group="exodoc">
+			<div class="row" host="exodoc">
 				<div class="col-lg-3">
 					<div class="rm-cell rm-cell-bordered">
 						<h2>Documents security level</h2>
@@ -77,7 +77,7 @@
 					</div>
 				</div>
 				<div class="col-lg-3">
-					<div class="rm-cell rm-cell-bordered" interval-default="5m">
+					<div class="rm-cell rm-cell-bordered" interval="5m">
 						<h2>Documents</h2>
 						<table class="rm-table">
 							<tr><td>total</td><td><rm-live-metric service="exodoc.doc_total"></rm-live-metric></td></tr>
@@ -95,9 +95,9 @@
 				</div>
 			</div>
 			<hr>
-			<div class="row" host-group="exodoc">
+			<div class="row" host="exodoc">
 				<div class="col-lg-3">
-					<div class="rm-cell rm-cell-bordered" interval-default="5m">
+					<div class="rm-cell rm-cell-bordered" interval="5m">
 						<h2>Marketing</h2>
 						<table class="rm-table">
 							<tr><td>used coupons</td><td><rm-live-metric service="exodoc.coupon_used"></rm-live-metric></td></tr>
