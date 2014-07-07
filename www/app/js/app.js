@@ -662,14 +662,16 @@ dashboardApp.directive("rmLastMetric", ['$interval', function($interval) {
 					var graphite_url = create_graphite_url(host, service, from);
 					$.get(graphite_url, function(data) {
 						if (data && data.length) {
+							console.log("data", data);
 							var when = "never";
 							var value = 0;
-							_.each(data[0].datapoints.reverse(), function(val) {
-								if (val[0]) {
-									when = dhm((new Date() - new Date(val[1]*1000)) / 1000);
-									value = val[0];
-								}
+							var val = _.find(data[0].datapoints.reverse(), function(val) {
+								return val[0];
 							});
+							if (val) {
+								when = dhm((new Date() - new Date(val[1]*1000)) / 1000);
+								value = val[0];
+							}
 							if (format != undefined) {
 								value = apply_format(value, format);
 							}
