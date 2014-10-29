@@ -65,9 +65,12 @@
 					<div class="rm-cell-state-2x" host="epyx-backup" rm-state="cpu">
 						<span>cdn-backup</span>
 					</div>
-					<div class="rm-cell-state-2x" host="exodoc-jenkins" rm-state="cpu">
+					<div class="rm-cell-state-2x" host="exodoc-ch" rm-state="postgres-backup">
 						<span>postgres-backup</span>
 					</div>
+                    <div class="rm-cell-state-2x" host="epyx-backup" rm-state="exodoc-ch rsync">
+                        <span>backups-rsync</span>
+                    </div>
 				</div>
 				<div class="col-lg-2">
 					<div class="rm-cell rm-cell-bordered" interval="2s">
@@ -171,9 +174,12 @@
 					<div class="rm-cell-state-2x" rm-state="nginx.active">
 						<span>nginx</span>
 					</div>
-					<div class="rm-cell-state-2x" rm-state="DB.exodoc.size">
-						<span>postgresql</span>
-					</div>
+                    <div class="rm-cell-state-2x" host="dev-exodoc-ch" rm-state="postgres-backup">
+                        <span>postgres-backup</span>
+                    </div>
+                    <div class="rm-cell-state-2x" host="epyx-backup" rm-state="dev-exodoc-ch rsync">
+                        <span>backups rsync</span>
+                    </div>
 				</div>
 
 				<div class="col-lg-2">
