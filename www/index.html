@@ -90,7 +90,7 @@
 
 				<div class="col-lg-1" host="exodoc">
 					<div class="rm-cell rm-cell-bordered">
-						<h2>Disk exodoc</h2>
+						<h2>exodoc disk</h2>
 						<rm-easy-pie service="disk /" size="80" unit="%">
 							</rm-easy-pie>
 					</div>
@@ -106,7 +106,7 @@
 
 				<div class="col-lg-1" host="elasticsearch">
 					<div class="rm-cell rm-cell-bordered">
-						<h2>ES Disk</h2>
+						<h2>ES disk</h2>
 						<rm-easy-pie service="disk /" size="80" unit="%">
 							</rm-easy-pie>
 						<div class="rm-cell-sep"></div>
@@ -117,13 +117,20 @@
 
 				<div class="col-lg-1" host="epyx-backup">
 					<div class="rm-cell rm-cell-bordered">
-						<h2>CDN backup</h2>
+						<h2>epyx backup</h2>
 						<rm-easy-pie service="disk /mnt/data" size="80" unit="%">
 							</rm-easy-pie>
 						<table class="rm-table">
 							<tr>
+								<td style="width: 30%">CDN</td>
 								<td class="graphite-text">
 									<rm-last-metric show-time=true service="exodoc.backup.cdn.duration" format="duration"></rm-last-metric>
+								</td>
+							</tr>
+							<tr>
+								<td>DB</td>
+								<td class="graphite-text">
+									<rm-last-metric show-time=true service="exodoc-ch rsync" format="duration"></rm-last-metric>
 								</td>
 							</tr>
 						</table>
@@ -132,16 +139,12 @@
 
 				<div class="col-lg-1" host="exodoc-jenkins">
 					<div class="rm-cell rm-cell-bordered">
-						<h2>PG backup</h2>
+						<h2>VLG jenkins</h2>
 						<rm-easy-pie service="disk /mnt/backup" size="80" unit="%">
 							</rm-easy-pie>
-						<table class="rm-table">
-							<tr>
-								<td class="graphite-text">
-									<rm-last-metric show-time=true service="exodoc.backup.postgres" format="duration"></rm-last-metric>
-								</td>
-							</tr>
-						</table>
+						<div class="rm-cell-sep"></div>
+						<rm-sparkline interval="2s" service="load" title="load" min="0" max="1.0" height="28px" show-value="percent" unit="%">
+						</rm-sparkline>
 					</div>
 				</div>
 
