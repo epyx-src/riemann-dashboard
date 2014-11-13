@@ -65,7 +65,6 @@ var dashboardApp = angular.module('ExodocDashboardApp', ['ui.bootstrap']);
 
 dashboardApp.factory('RiemannService', function() {
   	var service = new RiemannService();
-	service.start();
   	return service;
 });
 
@@ -73,8 +72,8 @@ dashboardApp.controller('ExodocDashboardCtrl',['$scope', '$interval', 'RiemannSe
 	$scope.refresh = function() {
 		location.reload();
 	};
+	riemann_service.start();
 }]);
-
 
 var find_host = function(tElement, tAttrs) {
 	var host = tAttrs.host;
@@ -343,11 +342,13 @@ dashboardApp.directive("rmState", ['$interval', 'RiemannService', function($inte
 			var service = tAttrs.service || tAttrs.rmState;
 			var host = find_host(tElement, tAttrs);
 			var interval = find_interval(tElement, tAttrs, "3s");
+			var live = tAttrs.live || true;
 			return function(scope, element, attrs){
 				var timeout_id = null;
 				var old_state = null;
-				function update() {
-					var riemann_data = riemann_service.get(host, service);
+				var live_id = null;
+				function update(riemann_data) {
+					riemann_data = riemann_data || riemann_service.get(host, service);
 					if (riemann_data == undefined) {
 						element.text( "unknwon: "+host+"/"+service);
 						return;
@@ -370,11 +371,23 @@ dashboardApp.directive("rmState", ['$interval', 'RiemannService', function($inte
 					}
       			}
 				element.on('$destroy', function() {
-        			$interval.cancel(timeout_id);
+					if (timeout_id) {
+						$interval.cancel(timeout_id);
+					}
+					if (live_id) {
+						riemann_service.remove_live(live_id);
+					}
       			});
-				timeout_id = $interval(function() {
-        			update(); // update DOM
-      			}, interval);
+				if (live) {
+					live_id = riemann_service.add_live(host, service, function(riemann_data) {
+						update(riemann_data); // update DOM
+					});
+					console.log("Live added");
+				} else {
+					timeout_id = $interval(function () {
+						update(); // update DOM
+					}, interval);
+				}
 			};
 		}
 	};
@@ -662,7 +675,6 @@ dashboardApp.directive("rmLastMetric", ['$interval', function($interval) {
 					var graphite_url = create_graphite_url(host, service, from);
 					$.get(graphite_url, function(data) {
 						if (data && data.length) {
-							console.log("data", data);
 							var when = "never";
 							var value = 0;
 							var val = _.find(data[0].datapoints.reverse(), function(val) {

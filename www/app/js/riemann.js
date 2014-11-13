@@ -1,8 +1,10 @@
 
 function RiemannService() {
-	this._all_events = this.get_cached_data();
+	this._all_events = {};//this.get_cached_data();
 	this.last_call = null;
 	this.TIMEOUT_RELOAD = 1000 * 60 * 5;
+	this.live_id = 0;
+	this.live_list = [];
 }
 
 RiemannService.prototype.handle_error = function(err, stop) {
@@ -21,8 +23,11 @@ RiemannService.prototype.handle_callback = function(msg) {
 		this.handle_error(ex);
 		return;
 	}
+	var old_data = this._all_events[data.host+":"+data.service];
 	this._all_events[data.host+":"+data.service] = data;
-
+	if (!old_data || old_data.state != data.state || old_data.metric != old_data.metric) {
+		this.notify_live(data.host, data.service, data);
+	}
 };
 
 RiemannService.prototype.stop = function() {
@@ -110,9 +115,53 @@ RiemannService.prototype.start = function() {
 			self.reconnect_sse()
 		}
 	}, 1000);
+	$.each(this.all_events, function(i, data) {
+		self.notify_live(data.host, data.service, data);
+	});
 };
 
 RiemannService.prototype.get = function(host, service) {
 	service = service.replace(/\./g," ");
 	return this._all_events[host+":"+service] || {};
 };
+
+RiemannService.prototype._live_key = function(host, service) {
+	return host+":"+service;
+};
+
+RiemannService.prototype.add_live = function(host, service, fun) {
+	this.live_id += 1;
+	this.live_list.push({
+		host: host,
+		service: service.replace(/\./g," "),
+		id: this.live_id,
+		fun: fun
+	});
+	return this.live_id;
+};
+
+RiemannService.prototype.remove_live = function(id) {
+	var self = this;
+	$.each( this.live_list, function(i, obj) {
+		if (obj.id == id) {
+			delete self.live_list[i]
+		}
+	});
+};
+
+RiemannService.prototype.notify_live = function(host, service, riemann_data) {
+	$.each( this.live_list, function(i, obj) {
+		if (obj.host == host && obj.service == service) {
+			(function(obj, data) {
+				setTimeout(function() {
+					try {
+						obj.fun(data);
+					} catch(ex) {
+						console.log("Error:" + ex);
+					}
+				}, 1);
+			})(obj, riemann_data);
+		}
+	});
+};
+
