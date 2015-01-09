@@ -240,6 +240,9 @@
 					<div class="rm-cell-state-2x" host="cs-node-0001" rm-state="nginx.active">
 						<span>nginx</span>
 					</div>
+					<div class="rm-cell-state-2x" host="front-cdn-1" rm-state="haproxy.cdn-https.FRONTEND.status">
+						<span>HAProxy</span>
+					</div>
 				</div>
 				<div class="col-lg-1">
 					<div class="rm-cell rm-cell-bordered" interval="3s" host="cs-node-0001">
@@ -267,6 +270,45 @@
 							</rm-sparkline>
 					</div>
 				</div>
+
+				<div class="col-lg-1">
+					<div class="rm-cell rm-cell-bordered" interval="3s" host="cs-node-0001">
+						<h2>nginx</h2>
+						<rm-sparkline service="load" title="load" min="0" max="1.0" height="36px" show-value="percent" unit="%">
+							</rm-sparkline>
+						<div class="rm-cell-sep"></div>
+						<rm-sparkline service="nginx.active" title="session" min="0" height="36px" show-value="fixed-0" unit="">
+							</rm-sparkline>
+						<table class="rm-table">
+							<tr>
+								<td style="width: 30%">max</td>
+								<td class="graphite-text">
+									<rm-summarize interval="10m" key="max" from="-3months" service="nginx.active"></rm-summarize>
+								</td>
+							</tr>
+						</table>
+					</div>
+				</div>
+
+				<div class="col-lg-1">
+					<div class="rm-cell rm-cell-bordered" interval="3s" host="front-cdn-1">
+						<h2>HAProxy</h2>
+						<rm-sparkline service="load" title="load" min="0" max="1.0" height="36px" show-value="percent" unit="%">
+							</rm-sparkline>
+						<div class="rm-cell-sep"></div>
+						<rm-sparkline service="haproxy.cdn-https.FRONTEND.rate" title="session" min="0" height="36px" show-value="fixed-0" unit="">
+							</rm-sparkline>
+						<table class="rm-table">
+							<tr>
+								<td style="width: 30%">max</td>
+								<td class="graphite-text">
+									<rm-last-metric service="haproxy.cdn-https.FRONTEND.rate_max" format="fixed-0"></rm-last-metric>
+								</td>
+							</tr>
+						</table>
+					</div>
+				</div>
+
 				<div class="col-lg-1">
 					<div class="rm-cell rm-cell-bordered">
 						<h2>Storage</h2>
@@ -275,7 +317,7 @@
 					</div>
 				</div>
 
-				<div class="col-lg-3">
+				<div class="col-lg-2">
 					<div class="rm-cell rm-cell-bordered">
 						<h2>Last 48 h get/put [n1]</h2>
 						<rm-graphite from="-48hours" host="cs-node-0001" height="120" hide-legend="true">
@@ -289,7 +331,7 @@
 					</div>
 				</div>
 
-				<div class="col-lg-3">
+				<div class="col-lg-2">
 					<div class="rm-cell rm-cell-bordered">
 						<h2>Last 48 h get/put [n2]</h2>
 						<rm-graphite from="-48hours" host="cs-node-0002" height="120" hide-legend="true">
