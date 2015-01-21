@@ -54,7 +54,7 @@
 						<span>postgresql</span>
 					</div>
 					<div class="rm-cell-state-2x" host="exodoc-transform." rm-state="actarus">
-						<span>transform service</span>
+						<span>transformer</span>
 					</div>
 					<div class="rm-cell-state-2x" host="sentry" rm-state="cpu">
 						<span>sentry</span>
@@ -63,31 +63,37 @@
 						<span>elasticsearch</span>
 					</div>
 					<div class="rm-cell-state-2x" host="epyx-backup" rm-state="cpu">
-						<span>cdn-backup</span>
+						<span>cdn-bkp</span>
 					</div>
 					<div class="rm-cell-state-2x" host="exodoc-ch" rm-state="postgres-backup">
-						<span>postgres-backup</span>
+						<span>postgres-bkp</span>
 					</div>
                     <div class="rm-cell-state-2x" host="epyx-backup" rm-state="exodoc-ch rsync">
-                        <span>backups-rsync</span>
+                        <span>bkp-rsync</span>
                     </div>
 				</div>
-				<div class="col-lg-2">
+				<div class="col-lg-1">
 					<div class="rm-cell rm-cell-bordered" interval="2s">
-						<rm-sparkline service="cpu" title="cpu" min="0" max="1.0" height="48px" show-value="percent" unit="%">
+						<h2>Main</h2>
+						<rm-sparkline service="cpu" title="cpu" min="0" max="1.0" height="36px" show-value="percent" unit="%">
 							</rm-sparkline>
 						<div class="rm-cell-sep"></div>
-						<rm-sparkline service="load" title="load" min="0" max="1.0" height="48px" show-value="percent" unit="%">
+						<rm-sparkline service="load" title="load" min="0" max="1.0" height="36px" show-value="percent" unit="%">
 							</rm-sparkline>
 						<div class="rm-cell-sep"></div>
-						<rm-sparkline service="memory" title="memory" min="0" max="1.0" height="48px" show-value="percent" unit="%">
+						<rm-sparkline service="memory" title="memory" min="0" max="1.0" height="36px" show-value="percent" unit="%">
 							</rm-sparkline>
 						<div class="rm-cell-sep"></div>
-						<rm-sparkline service="nginx.active" title="nginx" min="0" height="48px" show-value="fixed-0" unit="">
+						<rm-sparkline service="nginx.active" title="nginx" min="0" height="36px" show-value="fixed-0" unit="">
 							</rm-sparkline>
 					</div>
 				</div>
 
+				<div class="col-lg-1">
+					<div class="rm-cell rm-cell-bordered" interval="2s">
+						<h2>HAProxy</h2>
+					</div>
+				</div>
 				<div class="col-lg-1" host="exodoc">
 					<div class="rm-cell rm-cell-bordered">
 						<h2>exodoc disk</h2>
@@ -183,17 +189,40 @@
                     <div class="rm-cell-state-2x" host="epyx-backup" rm-state="dev-exodoc-ch rsync">
                         <span>backups-rsync</span>
                     </div>
+					<div class="rm-cell-state-2x" host="front-dev-exodoc-1" rm-state="haproxy.dev-exodoc-https.FRONTEND.status">
+                        <span>HAProxy</span>
+                    </div>
 				</div>
 
-				<div class="col-lg-2">
+				<div class="col-lg-1">
 					<div class="rm-cell rm-cell-bordered" interval="2s">
-						<rm-sparkline service="cpu" title="cpu" min="0" max="1.0" height="48px" show-value="percent" unit="%">
+						<h2>Main</h2>
+						<rm-sparkline service="cpu" title="cpu" min="0" max="1.0" height="36px" show-value="percent" unit="%">
 							</rm-sparkline>
 						<div class="rm-cell-sep"></div>
-						<rm-sparkline service="load" title="load" min="0" max="1.0" height="48px" show-value="percent" unit="%">
+						<rm-sparkline service="load" title="load" min="0" max="1.0" height="36px" show-value="percent" unit="%">
 							</rm-sparkline>
 						<div class="rm-cell-sep"></div>
-						<rm-sparkline service="memory" title="memory" min="0" max="1.0" height="48px" show-value="percent" unit="%">
+						<rm-sparkline service="memory" title="memory" min="0" max="1.0" height="36px" show-value="percent" unit="%">
+							</rm-sparkline>
+						<rm-sparkline service="nginx.active" title="nginx" min="0" height="36px" show-value="fixed-0" unit="">
+							</rm-sparkline>
+					</div>
+				</div>
+
+				<div class="col-lg-1">
+					<div class="rm-cell rm-cell-bordered" interval="10s" host="front-dev-exodoc-1">
+						<h2>HAProxy</h2>
+						<rm-sparkline service="cpu" title="cpu" min="0" max="1.0" height="36px" show-value="percent" unit="%">
+							</rm-sparkline>
+						<div class="rm-cell-sep"></div>
+						<rm-sparkline service="load" title="load" min="0" max="1.0" height="36px" show-value="percent" unit="%">
+							</rm-sparkline>
+						<div class="rm-cell-sep"></div>
+						<rm-sparkline service="memory" title="memory" min="0" max="1.0" height="36px" show-value="percent" unit="%">
+							</rm-sparkline>
+						<div class="rm-cell-sep"></div>
+						<rm-sparkline service="haproxy.dev-exodoc-https.FRONTEND.req_rate" title="req" min="0" height="36px" show-value="fixed-0" unit="">
 							</rm-sparkline>
 					</div>
 				</div>
@@ -240,7 +269,7 @@
 					<div class="rm-cell-state-2x" host="cs-node-0001" rm-state="nginx.active">
 						<span>nginx</span>
 					</div>
-					<div class="rm-cell-state-2x" host="front-cdn-1" rm-state="haproxy.cdn-https.FRONTEND.status">
+					<div class="rm-cell-state-2x" host="front-cdn-1" rm-state="haproxy.cdn-http.FRONTEND.status">
 						<span>HAProxy</span>
 					</div>
 				</div>
@@ -296,13 +325,13 @@
 						<rm-sparkline service="load" title="load" min="0" max="1.0" height="36px" show-value="percent" unit="%">
 							</rm-sparkline>
 						<div class="rm-cell-sep"></div>
-						<rm-sparkline service="haproxy.cdn-https.FRONTEND.rate" title="session" min="0" height="36px" show-value="fixed-0" unit="">
+						<rm-sparkline service="haproxy.cdn-http.FRONTEND.req_rate" title="session" min="0" height="36px" show-value="fixed-0" unit="">
 							</rm-sparkline>
 						<table class="rm-table">
 							<tr>
 								<td style="width: 30%">max</td>
 								<td class="graphite-text">
-									<rm-last-metric service="haproxy.cdn-https.FRONTEND.rate_max" format="fixed-0"></rm-last-metric>
+									<rm-last-metric service="haproxy.cdn-http.FRONTEND.rate_max" format="fixed-0"></rm-last-metric>
 								</td>
 							</tr>
 						</table>

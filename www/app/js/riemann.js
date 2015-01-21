@@ -1,6 +1,7 @@
 
 function RiemannService() {
 	this._all_events = {};//this.get_cached_data();
+	this._all_hosts = {};
 	this.last_call = null;
 	this.TIMEOUT_RELOAD = 1000 * 60 * 5;
 	this.live_id = 0;
@@ -24,6 +25,9 @@ RiemannService.prototype.handle_callback = function(msg) {
 		return;
 	}
 	var old_data = this._all_events[data.host+":"+data.service];
+	var by_hosts = this._all_hosts[data.host] || {};
+	by_hosts[data.service] = data;
+	this._all_hosts[data.host] = by_hosts;
 	this._all_events[data.host+":"+data.service] = data;
 	if (!old_data || old_data.state != data.state || old_data.metric != old_data.metric) {
 		this.notify_live(data.host, data.service, data);
@@ -42,6 +46,24 @@ RiemannService.prototype.stop = function() {
 RiemannService.prototype.all_events = function() {
 	var result = {};
 	_.each(this._all_events, function(v, k) {
+		result[k] = v;
+	});
+	return result;
+};
+
+RiemannService.prototype.all_services = function(service_regexp) {
+	var result = {};
+	_.each(this._all_events, function(v, k) {
+		if (v.service.match(service_regexp)) {
+			result[k] = v
+		}
+	});
+	return result;
+};
+
+RiemannService.prototype.all_hosts = function() {
+	var result = {};
+	_.each(this._all_hosts, function(v, k) {
 		result[k] = v;
 	});
 	return result;
@@ -129,13 +151,14 @@ RiemannService.prototype._live_key = function(host, service) {
 	return host+":"+service;
 };
 
-RiemannService.prototype.add_live = function(host, service, fun) {
+RiemannService.prototype.add_live = function(host, service, fun, user_data) {
 	this.live_id += 1;
 	this.live_list.push({
 		host: host,
 		service: service.replace(/\./g," "),
 		id: this.live_id,
-		fun: fun
+		fun: fun,
+		user_data: user_data
 	});
 	return this.live_id;
 };
@@ -155,7 +178,7 @@ RiemannService.prototype.notify_live = function(host, service, riemann_data) {
 			(function(obj, data) {
 				setTimeout(function() {
 					try {
-						obj.fun(data);
+						obj.fun(data, obj.user_data);
 					} catch(ex) {
 						console.log("Error:" + ex);
 					}

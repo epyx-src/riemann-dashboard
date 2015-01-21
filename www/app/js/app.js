@@ -75,6 +75,19 @@ dashboardApp.controller('ExodocDashboardCtrl',['$scope', '$interval', 'RiemannSe
 	riemann_service.start();
 }]);
 
+dashboardApp.controller('ExodocMapdCtrl',['$scope', '$interval', 'RiemannService', function($scope, $interval, riemann_service) {
+	$scope.refresh = function() {
+		location.reload();
+	};
+	riemann_service.start();
+	$interval(function () {
+         $scope.all_hosts = riemann_service.all_hosts();
+		 $scope.all_nginx = riemann_service.all_services(/^nginx active$/g);
+		 $scope.all_haproxy = riemann_service.all_services(/^haproxy .* FRONTEND req_rate$/g);
+    }, 2000);
+}]);
+
+
 var find_host = function(tElement, tAttrs) {
 	var host = tAttrs.host;
 	if (host == undefined) {
@@ -108,6 +121,174 @@ var find_interval =  function(tElement, tAttrs, default_value) {
 	}
 	return ret;
 };
+
+/**
+ * monitoring with visjs
+ */
+dashboardApp.directive("visualmon", ['$interval', 'RiemannService', function($interval, riemannService) {
+	var id_count = 0;
+	return {
+        restrict:"E",
+		compile: function(tElement, tAttrs, transclude){
+			var nodes = [];
+			var edges = [];
+			var elm_id = 0;
+			var find_by_name = function(name) {
+				return _.find(nodes, function(n) {
+					return n.name == name;
+				}) || _.find(edges, function(n) {
+					return n.name == name;
+				}) || {};
+			};
+			var find_by_id = function(id) {
+				return _.find(nodes, function(n) {
+					return n.id == id;
+				}) || _.find(edges, function(n) {
+					return n.id == id;
+				}) || {};
+			};
+			tElement.find("node").each(function(i, n) {
+				var node = $(n);
+				data ={
+					"id": (elm_id++),
+					"type": "n",
+					"name": node.attr("name"),
+					"host": node.attr("host"),
+					"status": node.attr("status"),
+					"metric": node.attr("metric"),
+					"shape": node.attr("shape") || "box",
+					"level": parseInt(node.attr("level")) || 0,
+					"fontSize": 12,
+					"fontFace": "arial",
+					"color": {
+						background: '#444',
+					  	border: '#000',
+						color: '#000'
+					},
+					fontColor: "#888"
+				};
+				var x = node.attr('x');
+				var y = node.attr('y');
+				var level = node.attr('level');
+
+				if (x) {
+					data.x = parseInt(x);
+					data.allowedToMoveX = false;
+				} else {
+					data.x = 0;
+				}
+				if (y) {
+					data.y = parseInt(y);
+					data.allowedToMoveY = false;
+				} else if (level != null) {
+					data.y = parseInt(level) * 100.0;
+				} else {
+					data.y = 0;
+				}
+				data.label = (node.attr("label") || node.attr("name")).toUpperCase() + "\n["+data.host+"]\n0%";
+				nodes.push(data);
+			});
+			tElement.find("edge").each(function(i, n) {
+				var node = $(n);
+				data = {
+					"id": (elm_id++),
+					"type": "e",
+					"from": find_by_name(node.attr("src")).id,
+					"to": find_by_name(node.attr("dst")).id,
+					"host": node.attr("host"),
+					"color": {
+						color: '#000'
+					},
+					"style": "arrow",
+					"status": node.attr("status")
+				};
+				var length = node.attr('length');
+				if (length) {
+					data.length = parseInt(length);
+				}
+				edges.push(data);
+			});
+			var width = tAttrs.width || "400";
+			var height = tAttrs.width || "400";
+			var vis_id = 'visualmon-'+(id_count++);
+			tElement.replaceWith('<div id="'+vis_id+'" class="visualmon">'+JSON.stringify(edges)+'</div>');
+
+			// create a network
+			var container = document.getElementById(vis_id);
+
+			var dataset_nodes = new vis.DataSet();
+			dataset_nodes.add(nodes);
+			var dataset_edges = new vis.DataSet();
+			dataset_edges.add(edges);
+
+			var data = {
+				nodes: dataset_nodes,
+				edges: dataset_edges
+			};
+			var options = {
+				width: width,
+				height: height,
+				zoomable: false,
+				selectable: true,
+				repulsion: {
+				  enabled: false,
+			    },
+				physics: {
+					enable: false
+				},
+				smoothCurves: false,
+				nodes: {
+					fontFace: "Helvetica Neue"
+				}
+
+			};
+			var network = new vis.Network(container, data, options);
+			var all = [].concat(nodes, edges);
+			_.each(all, function(n) {
+				if (n.status) {
+					riemannService.add_live(n.host, n.status, function (data, elm_id) {
+						var node_or_edge = find_by_id(elm_id);
+						console.log(data, node_or_edge);
+						if (data.state == 'ok') {
+							node_or_edge.color.border = "#032c19";
+							node_or_edge.color.background = "#075730";
+							node_or_edge.fontColor = "#55d475";
+							node_or_edge.color.color = "rgb(150,255,150)";
+							node_or_edge.width = 2;
+						} else if (data.state == 'warning') {
+							node_or_edge.color.border = "orange";
+							node_or_edge.color.background = "rgb(204, 175, 91)";
+							node_or_edge.fontColor = "#2d270f";
+							node_or_edge.color.color = "orange";
+							node_or_edge.width = 2;
+						} else if (data.state == 'critical') {
+							node_or_edge.color.border = "white";
+							node_or_edge.color.background = "rgb(204, 0, 0)";
+							node_or_edge.fontColor = "white";
+							node_or_edge.color.color = "red";
+							node_or_edge.width = 2;
+						} else {
+							node_or_edge.color.border = "black";
+							node_or_edge.color.background = "darkGrey";
+							node_or_edge.fontColor = "gray";
+							node_or_edge.color.color = "black";
+							node_or_edge.width = 1;
+						}
+						if (node_or_edge.type == 'n') {
+							dataset_nodes.update(node_or_edge)
+						} else if (node_or_edge.type == 'e') {
+							dataset_edges.update(node_or_edge)
+						}
+					}, n.id)
+				}
+			});
+
+			return function(scope, element, attrs){
+
+			}
+		}
+	};
+}]);
 
 /**
  * Display easy pie on a given service
@@ -382,7 +563,6 @@ dashboardApp.directive("rmState", ['$interval', 'RiemannService', function($inte
 					live_id = riemann_service.add_live(host, service, function(riemann_data) {
 						update(riemann_data); // update DOM
 					});
-					console.log("Live added");
 				} else {
 					timeout_id = $interval(function () {
 						update(); // update DOM
