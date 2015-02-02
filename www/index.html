@@ -32,7 +32,15 @@
 			<div ng-if="error" class="alert alert-danger">
 				<span ng-bind="error"></span>
 			</div>
-			<h1>exo<b>doc</b> dashboard <a class="btn-rounded btn btn-link btn-xs" ng-click="refresh()"><i class="glyphicon glyphicon-refresh"></i></a><rm-flip-clock class="pull-right"></rm-flip-clock></h1>
+			<h1>exo<b>doc</b> dashboard
+
+				<a class="btn-rounded btn btn-link btn-xs" ng-click="refresh()"><i class="glyphicon glyphicon-refresh"></i></a>
+
+				<rm-flip-clock class="pull-right"></rm-flip-clock>
+				<small ng-if="status.connected" class="rm-cell-state rm-state-ok pull-right">Connected</small>
+				<small ng-if="!status.connected" class="rm-cell-state rm-state-critical pull-right">disconnected</small>
+			</h1>
+
 			<hr>
 
 			<div class="row" host="exodoc">
@@ -189,7 +197,7 @@
                     <div class="rm-cell-state-2x" host="epyx-backup" rm-state="dev-exodoc-ch rsync">
                         <span>backups-rsync</span>
                     </div>
-					<div class="rm-cell-state-2x" host="front-dev-exodoc-1" rm-state="haproxy.dev-exodoc-https.FRONTEND.status">
+					<div class="rm-cell-state-2x" host="front-dev-exodoc-1" rm-state="haproxy.dev-exodoc-https.FRONTEND.req_rate">
                         <span>HAProxy</span>
                     </div>
 				</div>
@@ -269,7 +277,7 @@
 					<div class="rm-cell-state-2x" host="cs-node-0001" rm-state="nginx.active">
 						<span>nginx</span>
 					</div>
-					<div class="rm-cell-state-2x" host="front-cdn-1" rm-state="haproxy.cdn-http.FRONTEND.status">
+					<div class="rm-cell-state-2x" host="front-cdn-1" rm-state="haproxy.s3-http.FRONTEND.status">
 						<span>HAProxy</span>
 					</div>
 				</div>

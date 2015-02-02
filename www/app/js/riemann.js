@@ -4,8 +4,11 @@ function RiemannService() {
 	this._all_hosts = {};
 	this.last_call = null;
 	this.TIMEOUT_RELOAD = 1000 * 60 * 5;
+
 	this.live_id = 0;
 	this.live_list = [];
+
+	this.connected = false;
 }
 
 RiemannService.prototype.handle_error = function(err, stop) {
@@ -13,7 +16,9 @@ RiemannService.prototype.handle_error = function(err, stop) {
 	if (stop) {
 		$("body").css("background", "red");
 	}
-	this.reconnect_sse()
+	if (!stop) {
+		this.reconnect_sse()
+	}
 };
 
 RiemannService.prototype.handle_callback = function(msg) {
@@ -70,6 +75,7 @@ RiemannService.prototype.all_hosts = function() {
 };
 
 RiemannService.prototype.reconnect_sse = function() {
+	this.connected = false;
 	var self = this;
 	self.last_call = null;
 	try {
@@ -94,6 +100,7 @@ RiemannService.prototype.connect_sse = function() {
 
 		self.source.addEventListener('open', function(e) {
 			console.log("Riemann service connected");
+			self.connected = true;
 		}, false);
 
 		self.source.addEventListener('error', function(e, err) {
@@ -187,4 +194,3 @@ RiemannService.prototype.notify_live = function(host, service, riemann_data) {
 		}
 	});
 };
-

@@ -352,3 +352,13 @@ rm-flip-clock {
 .visualmon {
 	background-color: rgba(255,255,255,0.05);
 }
+
+.mini-progress {
+	display: block;
+	height: 8px;
+	background-color: rgba(255,255,255,0.25);
+	border-right: 1px solid rgba(255,255,255,0.5);
+	margin-left: -4px;
+	margin-right: -4px;
+	width:0;
+}

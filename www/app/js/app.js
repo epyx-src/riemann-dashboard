@@ -72,6 +72,12 @@ dashboardApp.controller('ExodocDashboardCtrl',['$scope', '$interval', 'RiemannSe
 	$scope.refresh = function() {
 		location.reload();
 	};
+	$scope.status = {
+		connected: false
+	};
+	$interval(function() {
+		$scope.status.connected = riemann_service.connected;
+	}, 5000);
 	riemann_service.start();
 }]);
 
@@ -79,11 +85,17 @@ dashboardApp.controller('ExodocMapdCtrl',['$scope', '$interval', 'RiemannService
 	$scope.refresh = function() {
 		location.reload();
 	};
+	$scope.status = {
+		connected: false
+	};
+	$interval(function() {
+		$scope.status.connected = riemann_service.connected;
+	}, 5000);
 	riemann_service.start();
 	$interval(function () {
          $scope.all_hosts = riemann_service.all_hosts();
-		 $scope.all_nginx = riemann_service.all_services(/^nginx active$/g);
-		 $scope.all_haproxy = riemann_service.all_services(/^haproxy .* FRONTEND req_rate$/g);
+		 //$scope.all_nginx = riemann_service.all_services(/^nginx active$/g);
+		 //$scope.all_haproxy = riemann_service.all_services(/^haproxy .* FRONTEND req_rate$/g);
     }, 2000);
 }]);
 
@@ -185,7 +197,7 @@ dashboardApp.directive("visualmon", ['$interval', 'RiemannService', function($in
 				} else {
 					data.y = 0;
 				}
-				data.label = (node.attr("label") || node.attr("name")).toUpperCase() + "\n["+data.host+"]\n0%";
+				data.label = (node.attr("label") || node.attr("name")).toUpperCase() + "\n["+data.host+"]";
 				nodes.push(data);
 			});
 			tElement.find("edge").each(function(i, n) {
@@ -208,8 +220,8 @@ dashboardApp.directive("visualmon", ['$interval', 'RiemannService', function($in
 				}
 				edges.push(data);
 			});
-			var width = tAttrs.width || "400";
-			var height = tAttrs.width || "400";
+			var width = tAttrs.width || "400px";
+			var height = tAttrs.height || "400px";
 			var vis_id = 'visualmon-'+(id_count++);
 			tElement.replaceWith('<div id="'+vis_id+'" class="visualmon">'+JSON.stringify(edges)+'</div>');
 
@@ -231,7 +243,7 @@ dashboardApp.directive("visualmon", ['$interval', 'RiemannService', function($in
 				zoomable: false,
 				selectable: true,
 				repulsion: {
-				  enabled: false,
+				  enabled: false
 			    },
 				physics: {
 					enable: false
@@ -243,12 +255,15 @@ dashboardApp.directive("visualmon", ['$interval', 'RiemannService', function($in
 
 			};
 			var network = new vis.Network(container, data, options);
+			window.addEventListener("resize", function() {
+				network.redraw();
+				network.zoomExtent(false);
+			});
 			var all = [].concat(nodes, edges);
 			_.each(all, function(n) {
 				if (n.status) {
 					riemannService.add_live(n.host, n.status, function (data, elm_id) {
 						var node_or_edge = find_by_id(elm_id);
-						console.log(data, node_or_edge);
 						if (data.state == 'ok') {
 							node_or_edge.color.border = "#032c19";
 							node_or_edge.color.background = "#075730";
