@@ -100,6 +100,17 @@
 				<div class="col-lg-1">
 					<div class="rm-cell rm-cell-bordered" interval="2s">
 						<h2>HAProxy</h2>
+						<rm-sparkline service="cpu" title="cpu" min="0" max="1.0" height="36px" show-value="percent" unit="%">
+							</rm-sparkline>
+						<div class="rm-cell-sep"></div>
+						<rm-sparkline service="load" title="load" min="0" max="1.0" height="36px" show-value="percent" unit="%">
+							</rm-sparkline>
+						<div class="rm-cell-sep"></div>
+						<rm-sparkline service="memory" title="memory" min="0" max="1.0" height="36px" show-value="percent" unit="%">
+							</rm-sparkline>
+						<div class="rm-cell-sep"></div>
+						<rm-sparkline service="haproxy.dev-exodoc-https.FRONTEND.req_rate" title="req" min="0" height="36px" show-value="fixed-0" unit="">
+							</rm-sparkline>
 					</div>
 				</div>
 				<div class="col-lg-1" host="exodoc">
