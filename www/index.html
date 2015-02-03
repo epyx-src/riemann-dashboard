@@ -263,13 +263,12 @@
 				</div>
 
 				<div class="col-lg-3">
-					<div class="rm-cell rm-cell-bordered">
-						<h2>nginx 7 days activities</h2>
-						<rm-graphite from="-7days" height="130">
-							<serie service="nginx.active" color="444444"></serie>
-							<serie service="nginx.reading" color="448844"></serie>
-							<serie service="nginx.writing" color="444488"></serie>
+					<div class="rm-cell rm-cell-bordered" host="front-dev-exodoc-1">
+						<h2>HAPoxy 7 days activities</h2>
+						<rm-graphite from="-7days" height="130" hide-legend="true">
+							<serie service="haproxy.dev-exodoc-https.FRONTEND.req_rate" color="8888AA"></serie>
 						</rm-graphite>
+						<rm-legend color="#8888AA">req_rate</rm-legend>
 					</div>
 				</div>
 			</div>
@@ -293,48 +292,23 @@
 					</div>
 				</div>
 				<div class="col-lg-1">
-					<div class="rm-cell rm-cell-bordered" interval="3s" host="cs-node-0001">
-						<h2>Node 1</h2>
-						<rm-sparkline service="cpu" title="cpu" min="0" max="1.0" height="36px" show-value="percent" unit="%">
-							</rm-sparkline>
-						<div class="rm-cell-sep"></div>
-						<rm-sparkline service="memory" title="memory" min="0" max="1.0" height="36px" show-value="percent" unit="%">
-							</rm-sparkline>
-						<div class="rm-cell-sep"></div>
-						<rm-sparkline service="load" title="load" min="0" max="1.0" height="36px" show-value="percent" unit="%">
-							</rm-sparkline>
-					</div>
-				</div>
-				<div class="col-lg-1">
-					<div class="rm-cell rm-cell-bordered" interval="3s" host="cs-node-0002">
-						<h2>Node 2</h2>
-						<rm-sparkline service="cpu" title="cpu" min="0" max="1.0" height="36px" show-value="percent" unit="%">
-							</rm-sparkline>
-						<div class="rm-cell-sep"></div>
-						<rm-sparkline service="memory" title="memory" min="0" max="1.0" height="36px" show-value="percent" unit="%">
-							</rm-sparkline>
-						<div class="rm-cell-sep"></div>
-						<rm-sparkline service="load" title="load" min="0" max="1.0" height="36px" show-value="percent" unit="%">
-							</rm-sparkline>
-					</div>
-				</div>
-
-				<div class="col-lg-1">
-					<div class="rm-cell rm-cell-bordered" interval="3s" host="cs-node-0001">
-						<h2>nginx</h2>
-						<rm-sparkline service="load" title="load" min="0" max="1.0" height="36px" show-value="percent" unit="%">
-							</rm-sparkline>
-						<div class="rm-cell-sep"></div>
-						<rm-sparkline service="nginx.active" title="session" min="0" height="36px" show-value="fixed-0" unit="">
-							</rm-sparkline>
-						<table class="rm-table">
-							<tr>
-								<td style="width: 30%">max</td>
-								<td class="graphite-text">
-									<rm-summarize interval="10m" key="max" from="-3months" service="nginx.active"></rm-summarize>
-								</td>
-							</tr>
-						</table>
+					<div class="rm-cell rm-cell-bordered" interval="3s" >
+						<div host="cs-node-0001">
+							<h2>Node 1</h2>
+							<rm-sparkline service="memory" title="memory" min="0" max="1.0" height="36px" show-value="percent" unit="%">
+								</rm-sparkline>
+							<div class="rm-cell-sep"></div>
+							<rm-sparkline service="load" title="load" min="0" max="1.0" height="36px" show-value="percent" unit="%">
+								</rm-sparkline>
+						</div>
+						<div host="cs-node-0002">
+							<h2>Node 2</h2>
+							<rm-sparkline service="memory" title="memory" min="0" max="1.0" height="36px" show-value="percent" unit="%">
+								</rm-sparkline>
+							<div class="rm-cell-sep"></div>
+							<rm-sparkline service="load" title="load" min="0" max="1.0" height="36px" show-value="percent" unit="%">
+								</rm-sparkline>
+						</div>
 					</div>
 				</div>
 
@@ -362,6 +336,18 @@
 						<h2>Storage</h2>
 						<rm-easy-pie host="cs-node-0001" service="disk /" size="80" unit="%">
 							</rm-easy-pie>
+					</div>
+				</div>
+
+				<div class="col-lg-2">
+					<div class="rm-cell rm-cell-bordered" host="front-cdn-1">
+						<h2>HAPoxy 48 H activities</h2>
+						<rm-graphite from="-48hours" height="130" hide-legend="true">
+							<serie service="haproxy.s3-https.FRONTEND.req_rate" color="669944"></serie>
+							<serie service="haproxy.s3-http.FRONTEND.req_rate" color="8888AA"></serie>
+						</rm-graphite>
+						<rm-legend color="#669944">req_rate (https)</rm-legend>
+						<rm-legend color="#8888AA">req_rate (http)</rm-legend>
 					</div>
 				</div>
 
