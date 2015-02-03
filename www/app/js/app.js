@@ -168,6 +168,7 @@ dashboardApp.directive("visualmon", ['$interval', 'RiemannService', function($in
 					"host": node.attr("host"),
 					"status": node.attr("status"),
 					"metric": node.attr("metric"),
+					"format": node.attr("format"),
 					"shape": node.attr("shape") || "box",
 					"level": parseInt(node.attr("level")) || 0,
 					"fontSize": 12,
@@ -198,6 +199,7 @@ dashboardApp.directive("visualmon", ['$interval', 'RiemannService', function($in
 					data.y = 0;
 				}
 				data.label = (node.attr("label") || node.attr("name")).toUpperCase() + "\n["+data.host+"]";
+				data._label = (node.attr("label") || node.attr("name")).toUpperCase() + "\n["+data.host+"]";
 				nodes.push(data);
 			});
 			tElement.find("edge").each(function(i, n) {
@@ -211,8 +213,11 @@ dashboardApp.directive("visualmon", ['$interval', 'RiemannService', function($in
 					"color": {
 						color: '#000'
 					},
+					"fontColor": '#000',
 					"style": "arrow",
-					"status": node.attr("status")
+					"status": node.attr("status"),
+					"metric": node.attr("metric"),
+					"format": node.attr("format")
 				};
 				var length = node.attr('length');
 				if (length) {
@@ -292,6 +297,22 @@ dashboardApp.directive("visualmon", ['$interval', 'RiemannService', function($in
 						if (node_or_edge.type == 'n') {
 							dataset_nodes.update(node_or_edge)
 						} else if (node_or_edge.type == 'e') {
+							node_or_edge.fontColor = "yellow";
+							node_or_edge.fontFill = "black";
+							dataset_edges.update(node_or_edge)
+						}
+					}, n.id)
+				}
+				if (n.metric) {
+					console.log("Add metric: "+n)
+					riemannService.add_live(n.host, n.metric, function (data, elm_id) {
+						var node_or_edge = find_by_id(elm_id);
+						var val = apply_format(data.metric, node_or_edge.format);
+						if (node_or_edge.type == 'n') {
+							node_or_edge.label = node_or_edge._label + "\n(" + val+")";
+							dataset_nodes.update(node_or_edge)
+						} else if (node_or_edge.type == 'e') {
+							node_or_edge.label = ""+val;
 							dataset_edges.update(node_or_edge)
 						}
 					}, n.id)

@@ -34,7 +34,7 @@ RiemannService.prototype.handle_callback = function(msg) {
 	by_hosts[data.service] = data;
 	this._all_hosts[data.host] = by_hosts;
 	this._all_events[data.host+":"+data.service] = data;
-	if (!old_data || old_data.state != data.state || old_data.metric != old_data.metric) {
+	if (!old_data || old_data.state != data.state || old_data.metric != data.metric) {
 		this.notify_live(data.host, data.service, data);
 	}
 };
