@@ -98,7 +98,7 @@
 				</div>
 
 				<div class="col-lg-1">
-					<div class="rm-cell rm-cell-bordered" interval="2s">
+					<div class="rm-cell rm-cell-bordered" interval="2s" host="front-prod-exodoc-1">
 						<h2>HAProxy</h2>
 						<rm-sparkline service="cpu" title="cpu" min="0" max="1.0" height="36px" show-value="percent" unit="%">
 							</rm-sparkline>
@@ -109,7 +109,7 @@
 						<rm-sparkline service="memory" title="memory" min="0" max="1.0" height="36px" show-value="percent" unit="%">
 							</rm-sparkline>
 						<div class="rm-cell-sep"></div>
-						<rm-sparkline service="haproxy.dev-exodoc-https.FRONTEND.req_rate" title="req" min="0" height="36px" show-value="fixed-0" unit="">
+						<rm-sparkline service="haproxy.prod-exodoc-https.FRONTEND.req_rate" title="req" min="0" height="36px" show-value="fixed-0" unit="">
 							</rm-sparkline>
 					</div>
 				</div>
@@ -344,13 +344,13 @@
 						<rm-sparkline service="load" title="load" min="0" max="1.0" height="36px" show-value="percent" unit="%">
 							</rm-sparkline>
 						<div class="rm-cell-sep"></div>
-						<rm-sparkline service="haproxy.cdn-http.FRONTEND.req_rate" title="session" min="0" height="36px" show-value="fixed-0" unit="">
+						<rm-sparkline service="haproxy.s3-https.FRONTEND.req_rate" title="session" min="0" height="36px" show-value="fixed-0" unit="">
 							</rm-sparkline>
 						<table class="rm-table">
 							<tr>
 								<td style="width: 30%">max</td>
 								<td class="graphite-text">
-									<rm-last-metric service="haproxy.cdn-http.FRONTEND.rate_max" format="fixed-0"></rm-last-metric>
+									<rm-last-metric service="haproxy.s3-https.FRONTEND.rate_max" format="fixed-0"></rm-last-metric>
 								</td>
 							</tr>
 						</table>
