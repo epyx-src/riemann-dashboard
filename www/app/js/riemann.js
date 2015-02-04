@@ -86,7 +86,7 @@ RiemannService.prototype.reconnect_sse = function() {
 	this.source = null;
 	setTimeout(function() {
 		self.connect_sse();
-	}, 1000);
+	}, 5000);
 };
 
 RiemannService.prototype.connect_sse = function() {
