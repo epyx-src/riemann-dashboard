@@ -85,7 +85,7 @@
 		</div>
 		<div class="col-lg-9">
 			<div class="row" host="exodoc">
-				<div class="col-lg-3">
+				<div class="col-lg-4">
 					<h3 class="title-group">Production</h3>
 					<div class="rm-cell-state-2x" rm-state="exodoc.web">
 						<span>django</span>
@@ -123,15 +123,6 @@
                     <div class="rm-cell-state-2x" host="epyx-backup" rm-state="prod-exodoc rsync">
                         <span>bkp-rsync</span>
                     </div>
-				</div>
-
-				<div class="col-lg-1" host="exodoc">
-					<div class="rm-cell rm-cell-bordered">
-						<h2>disk</h2>
-						<rm-easy-pie service="disk /" size="80" unit="%">
-							</rm-easy-pie>
-					</div>
-
 				</div>
 
 				<div class="col-lg-1" host="elasticsearch">
@@ -200,7 +191,7 @@
 			<hr>
 
 			<div class="row" host="dev-exodoc">
-				<div class="col-lg-3">
+				<div class="col-lg-4">
 					<h3 class="title-group">Sandbox</h3>
 					<div class="rm-cell-state-2x" rm-state="exodoc.web">
 						<span>django</span>
@@ -236,7 +227,7 @@
 					</div>
 				</div>
 
-				<div class="col-lg-4">
+				<div class="col-lg-3">
 				</div>
 
 				<div class="col-lg-2">
@@ -261,7 +252,7 @@
 			<hr>
 
 			<div class="row">
-				<div class="col-lg-3">
+				<div class="col-lg-4">
 					<h3 class="title-group">Riak-CS</h3>
 					<div class="rm-cell-state-2x" host="cs-node-0001" rm-state="riak.disk">
 						<span>node-1</span>
@@ -285,7 +276,7 @@
 					</div>
 				</div>
 
-				<div class="col-lg-3">
+				<div class="col-lg-2">
 					<div class="rm-cell rm-cell-bordered">
 						<h2>Last 48 h get/put [n1]</h2>
 						<rm-graphite from="-48hours" host="cs-node-0001" height="120" hide-legend="true">
@@ -299,7 +290,7 @@
 					</div>
 				</div>
 
-				<div class="col-lg-3">
+				<div class="col-lg-2">
 					<div class="rm-cell rm-cell-bordered">
 						<h2>Last 48 h get/put [n2]</h2>
 						<rm-graphite from="-48hours" host="cs-node-0002" height="120" hide-legend="true">
@@ -311,6 +302,9 @@
 						<rm-legend color="#8888AA">download (50,99)</rm-legend>
 						<rm-legend color="#AA8888">upload (50,99)</rm-legend>
 					</div>
+				</div>
+
+				<div class="col-lg-1">
 				</div>
 
 				<div class="col-lg-2">
