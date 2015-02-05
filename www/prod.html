@@ -9,7 +9,7 @@
 		<link rel="stylesheet" href="css/vis.min.css">
 
 		<meta name="apple-mobile-web-app-title" content="exodoc">
-		<title>Exodoc dev dashboard</title>
+		<title>Exodoc prod dashboard</title>
 		<script type="text/javascript" src="js/config.js"></script>
 		<script type="text/javascript" src="js/underscore-min.js"></script>
 		<script type="text/javascript" src="js/jquery.js"></script>
@@ -34,7 +34,7 @@
 			<div ng-if="error" class="alert alert-danger">
 				<span ng-bind="error"></span>
 			</div>
-			<h1>exo<b>doc</b> Sandbox<a class="btn-rounded btn btn-link btn-xs" ng-click="refresh()"><i class="glyphicon glyphicon-refresh"></i></a><rm-flip-clock class="pull-right"></rm-flip-clock></h1>
+			<h1>exo<b>doc</b> Production<a class="btn-rounded btn btn-link btn-xs" ng-click="refresh()"><i class="glyphicon glyphicon-refresh"></i></a><rm-flip-clock class="pull-right"></rm-flip-clock></h1>
 			<hr>
 			<div class="row" host="exodoc">
 				<div class="col-lg-4">
@@ -53,20 +53,20 @@
 							</tr>
 						</thead>
 						<tbody>
-							<tr class="span-width" ng-repeat="(host, services) in all_hosts">
+							<tr class="span-width" ng-repeat="(host, services) in all_hosts" host="{{host}}">
 								<td>
 									<span class="rm-cell-state-2x rm-state-{{services.cpu.state}}">{{host}}</span>
 								</td>
 								<td>
 									<span class="rm-cell-state rm-state-{{services.load.state}}" ng-hide="!services.load.state">
-										{{services.load.metric * 100.0|number:2}} %
-										<span class="mini-progress" style="width:{{services['load'].metric * 100.0|number:2}}%;"></span>
+										<rm-sparkline service="load" title="" min="0" max="10.0" height="20px" show-value="fixed-2" unit="">
+										</rm-sparkline>
 									</span>
 								</td>
 								<td>
 									<span class="rm-cell-state rm-state-{{services.memory.state}}" ng-hide="!services.memory.state">
-										{{services.memory.metric * 100.0|number:2}} %
-										<span class="mini-progress" style="width:{{services['memory'].metric * 100.0|number:2}}%;"></span>
+										<rm-sparkline service="memory" title="" min="0" max="1.0" height="20px" show-value="percent" unit="%">
+										</rm-sparkline>
 									</span>
 								</td>
 								<td>
@@ -84,47 +84,43 @@
 					<visualmon width="100%" height="100%">
 						<node x=-300 name="front-1" level=0 host="front-prod-exodoc-1" status="haproxy.prod-exodoc-https.FRONTEND.req_rate" metric="" shape="box"></node>
 
-						<node x=1 name="prod-exodoc-nginx" level=1 host="dev-exodoc" status="nginx.active" metric="" shape="box"></node>
+						<node x=1 name="nginx-1" level=1 host="exodoc" status="nginx.active" graphite="nginx.active" shape="box"></node>
 
-						<node x=-300 name="prod-exodoc-upload" level=2 host="prod-exodoc-upload-1" status="nginx.active" metric="" shape="ellipse"></node>
-						<node x=-70 name="django" level=2 host="exodoc" status="exodoc.web" metric="" shape="ellipse"></node>
-						<node x=70 name="nodejs" level=2 host="exodoc" status="exodoc.api" metric="" shape="ellipse"></node>
-						<node x=300 name="transform" level=2 host="exodoc-transform." status="actarus" metric="" shape="ellipse"></node>
+						<node x=-300 name="upload-1" level=2 host="prod-exodoc-upload-1" status="exodoc.web" shape="ellipse"></node>
+						<node x=-70 name="django-1" level=2 host="exodoc" status="exodoc.web" metric="" shape="ellipse"></node>
+						<node x=70 name="download-1" level=2 host="exodoc" status="exodoc.api" metric="" shape="ellipse"></node>
+						<node x=300 name="transform-1" level=2 host="exodoc-transform." status="actarus" metric="" shape="ellipse"></node>
 
 						<node x=-70 name="postgresql" level=5 host="exodoc" status="DB.exodoc.size" metric="" shape="database"></node>
 						<node x=70 name="redis" level=5 host="exodoc" status="redis" metric="" shape="database"></node>
 
-						<node x=300 name="front-cdn-1" level=5 host="front-cdn-1" status="haproxy.s3-http.FRONTEND.req_rate" metric="" shape="box"></node>
+						<node x=300 name="front-s3-1" level=5 host="front-cdn-1" status="haproxy.s3-http.FRONTEND.req_rate" metric="" shape="box"></node>
 
 						<node x=-300 name="email" label="email" level=6 host="email" status="" shape="ellipse"></node>
 
 						<node X=300 name="riak-cs" level=6 host="cs-node-0001" status="riak.disk" metric="" shape="database"></node>
 
 						<!-- edges -->
-						<edge src="front-1" dst="prod-exodoc-nginx" host="front-prod-exodoc-1" status="haproxy.prod-exodoc-backend.prod-exodoc-1.req_rate"></edge>
-						<edge src="front-1" dst="prod-exodoc-upload" host="front-prod-exodoc-1" status="haproxy.prod-exodoc-upload-backend.prod-exodoc-upload-1.req_rate"></edge>
+						<edge src="front-1" dst="nginx-1" host="front-prod-exodoc-1" status="haproxy.prod-exodoc-backend.BACKEND.scur"></edge>
+						<edge src="front-1" dst="upload-1" host="front-prod-exodoc-1" status="haproxy.prod-exodoc-upload-backend.BACKEND.scur"></edge>
 
-						<edge src="prod-exodoc-nginx" dst="nodejs" host="exodoc" status=""></edge>
-						<edge src="prod-exodoc-nginx" dst="django" host="exodoc" status=""></edge>
+						<edge src="nginx-1" dst="download-1" host="exodoc" status=""></edge>
+						<edge src="nginx-1" dst="django-1" host="exodoc" status=""></edge>
 
-						<edge src="nodejs" dst="redis" host="dev-exodoc" status="exodoc.api.conn_redis"></edge>
-						<edge src="nodejs" dst="front-cdn-1" host="dev-exodoc" status="exodoc.api.conn_cdn"></edge>
+						<edge src="download-1" dst="redis" host="exodoc" status="exodoc.api.conn_redis"></edge>
+						<edge src="download-1" dst="front-s3-1" host="exodoc" status="exodoc.api.conn_cdn"></edge>
 
-						<edge src="django" dst="front-cdn-1" host="dev-exodoc" status=""></edge>
-						<edge src="django" dst="postgresql" host="dev-exodoc" status="exodoc.conn_db"></edge>
-						<edge src="django" dst="redis" host="dev-exodoc" status="exodoc.conn_redis"></edge>
-						<edge src="django" dst="email" host="dev-exodoc" status="exodoc.conn_smtp"></edge>
-						<edge src="django" dst="nsq-dj" host="dev-exodoc" status=""></edge>
+						<edge src="django-1" dst="front-s3-1" host="exodoc" status=""></edge>
+						<edge src="django-1" dst="postgresql" host="exodoc" status="exodoc.conn_db"></edge>
+						<edge src="django-1" dst="redis" host="exodoc" status="exodoc.conn_redis"></edge>
+						<edge src="django-1" dst="email" host="exodoc" status="exodoc.conn_smtp"></edge>
 
-						<edge src="prod-exodoc-upload" dst="postgresql" host="dev-exodoc-upload" status="exodoc.conn_db"></edge>
-						<edge src="prod-exodoc-upload" dst="redis" host="dev-exodoc-upload" status="exodoc.conn_redis"></edge>
-						<edge src="prod-exodoc-upload" dst="front-cdn-1" host="dev-exodoc" status=""></edge>
-						<edge src="prod-exodoc-upload" dst="nsq-up" host="dev-exodoc" status=""></edge>
-						<edge src="prod-exodoc-upload" dst="email" host="dev-exodoc" status="exodoc.conn_snmp"></edge>
+						<edge src="upload-1" dst="postgresql" host="prod-exodoc-upload" status="exodoc.conn_db"></edge>
+						<edge src="upload-1" dst="redis" host="prod-exodoc-upload" status="exodoc.conn_redis"></edge>
+						<edge src="upload-1" dst="front-s3-1" host="exodoc" status=""></edge>
+						<edge src="upload-1" dst="email" host="exodoc" status="exodoc.conn_snmp"></edge>
 
-						<edge src="transform" dst="nsq-tr" host="dev-exodoc-upload" status=""></edge>
-
-						<edge src="front-cdn-1" dst="riak-cs" host="front-cdn-1" status="haproxy.riak_cs_backend.riak1.req_rate" length=100></edge>
+						<edge src="front-s3-1" dst="riak-cs" host="front-cdn-1" status="haproxy.riak_cs_backend.riak1.req_rate" length=100></edge>
 
 					</visualmon>
 				</div>

@@ -27,6 +27,9 @@ RiemannService.prototype.handle_callback = function(msg) {
 		this.last_call = new Date();
 	} catch (ex) {
 		this.handle_error(ex);
+		console.warn("SSE Parsing error");
+		console.warn(ex);
+		console.log("Data: "+msg.data);
 		return;
 	}
 	var old_data = this._all_events[data.host+":"+data.service];

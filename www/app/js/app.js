@@ -60,6 +60,34 @@ var apply_format = function(val, format) {
 	return fun(val);
 };
 
+/*
+	Graphite utilities
+ */
+var create_graphite_url = function(host, series, options) {
+	options = _.extend({
+		bgcolor: "#000000",
+		fgcolor: "#999999",
+		minorGridLineColor: "#555555",
+		majorGridLineColor: "#888888",
+		areaMode: 'first',
+		fontBold: 'false',
+		areaAlpha: "0.8",
+		_uniq: (1 / Math.floor((new Date()).getTime() / 30000.0))
+	}, options);
+	var query = $.param(options);
+	var colors = [];
+	_.each(series, function(data){
+		colors.push(data.color || "green");
+		query = query + "&" + $.param({
+			target: host+"."+data.target.replace(/ /g,".").replace(/[//]/, "")
+		});
+	});
+	query = query + "&" + $.param({
+		colorList: colors.join(",")
+	});
+	return window.GRAPHITE_URL + "?" + query;
+};
+
 /* Application */
 var dashboardApp = angular.module('ExodocDashboardApp', ['ui.bootstrap']);
 
@@ -78,6 +106,9 @@ dashboardApp.controller('ExodocDashboardCtrl',['$scope', '$interval', 'RiemannSe
 	$interval(function() {
 		$scope.status.connected = riemann_service.connected;
 	}, 5000);
+	$interval(function () {
+         $scope.all_hosts = riemann_service.all_hosts();
+	}, 2000);
 	riemann_service.start();
 }]);
 
@@ -166,7 +197,8 @@ dashboardApp.directive("visualmon", ['$interval', 'RiemannService', function($in
 					"type": "n",
 					"name": node.attr("name"),
 					"host": node.attr("host"),
-					"status": node.attr("status"),
+					"status": node.attr("status") || node.attr("metric"),
+					'graphite': node.attr("graphite"),
 					"metric": node.attr("metric"),
 					"format": node.attr("format"),
 					"shape": node.attr("shape") || "box",
@@ -194,12 +226,17 @@ dashboardApp.directive("visualmon", ['$interval', 'RiemannService', function($in
 					data.y = parseInt(y);
 					data.allowedToMoveY = false;
 				} else if (level != null) {
-					data.y = parseInt(level) * 100.0;
+					data.y = parseInt(level) * 120.0;
 				} else {
 					data.y = 0;
 				}
-				data.label = (node.attr("label") || node.attr("name")).toUpperCase() + "\n["+data.host+"]";
+				if (data.graphite) {
+					data.shape = "image";
+					data.brokenImage = "/img/graphite_default.png";
+					data.image = "/img/graphite_default.png";
+				}
 				data._label = (node.attr("label") || node.attr("name")).toUpperCase() + "\n["+data.host+"]";
+				data.label =  data._label;
 				nodes.push(data);
 			});
 			tElement.find("edge").each(function(i, n) {
@@ -215,7 +252,7 @@ dashboardApp.directive("visualmon", ['$interval', 'RiemannService', function($in
 					},
 					"fontColor": '#000',
 					"style": "arrow",
-					"status": node.attr("status"),
+					"status": node.attr("status") || node.attr("metric"),
 					"metric": node.attr("metric"),
 					"format": node.attr("format")
 				};
@@ -304,18 +341,41 @@ dashboardApp.directive("visualmon", ['$interval', 'RiemannService', function($in
 					}, n.id)
 				}
 				if (n.metric) {
-					console.log("Add metric: "+n)
 					riemannService.add_live(n.host, n.metric, function (data, elm_id) {
 						var node_or_edge = find_by_id(elm_id);
 						var val = apply_format(data.metric, node_or_edge.format);
 						if (node_or_edge.type == 'n') {
-							node_or_edge.label = node_or_edge._label + "\n(" + val+")";
+							node_or_edge.label = node_or_edge._label + "\n\n" + val + "";
 							dataset_nodes.update(node_or_edge)
 						} else if (node_or_edge.type == 'e') {
 							node_or_edge.label = ""+val;
 							dataset_edges.update(node_or_edge)
 						}
 					}, n.id)
+				}
+				if (n.graphite) {
+					$interval(function() {
+						var from = "-1hour";
+						var until = "now";
+						var series = [];
+						var options = {
+							from: from,
+							until: until,
+							height: 50,
+							width: 150,
+							hideLegend: "true",
+							hideAxes: "true",
+							hideGrid: "true",
+							bgcolor: "223344"
+						};
+						series.push({
+							target: n.graphite,
+							color: "blue"
+						});
+						var graphite_img_src = create_graphite_url(n.host, series, options);
+						n.image = graphite_img_src;
+						dataset_nodes.update(n)
+					}, 5000);
 				}
 			});
 
@@ -416,9 +476,12 @@ dashboardApp.directive("rmSparkline", ['$interval', 'RiemannService', function($
 				'<div class="rm-sparklines"><div class="graph"></div><span class="value">&nbsp;</span><br><span class="title">'+title+'</span></div>'
 			);
 			return function(scope, element, attrs){
+				// grab host here
 				var timeout_id = null;
 				var datas = [];
 				function update() {
+					// grab host here as the element attribute may be changed by angularjs
+					host = find_host(element, tAttrs);
 					var metric = riemann_service.get(host, service).metric || 0;
 					datas.push(metric);
 					if (datas.length > nb_elements) {
@@ -613,30 +676,6 @@ dashboardApp.directive("rmState", ['$interval', 'RiemannService', function($inte
  * display graphite graph updated every interval
  */
 dashboardApp.directive("rmGraphite", ['$interval', function($interval) {
-	var create_graphite_url = function(host, series, options) {
-		options = _.extend(options, {
-			bgcolor: "#000000",
-			fgcolor: "#999999",
-			minorGridLineColor: "#555555",
-			majorGridLineColor: "#888888",
-			areaMode: 'first',
-			fontBold: 'false',
-			areaAlpha: "0.8",
-			_uniq: (1 / Math.floor((new Date()).getTime() / 30000.0))
-		});
-		var query = $.param(options);
-		var colors = [];
-		_.each(series, function(data){
-			colors.push(data.color || "green");
-			query = query + "&" + $.param({
-				target: host+"."+data.target.replace(/ /g,".").replace(/[//]/, "")
-			});
-		});
-		query = query + "&" + $.param({
-			colorList: colors.join(",")
-		});
-		return window.GRAPHITE_URL + "?" + query;
-	};
 	return {
         restrict:"E",
 		compile: function(tElement, tAttrs, transclude){
