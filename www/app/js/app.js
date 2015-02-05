@@ -1134,3 +1134,33 @@ dashboardApp.directive("rmLive", ['$interval', 'RiemannService', function($inter
 		}
 	};
 }]);
+
+dashboardApp.directive("loremImage", ['$interval', function($interval) {
+	return {
+        restrict:"E",
+		compile: function(tElement, tAttrs, transclude){
+			var interval = find_interval(tElement, tAttrs, "600");
+			var width = tAttrs.width || 400;
+			var height = tAttrs.height || 200;
+			var src = "http://lorempixel.com/"+width+"/"+height+"/?time=0";
+
+			tElement.replaceWith('<img src="http://lorempixel.com/'+width+'/'+height+'/?time=0"></span>');
+			return function(scope, element, attrs){
+				var timeout_id = null;
+				function update() {
+					src = "http://lorempixel.com/"+width+"/"+height+"/?time="+new Date().getTime();
+					$(element).attr("src", src)
+				}
+				element.on('$destroy', function() {
+        			$interval.cancel(timeout_id);
+      			});
+				timeout_id = $interval(function() {
+        			update(); // update plot
+      			}, interval);
+				setTimeout(function() {
+					update();
+				}, 1000);
+			};
+		}
+	};
+}]);
