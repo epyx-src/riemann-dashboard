@@ -83,6 +83,7 @@ RiemannService.prototype.reconnect_sse = function() {
 	self.last_call = null;
 	try {
 		this.source.close();
+		console.log("SSE closed due to error in stream");
 	} catch (ex) {
 		console.error(ex);
 	}

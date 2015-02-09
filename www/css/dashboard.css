@@ -132,6 +132,14 @@ hr {
 	border-bottom: 1px solid rgba(255,255,255,0.08);
 }
 
+.rm-cell-state-borderless {
+	display: inline-block;
+	border:1px solid rgba(0,0,0,0.5);
+	margin: 4px 4px 0 0;
+	font-weight: 100;
+	letter-spacing: 1px;
+}
+
 .rm-cell-state {
 	display: inline-block;
 	padding: 2px 5px;

@@ -58,15 +58,15 @@
 									<span class="rm-cell-state-2x rm-state-{{services.cpu.state}}">{{host}}</span>
 								</td>
 								<td>
-									<span class="rm-cell-state rm-state-{{services.load.state}}" ng-hide="!services.load.state">
-										{{services.load.metric * 100.0|number:2}} %
-										<span class="mini-progress" style="width:{{services['load'].metric * 100.0|number:2}}%;"></span>
+									<span class="rm-cell-state-borderless rm-state-{{services.load.state}}" ng-hide="!services.load.state">
+										<rm-sparkline service="load" title="" min="0" max="10.0" height="24px" show-value="fixed-2" unit="">
+										</rm-sparkline>
 									</span>
 								</td>
 								<td>
-									<span class="rm-cell-state rm-state-{{services.memory.state}}" ng-hide="!services.memory.state">
-										{{services.memory.metric * 100.0|number:2}} %
-										<span class="mini-progress" style="width:{{services['memory'].metric * 100.0|number:2}}%;"></span>
+									<span class="rm-cell-state-borderless rm-state-{{services.memory.state}}" ng-hide="!services.memory.state">
+										<rm-sparkline service="memory" title="" min="0" max="1.0" height="24px" show-value="percent" unit="%">
+										</rm-sparkline>
 									</span>
 								</td>
 								<td>
@@ -113,7 +113,7 @@
 						<edge src="dev-exodoc-nginx" dst="nodejs" host="dev-exodoc" status=""></edge>
 						<edge src="dev-exodoc-nginx" dst="django" host="dev-exodoc" status=""></edge>
 
-						<edge src="nodejs" dst="redis" host="dev-exodoc" status="exodoc.api.conn_redis" metric="exodoc.api.download_count"></edge>
+						<edge src="nodejs" dst="redis" host="dev-exodoc" status="exodoc.api.conn_redis"></edge>
 						<edge src="nodejs" dst="front-cdn-1" host="dev-exodoc" status="exodoc.api.conn_cdn"></edge>
 
 						<edge src="django" dst="front-cdn-1" host="dev-exodoc" status=""></edge>
