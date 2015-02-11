@@ -6,6 +6,7 @@
 		<link rel="stylesheet" href="css/dashboard.css">
 		<link rel="stylesheet" href="css/animate.min.css">
 		<link rel="stylesheet" href="css/jquery.jqplot.css">
+		<link rel="stylesheet" href="css/vis.min.css">
 
 		<meta name="apple-mobile-web-app-title" content="exodoc">
 		<title>Exodoc dashboard</title>
@@ -21,6 +22,7 @@
 		<script type="text/javascript" src="js/jqplot.donutRenderer.js"></script>
 		<script type="text/javascript" src="js/juration.js"></script>
 		<script type="text/javascript" src="js/cssua.js"></script>
+		<script type="text/javascript" src="js/vis.min.js"></script>
 
 		<!-- Application -->
 		<script type="text/javascript" src="app/js/riemann.js"></script>
@@ -86,7 +88,7 @@
 		<div class="col-lg-9">
 			<div class="row" host="exodoc">
 				<div class="col-lg-4">
-					<h3 class="title-group">Production</h3>
+					<h3 class="title-group">Services</h3>
 					<div class="rm-cell-state-2x" rm-state="exodoc.web">
 						<span>django</span>
 					</div>
@@ -151,21 +153,10 @@
 							<tr>
 								<td>DB</td>
 								<td class="graphite-text">
-									<rm-last-metric show-time=true service="exodoc-ch rsync" format="duration"></rm-last-metric>
+									<rm-last-metric show-time=true service="prod-exodoc rsync" format="duration"></rm-last-metric>
 								</td>
 							</tr>
 						</table>
-					</div>
-				</div>
-
-				<div class="col-lg-1" host="exodoc-jenkins">
-					<div class="rm-cell rm-cell-bordered">
-						<h2>VLG jenkins</h2>
-						<rm-easy-pie service="disk /mnt/backup" size="80" unit="%">
-							</rm-easy-pie>
-						<div class="rm-cell-sep"></div>
-						<rm-sparkline interval="2s" service="load" title="load" min="0" max="1.0" height="28px" show-value="percent" unit="%">
-						</rm-sparkline>
 					</div>
 				</div>
 
@@ -191,85 +182,88 @@
 			<hr>
 
 			<div class="row" host="dev-exodoc">
-				<div class="col-lg-4">
-					<h3 class="title-group">Sandbox</h3>
-					<div class="rm-cell-state-2x" rm-state="exodoc.web">
-						<span>django</span>
-					</div>
-					<div class="rm-cell-state-2x" rm-state="exodoc.api">
-						<span>node.js</span>
-					</div>
-					<div class="rm-cell-state-2x" rm-state="redis">
-						<span>redis</span>
-					</div>
-					<div class="rm-cell-state-2x" rm-state="nginx.active">
-						<span>nginx</span>
-					</div>
-					<div class="rm-cell-state-2x" host="dev-exodoc-upload" rm-state="exodoc.web">
-						<span>upload</span>
-					</div>
-                    <div class="rm-cell-state-2x" host="dev-exodoc" rm-state="postgres-backup">
-                        <span>postgres-bkp</span>
-                    </div>
-                    <div class="rm-cell-state-2x" host="epyx-backup" rm-state="dev-exodoc rsync">
-                        <span>bkp-rsync</span>
-                    </div>
-					<div class="rm-cell-state-2x" host="front-dev-exodoc-1" rm-state="haproxy.dev-exodoc-https.FRONTEND.req_rate">
-                        <span>HAProxy</span>
-                    </div>
-				</div>
-
-				<div class="col-lg-1">
-					<div class="rm-cell rm-cell-bordered">
-						<h2>Disk</h2>
-						<rm-easy-pie service="disk /" size="80" unit="%">
-							</rm-easy-pie>
-					</div>
-				</div>
-
 				<div class="col-lg-3">
-					<!--
-					<h4 class="title-group">Un-boring zone</h4>
-					<x-lorem-image height="150" width="300"></x-lorem-image>
-					-->
-				</div>
-
-				<div class="col-lg-2">
-					<div class="rm-cell rm-cell-bordered">
-						<h2>nginx 7 d activities</h2>
-						<rm-graphite from="-7days" height="120" >
-							<serie service="nginx.active" color="444488"></serie>
-						</rm-graphite>
-					</div>
-				</div>
-
-				<div class="col-lg-2">
 					<div class="rm-cell rm-cell-bordered" host="front-prod-exodoc-1">
-						<h2>HAProxy 7 d sessions</h2>
-						<rm-graphite from="-7days" height="120" >
-							<serie service="haproxy.prod-exodoc-https.FRONTEND.scur" color="444488"></serie>
+						<h2>Front network last week</h2>
+						<rm-graphite from="-7days" height="120" hide-legend="true">
+							<serie service="eth0.tx.bytes" color="444488"></serie>
+							<serie service="eth0.rx.bytes" color="448844"></serie>
 						</rm-graphite>
+						<rm-legend color="#444488">TX</rm-legend>
+						<rm-legend color="#448844">RX</rm-legend>
 					</div>
 				</div>
+
+				<div class="col-lg-2">
+					<div class="rm-cell rm-cell-bordered" host="exodoc">
+						<h2>Main load last week</h2>
+						<rm-graphite from="-7days" height="120" hide-legend="true">
+							<serie service="load" color="444488"></serie>
+						</rm-graphite>
+						<rm-legend color="#444488">TX</rm-legend>
+					</div>
+				</div>
+
+				<div class="col-lg-2">
+					<div class="rm-cell rm-cell-bordered" host="prod-exodoc-upload-1">
+						<h2>Upload load last week</h2>
+						<rm-graphite from="-7days" height="120" hide-legend="true">
+							<serie service="load" color="444488"></serie>
+						</rm-graphite>
+						<rm-legend color="#444488">TX</rm-legend>
+					</div>
+				</div>
+
+				<div class="col-lg-5">
+					<visualmon width="100%" height="160" level-height="80">
+						<node x=-300 name="front-1" level=1 host="front-prod-exodoc-1" status="haproxy.prod-exodoc-https.FRONTEND.req_rate" metric="" shape="box"></node>
+
+						<node x=-150 name="nginx-1" level=0 host="exodoc" status="nginx.active" shape="box"></node>
+						<node x=-150 name="upload-1" level=2 host="prod-exodoc-upload-1" status="exodoc.web" shape="ellipse"></node>
+						<node x=0 name="django-1" level=0 host="exodoc" status="exodoc.web" metric="" shape="ellipse"></node>
+						<node x=-100 name="download-1" level=1 host="exodoc" status="exodoc.api" metric="" shape="ellipse"></node>
+
+						<node x=150 name="front-s3-1" level=1 host="front-cdn-1" status="haproxy.s3-http.FRONTEND.req_rate" metric="" shape="box"></node>
+
+						<node x=400 name="riak-cs" level=1 host="cs-node-0001" metric="riak.disk" shape="database" format="fixed-2" unit="GiB"></node>
+
+						<!-- edges -->
+						<edge src="front-1" dst="nginx-1" host="front-prod-exodoc-1" metric="haproxy.prod-exodoc-backend.BACKEND.stot"></edge>
+						<edge src="front-1" dst="upload-1" host="front-prod-exodoc-1" metric="haproxy.prod-exodoc-upload-backend.BACKEND.stot"></edge>
+
+						<edge src="nginx-1" dst="download-1" host="exodoc" metric="exodoc.api.download_count"></edge>
+						<edge src="nginx-1" dst="django-1" host="exodoc" status=""></edge>
+
+						<edge src="download-1" dst="front-s3-1" host="exodoc" status="exodoc.api.conn_cdn"></edge>
+
+						<edge src="django-1" dst="front-s3-1" host="exodoc" status="exodoc.conn_cdn"></edge>
+
+						<edge src="upload-1" dst="front-s3-1" host="prod-exodoc-upload-1" status=""></edge>
+
+						<edge src="front-s3-1" dst="riak-cs" host="front-cdn-1" metric="haproxy.riak_cs_backend.BACKEND.stot" length=100></edge>
+
+					</visualmon>
+				</div>
+
+
 			</div>
 
 			<hr>
 
 			<div class="row">
-				<div class="col-lg-4">
+				<div class="col-lg-2">
 					<h3 class="title-group">Riak-CS</h3>
+					<div class="rm-cell-state-2x" host="front-cdn-1" rm-state="haproxy.s3-http.FRONTEND.status">
+						<span>HAProxy</span>
+					</div>
+
 					<div class="rm-cell-state-2x" host="cs-node-0001" rm-state="riak.disk">
 						<span>node-1</span>
 					</div>
 					<div class="rm-cell-state-2x" host="cs-node-0002" rm-state="riak.disk">
 						<span>node-2</span>
 					</div>
-					<div class="rm-cell-state-2x" host="cs-node-0001" rm-state="nginx.active">
-						<span>nginx</span>
-					</div>
-					<div class="rm-cell-state-2x" host="front-cdn-1" rm-state="haproxy.s3-http.FRONTEND.status">
-						<span>HAProxy</span>
-					</div>
+
 				</div>
 
 				<div class="col-lg-1">
@@ -308,7 +302,16 @@
 					</div>
 				</div>
 
-				<div class="col-lg-1">
+				<div class="col-lg-2">
+					<div class="rm-cell rm-cell-bordered" host="front-cdn-1">
+						<h2>HAPoxy 7 d network</h2>
+						<rm-graphite from="-7days" height="120" hide-legend="true">
+							<serie service="eth0.tx.bytes" color="444488"></serie>
+							<serie service="eth0.rx.bytes" color="448844"></serie>
+						</rm-graphite>
+						<rm-legend color="#444488">TX</rm-legend>
+						<rm-legend color="#448844">RX</rm-legend>
+					</div>
 				</div>
 
 				<div class="col-lg-2">

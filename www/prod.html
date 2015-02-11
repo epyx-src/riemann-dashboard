@@ -101,8 +101,8 @@
 						<node X=300 name="riak-cs" level=6 host="cs-node-0001" status="riak.disk" metric="" shape="database"></node>
 
 						<!-- edges -->
-						<edge src="front-1" dst="nginx-1" host="front-prod-exodoc-1" metric="haproxy.prod-exodoc-backend.BACKEND.scur"></edge>
-						<edge src="front-1" dst="upload-1" host="front-prod-exodoc-1" metric="haproxy.prod-exodoc-upload-backend.BACKEND.scur"></edge>
+						<edge src="front-1" dst="nginx-1" host="front-prod-exodoc-1" metric="haproxy.prod-exodoc-backend.BACKEND.stot"></edge>
+						<edge src="front-1" dst="upload-1" host="front-prod-exodoc-1" metric="haproxy.prod-exodoc-upload-backend.BACKEND.stot"></edge>
 
 						<edge src="nginx-1" dst="download-1" host="exodoc" status="" metric=""></edge>
 						<edge src="nginx-1" dst="django-1" host="exodoc" status=""></edge>
@@ -119,7 +119,7 @@
 						<edge src="upload-1" dst="redis" host="prod-exodoc-upload-1" status="exodoc.conn_redis"></edge>
 						<edge src="upload-1" dst="front-s3-1" host="prod-exodoc-upload-1" status=""></edge>
 
-						<edge src="front-s3-1" dst="riak-cs" host="front-cdn-1" metric="haproxy.riak_cs_backend.BACKEND.scur" length=100></edge>
+						<edge src="front-s3-1" dst="riak-cs" host="front-cdn-1" metric="haproxy.riak_cs_backend.BACKEND.stot" length=100></edge>
 
 					</visualmon>
 				</div>

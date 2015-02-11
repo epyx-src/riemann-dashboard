@@ -173,6 +173,7 @@ dashboardApp.directive("visualmon", ['$interval', 'RiemannService', function($in
 	return {
         restrict:"E",
 		compile: function(tElement, tAttrs, transclude){
+			var level_height = parseInt(tAttrs.levelHeight || "120");
 			var nodes = [];
 			var edges = [];
 			var elm_id = 0;
@@ -201,6 +202,7 @@ dashboardApp.directive("visualmon", ['$interval', 'RiemannService', function($in
 					'graphite': node.attr("graphite"),
 					"metric": node.attr("metric"),
 					"format": node.attr("format"),
+					"unit": node.attr("unit") || "",
 					"shape": node.attr("shape") || "box",
 					"level": parseInt(node.attr("level")) || 0,
 					"fontSize": 12,
@@ -226,7 +228,7 @@ dashboardApp.directive("visualmon", ['$interval', 'RiemannService', function($in
 					data.y = parseInt(y);
 					data.allowedToMoveY = false;
 				} else if (level != null) {
-					data.y = parseInt(level) * 120.0;
+					data.y = parseInt(level) * level_height;
 				} else {
 					data.y = 0;
 				}
@@ -254,7 +256,8 @@ dashboardApp.directive("visualmon", ['$interval', 'RiemannService', function($in
 					"style": "arrow",
 					"status": node.attr("status") || node.attr("metric"),
 					"metric": node.attr("metric"),
-					"format": node.attr("format")
+					"format": node.attr("format"),
+					"unit": node.attr("unit") || ""
 				};
 				var length = node.attr('length');
 				if (length) {
@@ -290,7 +293,7 @@ dashboardApp.directive("visualmon", ['$interval', 'RiemannService', function($in
 				physics: {
 					enable: false
 				},
-				smoothCurves: false,
+				smoothCurves: true,
 				nodes: {
 					fontFace: "Helvetica Neue"
 				}
@@ -345,10 +348,10 @@ dashboardApp.directive("visualmon", ['$interval', 'RiemannService', function($in
 						var node_or_edge = find_by_id(elm_id);
 						var val = apply_format(data.metric, node_or_edge.format);
 						if (node_or_edge.type == 'n') {
-							node_or_edge.label = node_or_edge._label + "\n\n" + val + "";
+							node_or_edge.label = node_or_edge._label + "\n\n" + val + " " + node_or_edge.unit;
 							dataset_nodes.update(node_or_edge)
 						} else if (node_or_edge.type == 'e') {
-							node_or_edge.label = ""+val;
+							node_or_edge.label = ""+val + " " + node_or_edge.unit;
 							dataset_edges.update(node_or_edge)
 						}
 					}, n.id)
@@ -549,6 +552,7 @@ dashboardApp.directive("rmProgress", ['$interval', 'RiemannService', function($i
 				var timeout_id = null;
 				var old_metric = [];
 				function update() {
+					host = find_host(element, tAttrs);
 					var metric = riemann_service.get(host, service).metric;
 					var real_max = 100;
 					if ((""+max).indexOf("metric:") == 0) {
@@ -593,6 +597,7 @@ dashboardApp.directive("rmLiveMetric", ['$interval', 'RiemannService', function(
 				var timeout_id = null;
 				var old_metric = null;
 				function update() {
+					host = find_host(element, tAttrs);
 					var metric = riemann_service.get(host, service).metric || 0;
 					if (old_metric != metric) {
 						element.text(
