@@ -162,8 +162,8 @@
 
 				<div class="col-lg-2">
 					<div class="rm-cell rm-cell-bordered">
-						<h2>nginx 7 d activities</h2>
-						<rm-graphite from="-7days" height="120" >
+						<h2>nginx 48h activities</h2>
+						<rm-graphite from="-48hours" height="120" >
 							<serie service="nginx.active" color="444488"></serie>
 						</rm-graphite>
 					</div>
@@ -171,8 +171,8 @@
 
 				<div class="col-lg-2">
 					<div class="rm-cell rm-cell-bordered" host="front-prod-exodoc-1">
-						<h2>HAProxy 7 d sessions</h2>
-						<rm-graphite from="-7days" height="120" >
+						<h2>HAProxy 48h sessions</h2>
+						<rm-graphite from="-48hours" height="120" >
 							<serie service="haproxy.prod-exodoc-https.FRONTEND.scur" color="444488"></serie>
 						</rm-graphite>
 					</div>
@@ -181,11 +181,11 @@
 			</div>
 			<hr>
 
-			<div class="row" host="dev-exodoc">
+			<div class="row">
 				<div class="col-lg-3">
 					<div class="rm-cell rm-cell-bordered" host="front-prod-exodoc-1">
-						<h2>Front network last week</h2>
-						<rm-graphite from="-7days" height="120" hide-legend="true">
+						<h2>Front network 48h</h2>
+						<rm-graphite from="-48hours" height="120" hide-legend="true">
 							<serie service="eth0.tx.bytes" color="444488"></serie>
 							<serie service="eth0.rx.bytes" color="448844"></serie>
 						</rm-graphite>
@@ -194,23 +194,15 @@
 					</div>
 				</div>
 
-				<div class="col-lg-2">
+				<div class="col-lg-3">
 					<div class="rm-cell rm-cell-bordered" host="exodoc">
-						<h2>Main load last week</h2>
-						<rm-graphite from="-7days" height="120" hide-legend="true">
-							<serie service="load" color="444488"></serie>
+						<h2>Apache 48h</h2>
+						<rm-graphite from="-48hours" height="120" hide-legend="true">
+							<serie host="exodoc" service="httpd.BusyWorkers" color="444488"></serie>
+							<serie host="prod-exodoc-upload-1" service="httpd.BusyWorkers" color="44BB44"></serie>
 						</rm-graphite>
-						<rm-legend color="#444488">TX</rm-legend>
-					</div>
-				</div>
-
-				<div class="col-lg-2">
-					<div class="rm-cell rm-cell-bordered" host="prod-exodoc-upload-1">
-						<h2>Upload load last week</h2>
-						<rm-graphite from="-7days" height="120" hide-legend="true">
-							<serie service="load" color="444488"></serie>
-						</rm-graphite>
-						<rm-legend color="#444488">TX</rm-legend>
+						<rm-legend color="#444488">Main busy workers</rm-legend>
+						<rm-legend color="#44BB44">Upload busy workers</rm-legend>
 					</div>
 				</div>
 
@@ -304,8 +296,8 @@
 
 				<div class="col-lg-2">
 					<div class="rm-cell rm-cell-bordered" host="front-cdn-1">
-						<h2>HAPoxy 7 d network</h2>
-						<rm-graphite from="-7days" height="120" hide-legend="true">
+						<h2>HAPoxy 48H network</h2>
+						<rm-graphite from="-48hours" height="120" hide-legend="true">
 							<serie service="eth0.tx.bytes" color="444488"></serie>
 							<serie service="eth0.rx.bytes" color="448844"></serie>
 						</rm-graphite>
@@ -316,8 +308,8 @@
 
 				<div class="col-lg-2">
 					<div class="rm-cell rm-cell-bordered" host="front-cdn-1">
-						<h2>HAPoxy 7 d sessions</h2>
-						<rm-graphite from="-7days" height="130" hide-legend="true">
+						<h2>HAPoxy 48H sessions</h2>
+						<rm-graphite from="-48hours" height="130" hide-legend="true">
 							<serie service="haproxy.s3-https.FRONTEND.scur" color="669944"></serie>
 							<serie service="haproxy.s3-http.FRONTEND.scur" color="8888AA"></serie>
 						</rm-graphite>

@@ -78,8 +78,9 @@ var create_graphite_url = function(host, series, options) {
 	var colors = [];
 	_.each(series, function(data){
 		colors.push(data.color || "green");
+		var r_host = data.host || host;
 		query = query + "&" + $.param({
-			target: host+"."+data.target.replace(/ /g,".").replace(/[//]/, "")
+			target: r_host+"."+data.target.replace(/ /g,".").replace(/[//]/, "")
 		});
 	});
 	query = query + "&" + $.param({
@@ -708,6 +709,7 @@ dashboardApp.directive("rmGraphite", ['$interval', function($interval) {
 				var $elm = $(this);
 				series.push({
 					target: $elm.attr("service") || "",
+					host: $elm.attr("host") || "",
 					color: $elm.attr("color")
 				});
 			});
