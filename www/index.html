@@ -86,7 +86,7 @@
 
 		</div>
 		<div class="col-lg-9">
-			<div class="row" host="exodoc">
+			<div class="row" host="prod-exodoc">
 				<div class="col-lg-4">
 					<h3 class="title-group">Services</h3>
 					<div class="rm-cell-state-2x" rm-state="exodoc.web">
@@ -195,10 +195,10 @@
 				</div>
 
 				<div class="col-lg-3">
-					<div class="rm-cell rm-cell-bordered" host="exodoc">
+					<div class="rm-cell rm-cell-bordered" host="prod-exodoc">
 						<h2>Apache 48h</h2>
 						<rm-graphite from="-48hours" height="120" hide-legend="true">
-							<serie host="exodoc" service="httpd.BusyWorkers" color="444488"></serie>
+							<serie host="prod-exodoc" service="httpd.BusyWorkers" color="444488"></serie>
 							<serie host="prod-exodoc-upload-1" service="httpd.BusyWorkers" color="44BB44"></serie>
 						</rm-graphite>
 						<rm-legend color="#444488">Main busy workers</rm-legend>
@@ -210,10 +210,10 @@
 					<visualmon width="100%" height="160" level-height="80">
 						<node x=-300 name="front-1" level=1 host="front-prod-exodoc-1" status="haproxy.prod-exodoc-https.FRONTEND.req_rate" metric="" shape="box"></node>
 
-						<node x=-150 name="nginx-1" level=0 host="exodoc" status="nginx.active" shape="box"></node>
+						<node x=-150 name="nginx-1" level=0 host="prod-exodoc" status="nginx.active" shape="box"></node>
 						<node x=-150 name="upload-1" level=2 host="prod-exodoc-upload-1" status="exodoc.web" shape="ellipse"></node>
-						<node x=0 name="django-1" level=0 host="exodoc" status="exodoc.web" metric="" shape="ellipse"></node>
-						<node x=-100 name="download-1" level=1 host="exodoc" status="exodoc.api" metric="" shape="ellipse"></node>
+						<node x=0 name="django-1" level=0 host="prod-exodoc" status="exodoc.web" metric="" shape="ellipse"></node>
+						<node x=-100 name="download-1" level=1 host="prod-exodoc" status="exodoc.api" metric="" shape="ellipse"></node>
 
 						<node x=150 name="front-s3-1" level=1 host="front-cdn-1" status="haproxy.s3-http.FRONTEND.req_rate" metric="" shape="box"></node>
 
@@ -223,12 +223,12 @@
 						<edge src="front-1" dst="nginx-1" host="front-prod-exodoc-1" metric="haproxy.prod-exodoc-backend.BACKEND.stot"></edge>
 						<edge src="front-1" dst="upload-1" host="front-prod-exodoc-1" metric="haproxy.prod-exodoc-upload-backend.BACKEND.stot"></edge>
 
-						<edge src="nginx-1" dst="download-1" host="exodoc" metric="exodoc.api.download_count"></edge>
-						<edge src="nginx-1" dst="django-1" host="exodoc" status=""></edge>
+						<edge src="nginx-1" dst="download-1" host="prod-exodoc" metric="exodoc.api.download_count"></edge>
+						<edge src="nginx-1" dst="django-1" host="prod-exodoc" status=""></edge>
 
-						<edge src="download-1" dst="front-s3-1" host="exodoc" status="exodoc.api.conn_cdn"></edge>
+						<edge src="download-1" dst="front-s3-1" host="prod-exodoc" status="exodoc.api.conn_cdn"></edge>
 
-						<edge src="django-1" dst="front-s3-1" host="exodoc" status="exodoc.conn_cdn"></edge>
+						<edge src="django-1" dst="front-s3-1" host="prod-exodoc" status="exodoc.conn_cdn"></edge>
 
 						<edge src="upload-1" dst="front-s3-1" host="prod-exodoc-upload-1" status=""></edge>
 
@@ -320,7 +320,7 @@
 			</div>
 
 			<h2>Key metrics</h2>
-			<div class="row" host="exodoc">
+			<div class="row" host="prod-exodoc">
 				<div class="col-lg-3">
 					<div class="rm-cell rm-cell-bordered">
 						<h2>Documents security level</h2>
