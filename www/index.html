@@ -182,9 +182,9 @@
 			<hr>
 
 			<div class="row">
-				<div class="col-lg-3">
+				<div class="col-lg-2">
 					<div class="rm-cell rm-cell-bordered" host="front-prod-exodoc-1">
-						<h2>Front network 48h</h2>
+						<h2>Front net 48h</h2>
 						<rm-graphite from="-48hours" height="120" hide-legend="true">
 							<serie service="eth0.tx.bytes" color="444488"></serie>
 							<serie service="eth0.rx.bytes" color="448844"></serie>
@@ -194,7 +194,7 @@
 					</div>
 				</div>
 
-				<div class="col-lg-3">
+				<div class="col-lg-2">
 					<div class="rm-cell rm-cell-bordered" host="prod-exodoc">
 						<h2>Apache 48h</h2>
 						<rm-graphite from="-48hours" height="120" hide-legend="true">
@@ -203,6 +203,33 @@
 						</rm-graphite>
 						<rm-legend color="#444488">Main busy workers</rm-legend>
 						<rm-legend color="#44BB44">Upload busy workers</rm-legend>
+					</div>
+				</div>
+				<div class="col-lg-2">
+					<h3 class="title-group">Riak-CS</h3>
+					<div class="rm-cell-state-2x" host="front-cdn-1" rm-state="haproxy.s3-http.FRONTEND.status">
+						<span>HAProxy</span>
+					</div>
+
+					<div class="rm-cell-state" host="cs-node-0001" rm-state="riak.disk">
+						<span>node-1</span>
+					</div>
+					<div class="rm-cell-state" host="cs-node-0002" rm-state="riak.disk">
+						<span>node-2</span>
+					</div>
+					<div class="rm-cell-state" host="cs-node-0003" rm-state="riak.disk">
+						<span>node-3</span>
+					</div>
+					<div class="rm-cell-state" host="cs-node-0004" rm-state="riak.disk">
+						<span>node-4</span>
+					</div>
+				</div>
+
+				<div class="col-lg-1">
+					<div class="rm-cell rm-cell-bordered">
+						<h2>riak sto</h2>
+						<rm-easy-pie host="cs-node-0001" service="disk /" size="80" unit="%">
+							</rm-easy-pie>
 					</div>
 				</div>
 
@@ -240,31 +267,9 @@
 
 			</div>
 
-			<hr>
+			<h6>riak</h6>
 
 			<div class="row">
-				<div class="col-lg-2">
-					<h3 class="title-group">Riak-CS</h3>
-					<div class="rm-cell-state-2x" host="front-cdn-1" rm-state="haproxy.s3-http.FRONTEND.status">
-						<span>HAProxy</span>
-					</div>
-
-					<div class="rm-cell-state-2x" host="cs-node-0001" rm-state="riak.disk">
-						<span>node-1</span>
-					</div>
-					<div class="rm-cell-state-2x" host="cs-node-0002" rm-state="riak.disk">
-						<span>node-2</span>
-					</div>
-
-				</div>
-
-				<div class="col-lg-1">
-					<div class="rm-cell rm-cell-bordered">
-						<h2>Storage</h2>
-						<rm-easy-pie host="cs-node-0001" service="disk /" size="80" unit="%">
-							</rm-easy-pie>
-					</div>
-				</div>
 
 				<div class="col-lg-2">
 					<div class="rm-cell rm-cell-bordered">
@@ -288,6 +293,34 @@
 							<serie service="riak.get.99" color="8888AA"></serie>
 							<serie service="riak.put.50" color="664444"></serie>
 							<serie service="riak.put.99" color="AA8888"></serie>
+						</rm-graphite>
+						<rm-legend color="#8888AA">download (50,99)</rm-legend>
+						<rm-legend color="#AA8888">upload (50,99)</rm-legend>
+					</div>
+				</div>
+
+				<div class="col-lg-2">
+					<div class="rm-cell rm-cell-bordered">
+						<h2>Last 48 h get/put [n3]</h2>
+						<rm-graphite from="-48hours" host="cs-node-0003" height="120" hide-legend="true">
+							<serie service="riak.get.time.50" color="444466"></serie>
+							<serie service="riak.get.time.99" color="8888AA"></serie>
+							<serie service="riak.put.time.50" color="664444"></serie>
+							<serie service="riak.put.time.99" color="AA8888"></serie>
+						</rm-graphite>
+						<rm-legend color="#8888AA">download (50,99)</rm-legend>
+						<rm-legend color="#AA8888">upload (50,99)</rm-legend>
+					</div>
+				</div>
+
+				<div class="col-lg-2">
+					<div class="rm-cell rm-cell-bordered">
+						<h2>Last 48 h get/put [n4]</h2>
+						<rm-graphite from="-48hours" host="cs-node-0004" height="120" hide-legend="true">
+							<serie service="riak.get.time.50" color="444466"></serie>
+							<serie service="riak.get.time.99" color="8888AA"></serie>
+							<serie service="riak.put.time.50" color="664444"></serie>
+							<serie service="riak.put.time.99" color="AA8888"></serie>
 						</rm-graphite>
 						<rm-legend color="#8888AA">download (50,99)</rm-legend>
 						<rm-legend color="#AA8888">upload (50,99)</rm-legend>
